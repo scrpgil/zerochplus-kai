@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  zerochplus:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/usr/local/apache2/htdocs
+    ports:
+      - 8080:80
