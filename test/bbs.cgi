@@ -242,6 +242,7 @@ sub PrintBBSThreadCreate
 	my $Set = $CGI->{'SET'};
 	my $Form = $CGI->{'FORM'};
 	my $Cookie = $CGI->{'COOKIE'};
+	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
 
 	require './module/legolas.pl';
 	my $Caption = LEGOLAS->new;
@@ -255,10 +256,11 @@ sub PrintBBSThreadCreate
 
 	# HTMLヘッダの出力
 	$Page->Print("Content-type: text/html\n\n");
-	$Page->Print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
+	$Page->Print("<!DOCTYPE html>\n");
 	$Page->Print("<html lang=\"ja\">\n");
 	$Page->Print("<head>\n");
 	$Page->Print(' <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">'."\n\n");
+	$Page->Print(" <link rel=\"stylesheet\" href=\"$data_path/app.css\" type=\"text/css\">"."\n\n");
 	$Caption->Print($Page, undef);
 	$Page->Print(" <title>$title</title>\n\n");
 	$Page->Print("</head>\n<!--nobanner-->\n");
@@ -397,6 +399,7 @@ sub PrintBBSCookieConfirm
 	my $Form = $CGI->{'FORM'};
 	my $Set = $CGI->{'SET'};
 	my $Cookie = $CGI->{'COOKIE'};
+	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
 
 	my $sanitize = sub {
 		$_ = shift;
@@ -422,12 +425,13 @@ sub PrintBBSCookieConfirm
 
 	$Page->Print("Content-type: text/html\n\n");
 	$Page->Print(<<HTML);
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <!-- 2ch_X:cookie -->
 <head>
 
  <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+ <link rel="stylesheet" href="$data_path/app.css" type="text/css">
 
  <title>■ 書き込み確認 ■</title>
 

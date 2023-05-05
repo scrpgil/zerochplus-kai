@@ -184,3 +184,17 @@ input.delete	{
 					float: right;
 					color: red;
 				}
+
+
+/*------------------------------------------------------------------------------
+	AAŠÖ˜A
+ *------------------------------------------------------------------------------*/
+@font-face {
+  font-family: "Saitamaar";
+  src: url("./fonts/Saitamaar.woff2") format("woff2");
+  font-display: swap;
+}
+
+dd {
+  font-family: Saitamaar, "Saitamaar";
+}

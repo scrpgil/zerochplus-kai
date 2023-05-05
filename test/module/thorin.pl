@@ -19,12 +19,12 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'BUFF'	=> [],
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -40,7 +40,7 @@ sub Print
 {
 	my $this = shift;
 	my ($line) = @_;
-	
+
 	push @{$this->{'BUFF'}}, $line;
 }
 
@@ -58,9 +58,9 @@ sub HTMLInput
 {
 	my $this = shift;
 	my ($kind, $name, $value) = @_;
-	
+
 	my $line = "<input type=$kind name=\"$name\" value=\"$value\">\n";
-	
+
 	push @{$this->{'BUFF'}}, $line;
 }
 
@@ -78,7 +78,7 @@ sub Flush
 {
 	my $this = shift;
 	my ($flag, $perm, $path) = @_;
-	
+
 	# ファイルへ出力
 	if ($flag) {
 		chmod($perm, $path);
@@ -108,7 +108,7 @@ sub Flush
 sub Clear
 {
 	my $this = shift;
-	
+
 	$this->{'BUFF'} = [];
 }
 
@@ -124,7 +124,7 @@ sub Merge
 {
 	my $this = shift;
 	my ($thorin) = @_;
-	
+
 	push @{$this->{'BUFF'}}, @{$thorin->{'BUFF'}};
 }
 

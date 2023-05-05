@@ -31,7 +31,7 @@ exit(SearchCGI());
 sub SearchCGI
 {
 	my ($Sys, $Page, $Form, $BBS);
-	
+
 	require './module/melkor.pl';
 	require './module/thorin.pl';
 	require './module/samwise.pl';
@@ -40,12 +40,12 @@ sub SearchCGI
 	$Page	= new THORIN;
 	$Form	= SAMWISE->new(1);
 	$BBS	= new NAZGUL;
-	
+
 	$Form->DecodeForm(1);
 	$Sys->Init();
 	$BBS->Load($Sys);
 	PrintHead($Sys, $Page, $BBS, $Form);
-	
+
 	# 検索ワードがある場合は検索を実行する
 	if ($Form->Get('WORD', '') ne '') {
 		Search($Sys, $Form, $Page, $BBS);
@@ -67,7 +67,7 @@ sub PrintHead
 	my ($Sys, $Page, $BBS, $Form) = @_;
 	my ($pBBS, $bbs, $name, $dir, $Banner);
 	my ($sMODE, $sBBS, $sKEY, $sWORD, @sTYPE, @cTYPE, $types, $BBSpath, @bbsSet, $id);
-	
+
 	my $sanitize = sub {
 		$_ = shift;
 		s/&/&amp;/g;
@@ -76,20 +76,20 @@ sub PrintHead
 		s/"/&#34;/g;#"
 		return $_;
 	};
-	
+
 	$sMODE	= &$sanitize($Form->Get('MODE', ''));
 	$sBBS	= &$sanitize($Form->Get('BBS', ''));
 	$sKEY	= &$sanitize($Form->Get('KEY', ''));
 	$sWORD	= &$sanitize($Form->Get('WORD'));
 	@sTYPE	= $Form->GetAtArray('TYPE', 0);
-	
+
 	$types = ($sTYPE[0] || 0) | ($sTYPE[1] || 0) | ($sTYPE[2] || 0);
 	$cTYPE[0] = ($types & 1 ? 'checked' : '');
 	$cTYPE[1] = ($types & 2 ? 'checked' : '');
 	$cTYPE[2] = ($types & 4 ? 'checked' : '');
-	
+
 	$BBSpath = $Sys->Get('BBSPATH');
-	
+
 	# バナーの読み込み
 	require './module/denethor.pl';
 	$Banner = new DENETHOR;
@@ -97,7 +97,7 @@ sub PrintHead
 
 	$Page->Print("Content-type: text/html;charset=Shift_JIS\n\n");
 	$Page->Print(<<HTML);
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 
@@ -116,7 +116,7 @@ sub PrintHead
  <tr>
   <td>
   <font size="+1"><b>検索＠0chPlus</b></font>
-  
+
   <div align="center" style="margin:1.2em 0;">
   <form action="./search.cgi" method="POST">
   <table border="0">
@@ -159,14 +159,14 @@ HTML
 
 	# BBSセットの取得
 	$BBS->GetKeySet('ALL', '', \@bbsSet);
-	
+
 	foreach $id (@bbsSet) {
 		$name = $BBS->Get('NAME', $id);
 		$dir = $BBS->Get('DIR', $id);
-		
+
 		# 板ディレクトリに.0ch_hiddenというファイルがあれば読み飛ばす
 		next if ( -e "$BBSpath/$dir/.0ch_hidden" && $sBBS ne $dir );
-		
+
 		if ($sBBS eq $dir) {
 			$Page->Print("     <option value=\"$dir\" selected>$name</option>\n");
 		}
@@ -226,10 +226,10 @@ sub PrintFoot
 {
 	my ($Sys, $Page) = @_;
 	my ($ver, $cgipath);
-	
+
 	$ver = $Sys->Get('VERSION');
 	$cgipath	= $Sys->Get('CGIPATH');
-	
+
 	$Page->Print(<<HTML);
 
 <div class="foot">
@@ -253,17 +253,17 @@ sub Search
 	my ($Sys, $Form, $Page, $BBS) = @_;;
 	my ($Search, $Mode, $Result, @elem, $n, $base, $word);
 	my (@types, $Type);
-	
+
 	require './module/balrogs.pl';
 	$Search = new BALROGS;
-	
+
 	$Mode = 0 if ($Form->Equal('MODE', 'ALL'));
 	$Mode = 1 if ($Form->Equal('MODE', 'BBS'));
 	$Mode = 2 if ($Form->Equal('MODE', 'THREAD'));
-	
+
 	@types = $Form->GetAtArray('TYPE', 0);
 	$Type = ($types[0] || 0) | ($types[1] || 0) | ($types[2] || 0);
-	
+
 	my $sanitize = sub {
 		$_ = shift;
 		s/&/&amp;/g;
@@ -271,24 +271,24 @@ sub Search
 		s/>/&gt;/g;
 		return $_;
 	};
-	
+
 	# 検索オブジェクトの設定と検索の実行
 	$Search->Create($Sys, $Mode, $Type, $Form->Get('BBS', ''), $Form->Get('KEY', ''));
 	$Search->Run(&$sanitize($Form->Get('WORD')));
-	
+
 	if ($@ ne '') {
 		PrintSystemError($Page, $@);
 		return;
 	}
-	
+
 	# 検索結果セット取得
 	$Result = $Search->GetResultSet();
 	$n		= $Result ? @$Result : 0;
 	$base	= $Sys->Get('BBSPATH');
 	$word	= $Form->Get('WORD');
-	
+
 	PrintResultHead($Page, $n);
-	
+
 	# 検索ヒットが1件以上あり
 	if ($n > 0) {
 		require './module/galadriel.pl';
@@ -304,7 +304,7 @@ sub Search
 	else {
 		PrintNoHit($Page);
 	}
-	
+
 	PrintResultFoot($Page);
 }
 
@@ -319,7 +319,7 @@ sub Search
 sub PrintResultHead
 {
 	my ($Page, $n) = @_;
-	
+
 	$Page->Print(<<HTML);
 <table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="#efefef" style="margin-bottom:1.2em;" align="center">
  <tr>
@@ -346,12 +346,12 @@ sub PrintResult
 {
 	my ($Page, $BBS, $Conv, $n, $base, $pResult) = @_;
 	my ($name, @bbsSet);
-	
+
 	$BBS->GetKeySet('DIR', $$pResult[0], \@bbsSet);
-	
+
 	if (@bbsSet > 0) {
 		$name = $BBS->Get('NAME', $bbsSet[0]);
-		
+
 		$Page->Print("   <dt>$n 名前：<b>");
 		if ($$pResult[4] eq '') {
 			$Page->Print("<font color=\"green\">$$pResult[3]</font>");
@@ -359,7 +359,7 @@ sub PrintResult
 		else {
 			$Page->Print("<a href=\"mailto:$$pResult[4]\">$$pResult[3]</a>");
 		}
-		
+
 	$Page->Print(<<HTML);
  </b>：$$pResult[5]</dt>
     <dd>
@@ -372,7 +372,7 @@ sub PrintResult
     <br>
     <br>
     </dd>
-    
+
 HTML
 	}
 }
@@ -388,7 +388,7 @@ HTML
 sub PrintResultFoot
 {
 	my ($Page) = @_;
-	
+
 	$Page->Print("  </dl>\n  </td>\n </tr>\n</table>\n");
 }
 
@@ -403,7 +403,7 @@ sub PrintResultFoot
 sub PrintNoHit
 {
 	my ($Page) = @_;
-	
+
 	$Page->Print(<<HTML);
 <dt>
  0 名前：<font color="forestgreen"><b>検索エンジソ\＠ぜろちゃんねるプラス</b></font>：No Hit
@@ -429,7 +429,7 @@ HTML
 sub PrintSystemError
 {
 	my ($Page, $msg) = @_;
-	
+
 	$Page->Print(<<HTML);
 <br>
 <table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="#efefef" align="center">
