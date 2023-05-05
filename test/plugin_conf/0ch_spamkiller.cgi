@@ -1,0 +1,9 @@
+1<>mail_atsign_point<>5
+1<>name_ascii_point<>2
+1<>nohost_point<>7
+1<>text_ahref_point<>5
+1<>text_ascii_point<>2
+1<>text_ascii_ratio<>95
+1<>text_url_point<>3
+1<>threshold_point<>10
+2<>tldomain_setting<>jp,com,net,org=2;*=3

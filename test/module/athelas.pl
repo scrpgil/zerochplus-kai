@@ -19,7 +19,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'Sys'		=> undef,
 		'FILE'		=> undef,
@@ -33,7 +33,7 @@ sub new
 		'ORDER'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -49,7 +49,7 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ハッシュ初期化
 	$this->{'SYS'} = $Sys;
 	$this->{'FILE'} = {};
@@ -61,27 +61,27 @@ sub Load
 	$this->{'CONFIG'} = {};
 	$this->{'CONFTYPE'} = {};
 	$this->{'ORDER'} = [];
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/plugins.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 7) {
 				warn "invalid line in $path";
 				#next;
 			}
-			
+
 			eval { require "./plugin/$elem[1]"; };
 			next if ($@);
-			
+
 			my $id = $elem[0];
 			$this->{'FILE'}->{$id} = $elem[1];
 			$this->{'CLASS'}->{$id} = $elem[2];
@@ -102,7 +102,7 @@ sub Load
 #
 #	プラグイン個別設定読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$id	
+#	@param	$id
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -110,12 +110,12 @@ sub LoadConfig
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $config = $this->{'CONFIG'}->{$id};
 	my $conftype = $this->{'CONFTYPE'}->{$id};
 	my $file = $this->{'FILE'}->{$id};
 	my $path = undef;
-	
+
 	if ($file =~ /^(0ch_.*)\.pl$/) {
 		$path = "./plugin_conf/$1.cgi";
 	}
@@ -123,7 +123,7 @@ sub LoadConfig
 		warn "invalid plugin file name: $file";
 		return;
 	}
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
@@ -145,7 +145,7 @@ sub LoadConfig
 #
 #	プラグイン個別設定保存
 #	-------------------------------------------------------------------------------------
-#	@param	$id	
+#	@param	$id
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -153,12 +153,12 @@ sub SaveConfig
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $config = $this->{'CONFIG'}->{$id};
 	my $conftype = $this->{'CONFTYPE'}->{$id};
 	my $file = $this->{'FILE'}->{$id};
 	my $path = undef;
-	
+
 	if ($file =~ /^(0ch_.*)\.pl$/) {
 		$path = "./plugin_conf/$1.cgi";
 	}
@@ -166,16 +166,16 @@ sub SaveConfig
 		warn "invalid plugin file name: $file";
 		return;
 	}
-	
+
 	if (scalar(keys %$config) > 0) {
 		chmod($this->{'SYS'}->Get('PM-ADM'), $path);
 		if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 			flock($fh, 2);
 			seek($fh, 0, 0);
-			
+
 			foreach my $key (sort keys %$config) {
 				next unless (defined $config->{$key});
-				
+
 				my $val = $config->{$key};
 				my $type = $conftype->{$key};
 				if ($type == 1) {
@@ -190,7 +190,7 @@ sub SaveConfig
 				}
 				print $fh "$type<>$key<>$val\n";
 			}
-			
+
 			truncate($fh, tell($fh));
 			close($fh);
 		}
@@ -208,7 +208,7 @@ sub HasConfig
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	return scalar(keys %{$this->{'CONFIG'}->{$id}});
 }
 
@@ -216,7 +216,7 @@ sub HasConfig
 #
 #	プラグイン個別設定初期値設定
 #	-------------------------------------------------------------------------------------
-#	@param	$id	
+#	@param	$id
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -224,12 +224,12 @@ sub SetDefaultConfig
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $config = $this->{'CONFIG'}->{$id} = {};
 	my $conftype = $this->{'CONFTYPE'}->{$id} = {};
 	my $file = $this->{'FILE'}->{$id};
 	my $className = undef;
-	
+
 	if ($file =~ /^0ch_(.*)\.pl$/) {
 		$className = "ZPL_$1";
 	}
@@ -237,7 +237,7 @@ sub SetDefaultConfig
 		warn "invalid plugin file name: $file";
 		return;
 	}
-	
+
 	require "./plugin/$file";
 	if ($className->can('getConfig')) {
 		my $plugin = $className->new;
@@ -261,15 +261,15 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/plugins.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach my $id (@{$this->{'ORDER'}}) {
 			my $data = join('<>',
 				$id,
@@ -280,10 +280,10 @@ sub Save
 				$this->{'TYPE'}->{$id},
 				$this->{'VALID'}->{$id}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -304,9 +304,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, @{$this->{'ORDER'}};
 	}
@@ -317,7 +317,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -335,9 +335,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -355,7 +355,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -374,15 +374,15 @@ sub Add
 {
 	my $this = shift;
 	my ($file, $valid) = @_;
-	
+
 	my $id = time;
 	$id++ while (exists $this->{'FILE'}->{$id});
-	
+
 	if (! -e "./plugin/$file") {
 		warn "not found plugin: ./plugin/$file";
 		return undef;
 	}
-	
+
 	my $className = undef;
 	if ($file =~ /0ch_(.*)\.pl/) {
 		$className = "ZPL_$1";
@@ -391,13 +391,13 @@ sub Add
 		warn "invalid plugin file name: $file";
 		return undef;
 	}
-	
+
 	require "./plugin/$file";
 	if (!$className->can('new')) {
 		warn "invalid plugin file name: $file";
 		return undef;
 	}
-	
+
 	my $plugin = $className->new;
 	$this->{'FILE'}->{$id} = $file;
 	$this->{'CLASS'}->{$id} = $className;
@@ -411,7 +411,7 @@ sub Add
 	$this->LoadConfig($id);
 	$this->SaveConfig($id);
 	push @{$this->{'ORDER'}}, $id;
-	
+
 	return $id;
 }
 
@@ -427,7 +427,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'FILE'}->{$id};
 	delete $this->{'CLASS'}->{$id};
 	delete $this->{'NAME'}->{$id};
@@ -436,7 +436,7 @@ sub Delete
 	delete $this->{'VALID'}->{$id};
 	delete $this->{'CONFIG'}->{$id};
 	delete $this->{'CONFTYPE'}->{$id};
-	
+
 	my $order = $this->{'ORDER'};
 	for my $i (reverse(0 .. $#$order)) {
 		if ($order->[$i] eq $id) {
@@ -457,7 +457,7 @@ sub Update
 {
 	my $this = shift;
 	my ($plugin, $exist);
-	
+
 	my @files = ();
 	if (opendir(my $dh, './plugin')) {
 		@files = readdir($dh);
@@ -475,7 +475,7 @@ sub Update
 		$this->{'ORDER'} = [];
 		return;
 	}
-	
+
 	# プラグイン追加・更新フェイズ
 	foreach my $file (@files) {
 		if ($file =~ /^0ch_(.*)\.pl/) {
@@ -529,7 +529,7 @@ package	PLUGINCONF;
 #	コンストラクタ
 #	-------------------------------------------------------------------------------------
 #	@param	$Plugin	ATHELAS
-#	@param	$id		
+#	@param	$id
 #	@return	モジュールオブジェクト
 #
 #------------------------------------------------------------------------------------------------------------
@@ -537,12 +537,12 @@ sub new
 {
 	my $class = shift;
 	my ($Plugin, $id) = @_;
-	
+
 	my $obj = {
 		'PLUGIN'	=> $Plugin,
 		'id'		=> $id
 	};
-	
+
 	bless $obj, $class;
 	return $obj;
 }
@@ -551,8 +551,8 @@ sub new
 #
 #	プラグイン個別設定設定
 #	-------------------------------------------------------------------------------------
-#	@param	$key	
-#	@param	$val	
+#	@param	$key
+#	@param	$val
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -560,13 +560,13 @@ sub SetConfig
 {
 	my $this = shift;
 	my ($key, $val) = @_;
-	
+
 	my $id = $this->{'id'};
 	my $Plugin = $this->{'PLUGIN'};
 	my $config = $Plugin->{'CONFIG'}->{$id};
 	my $conftype = $Plugin->{'CONFTYPE'}->{$id};
 	my $type = 0;
-	
+
 	if (defined $conftype->{$key}) {
 		$type = $conftype->{$key};
 	}
@@ -580,7 +580,7 @@ sub SetConfig
 		}
 		$conftype->{$key} = $type;
 	}
-	
+
 	if ($type == 1) {
 		$val -= 0;
 	}
@@ -591,9 +591,9 @@ sub SetConfig
 	elsif ($type == 3) {
 		$val = ($val ? 1 : 0);
 	}
-	
+
 	$config->{$key} = $val;
-	
+
 	$Plugin->SaveConfig($id);
 }
 
@@ -601,7 +601,7 @@ sub SetConfig
 #
 #	プラグイン個別設定取得
 #	-------------------------------------------------------------------------------------
-#	@param	$key	
+#	@param	$key
 #	@return	プラグイン個別設定
 #
 #------------------------------------------------------------------------------------------------------------
@@ -609,10 +609,10 @@ sub GetConfig
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	my $id = $this->{'id'};
 	my $config = $this->{'PLUGIN'}->{'CONFIG'}->{$id};
-	
+
 	return $config->{$key};
 }
 

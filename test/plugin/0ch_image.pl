@@ -79,10 +79,10 @@ sub execute
 {
 	my	$this = shift;
 	my	($sys,$form) = @_;
-	
+
 	my $contents = $sys->Get('_DAT_');
 	IMAGE(\($contents->[3]),$sys->Get('LIMTIME'));
-	
+
 	return 0;
 }
 
@@ -97,14 +97,16 @@ sub execute
 sub IMAGE
 {
 	my	($text,$limit) = @_;
-	
+
 	if($limit){
 		$$text =~ s/(http:\/\/.*?\.jpg)/<img src="$1" width=100 height=100\/>/g;
+		$$text =~ s/(http:\/\/.*?\.png)/<img src="$1" width=100 height=100\/>/g;
 		$$text =~ s/(http:\/\/.*?\.gif)/<img src="$1" width=100 height=100\/>/g;
 		$$text =~ s/(http:\/\/.*?\.bmp)/<img src="$1" width=100 height=100\/>/g;
 	}
 	else{
 		$$text =~ s/<a.*?>(.*?\.jpg)<\/a>/<img src="$1" width=100 height=100\/>/g;
+		$$text =~ s/<a.*?>(.*?\.png)<\/a>/<img src="$1" width=100 height=100\/>/g;
 		$$text =~ s/<a.*?>(.*?\.gif)<\/a>/<img src="$1" width=100 height=100\/>/g;
 		$$text =~ s/<a.*?>(.*?\.bmp)<\/a>/<img src="$1" width=100 height=100\/>/g;
 	}
