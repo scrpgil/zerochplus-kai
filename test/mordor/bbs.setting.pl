@@ -23,12 +23,12 @@ sub new
 {
 	my $this = shift;
 	my ($obj, @LOG);
-	
+
 	$obj = {
 		'LOG'	=> \@LOG
 	};
 	bless $obj, $this;
-	
+
 	return $obj;
 }
 
@@ -47,28 +47,28 @@ sub DoPrint
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
-	
+
 	require './mordor/sauron.pl';
 	$BASE = SAURON->new;
 	$BBS = $pSys->{'AD_BBS'};
-	
+
 	# 掲示板情報の読み込みとグループ設定
 	if (! defined $BBS) {
 		require './module/nazguls.pl';
 		$BBS = NAZGUL->new;
-		
+
 		$BBS->Load($Sys);
 		$Sys->Set('BBS', $BBS->Get('DIR', $Form->Get('TARGET_BBS')));
 		$pSys->{'SECINFO'}->SetGroupInfo($BBS->Get('DIR', $Form->Get('TARGET_BBS')));
 	}
-	
+
 	# 管理マスタオブジェクトの生成
 	$Page		= $BASE->Create($Sys, $Form);
 	$subMode	= $Form->Get('MODE_SUB');
-	
+
 	# メニューの設定
 	SetMenuList($BASE, $pSys, $Sys->Get('BBS'));
-	
+
 	if ($subMode eq 'SETINFO') {													# 設定情報画面
 		PrintSettingInfo($Page, $Sys, $Form);
 	}
@@ -98,10 +98,10 @@ sub DoPrint
 		$Sys->Set('_TITLE', 'Process Failed');
 		$BASE->PrintError($this->{'LOG'});
 	}
-	
+
 	# 掲示板情報を設定
 	$Page->HTMLInput('hidden', 'TARGET_BBS', $Form->Get('TARGET_BBS'));
-	
+
 	$BASE->Print($Sys->Get('_TITLE') . ' - ' . $BBS->Get('NAME', $Form->Get('TARGET_BBS')), 2);
 }
 
@@ -120,19 +120,19 @@ sub DoFunction
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $err, $BBS);
-	
+
 	require './module/nazguls.pl';
 	$BBS = NAZGUL->new;
-	
+
 	# 管理情報を登録
 	$BBS->Load($Sys);
 	$Sys->Set('BBS', $BBS->Get('DIR', $Form->Get('TARGET_BBS')));
 	$Sys->Set('ADMIN', $pSys);
 	$pSys->{'SECINFO'}->SetGroupInfo($Sys->Get('BBS'));
-	
+
 	$subMode	= $Form->Get('MODE_SUB');
 	$err		= 9999;
-	
+
 	if ($subMode eq 'SETBASE') {													# 基本設定
 		$err = FunctionBaseSetting($Sys, $Form, $this->{'LOG'});
 	}
@@ -151,7 +151,7 @@ sub DoFunction
 	elsif ($subMode eq 'SETIMPORT') {												# インポート
 		$err = FunctionSettingImport($Sys, $Form, $this->{'LOG'}, $BBS);
 	}
-	
+
 	# 処理結果表示
 	if ($err) {
 		$pSys->{'LOGGER'}->Put($Form->Get('UserName'),"THREAD($subMode)", "ERROR:$err");
@@ -177,9 +177,9 @@ sub DoFunction
 sub SetMenuList
 {
 	my ($Base, $pSys, $bbs) = @_;
-	
+
 	$Base->SetMenu('設定情報', "'bbs.setting','DISP','SETINFO'");
-	
+
 	# 管理グループ設定権限のみ
 	if ($pSys->{'SECINFO'}->IsAuthority($pSys->{'USER'}, $ZP::AUTH_BBSSETTING, $bbs)){
 		$Base->SetMenu('<hr>', '');
@@ -208,20 +208,20 @@ sub PrintSettingInfo
 {
 	my ($Page, $SYS, $Form) = @_;
 	my ($Setting, @settingKeys, $key, $val, $keyNum, $i);
-	
+
 	$SYS->Set('_TITLE', 'BBS Setting Information');
-	
+
 	require './module/isildur.pl';
 	$Setting = ISILDUR->new;
 	$Setting->Load($SYS);
-	
+
 	$Setting->GetKeySet(\@settingKeys);
 	$keyNum = @settingKeys;
 	push @settingKeys, '';
-	
+
 	$Page->Print("<center><table cellspcing=2 width=100%>");
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
-	
+
 	for ($i = 0 ; $i < ($keyNum / 2) ; $i++) {
 		$key = $settingKeys[$i * 2];
 		$val = $Setting->Get($key, '');
@@ -230,7 +230,7 @@ sub PrintSettingInfo
 		$val = $Setting->Get($key, '');
 		$Page->Print("<td class=\"DetailTitle\">$key</td><td>$val</td></tr>\n");
 	}
-	
+
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
 	$Page->Print("</table><br>");
 }
@@ -248,13 +248,13 @@ sub PrintSettingInfo
 sub PrintBaseSetting
 {
 	my ($Page, $Sys, $Form) = @_;
-	
+
 	$Sys->Set('_TITLE', 'BBS Base Setting');
-	
+
 	require './module/isildur.pl';
 	my $Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	my $setSubTitle		= $Setting->Get('BBS_SUBTITLE');
 	my $setKanban		= $Setting->Get('BBS_TITLE_PICTURE');
 	my $setKnabanLink	= $Setting->Get('BBS_TITLE_LINK');
@@ -263,7 +263,7 @@ sub PrintBaseSetting
 	my $setAbone		= $Setting->Get('BBS_DELETE_NAME');
 	my $setCookiePath	= $Setting->Get('BBS_COOKIEPATH');
 	my $setRefCushion	= $Setting->Get('BBS_REFERER_CUSHION');
-	
+
 	$Page->Print("<center><table cellspcing=2 width=100%>");
 	$Page->Print("<tr><td colspan=2>各設定値を入力して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>");
@@ -305,9 +305,9 @@ sub PrintColorSetting
 	my ($Setting);
 	my ($setIndexTitle, $setThreadTitle, $setIndexBG, $setThreadBG, $setCreateBG);
 	my ($setMenuBG, $setText, $setLink, $setLinkA, $setLinkV, $setName, $setCap);
-	
+
 	$SYS->Set('_TITLE', 'BBS Color Setting');
-	
+
 	# SETTING.TXTから値を取得
 	if ($flg == 0) {
 		require './module/isildur.pl';
@@ -318,7 +318,7 @@ sub PrintColorSetting
 	else {
 		$Setting = $Form;
 	}
-	
+
 	# 設定値を取得
 	$setIndexTitle	= $Setting->Get('BBS_TITLE_COLOR');
 	$setThreadTitle	= $Setting->Get('BBS_SUBJECT_COLOR');
@@ -332,7 +332,7 @@ sub PrintColorSetting
 	$setLinkV		= $Setting->Get('BBS_VLINK_COLOR');
 	$setName		= $Setting->Get('BBS_NAME_COLOR');
 	$setCap			= $Setting->Get('BBS_CAP_COLOR');
-	
+
 	$Page->Print("<center><table cellspcing=2 width=100%>");
 	$Page->Print("<tr><td colspan=6>各設定色を入力して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=6><hr></td></tr>");
@@ -373,7 +373,7 @@ sub PrintColorSetting
 	$Page->Print("<input type=text size=10 name=BBS_CAP_COLOR value=\"$setCap\">");
 	$Page->Print("</td><td><font color=$setName><font color=$setCap>名前</font></font></td></tr>\n");
 	$Page->Print("<tr><td colspan=6><hr></td></tr>");
-	
+
 	# スレッドプレビューの表示
 	if (1) {
 		$Page->Print("<tr><td class=\"DetailTitle\" colspan=3>indexプレビュー</td>");
@@ -415,13 +415,13 @@ sub PrintColorSetting
 sub PrintLimitSetting
 {
 	my ($Page, $Sys, $Form) = @_;
-	
+
 	$Sys->Set('_TITLE', 'BBS Limitter Setting');
-	
+
 	require './module/isildur.pl';
 	my $Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	# 設定値を取得
 	my $setResMax		= $Setting->Get('BBS_RES_MAX');
 	my $setSubMax		= $Setting->Get('BBS_SUBJECT_MAX');		# 最大スレッド数
@@ -436,7 +436,7 @@ sub PrintLimitSetting
 	my $setProxy		= $Setting->Get('BBS_PROXY_CHECK');
 	my $setOverSea		= $Setting->Get('BBS_JP_CHECK');
 	my $setTomato		= $Setting->Get('BBS_RAWIP_CHECK');
-	
+
 	my $setDatMax		= $Setting->Get('BBS_DATMAX');
 	my $setLineLength	= $Setting->Get('BBS_COLUMN_NUMBER');
 	my $setReadOnly		= $Setting->Get('BBS_READONLY');
@@ -448,15 +448,15 @@ sub PrintLimitSetting
 	my $setTateCount2	= $Setting->Get('BBS_TATESUGI_COUNT2');
 	my $setTateHour		= $Setting->Get('BBS_TATESUGI_HOUR');
 	my $setTateCount	= $Setting->Get('BBS_TATESUGI_COUNT');
-	
+
 	my $selROnone		= ($setReadOnly eq 'none' ? 'selected' : '');
 	my $selROcaps		= ($setReadOnly eq 'caps' ? 'selected' : '');
 	my $selROon			= ($setReadOnly eq 'on' ? 'selected' : '');
-	
+
 	$Page->Print("<center><table cellspcing=2 width=100%>");
 	$Page->Print("<tr><td colspan=4>各設定値を入力して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">タイトル文字数</td><td>");
 	$Page->Print("<input type=text size=10 name=BBS_SUBJECT_COUNT value=\"$setSubjectMax\"></td>");
 	$Page->Print("<td class=\"DetailTitle\">メール文字数</td><td>");
@@ -477,7 +477,7 @@ sub PrintLimitSetting
 	$Page->Print("<input type=checkbox name=NANASHI_CHECK $setNoName value=on>有効</td>");
 	$Page->Print("<td class=\"DetailTitle\">最大レス数(無記入=".$Sys->Get('RESMAX').")</td><td>");
 	$Page->Print("<input type=text size=10 name=BBS_RES_MAX value=\"$setResMax\"></td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">掲示板書き込み制限</td><td><select name=BBS_READONLY>");
 	$Page->Print("<option value=on $selROon>読取専用");
 	$Page->Print("<option value=caps $selROcaps>キャップのみ可能\");
@@ -492,33 +492,33 @@ sub PrintLimitSetting
 	$Page->Print("<tr><td class=\"DetailTitle\">スレッド作成制限(携帯)</td><td>");
 	$Page->Print("<input type=checkbox name=BBS_THREADMOBILE $setThreadMb value=on>携帯から許可</td>");
 	$Page->Print("</tr>");
-	
+
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\" colspan=4>連続書き込み規制</td></tr>");
 	$Page->Print("<tr><td colspan=4>");
 	$Page->Print("直近<input type=text size=5 name=timecount value=\"$setContinueMax\" style=\"text-align: right\">書き込みのうち、");
 	$Page->Print("一人が<input type=text size=5 name=timeclose value=\"$setWriteMax\" style=\"text-align: right\">回まで書き込み可");
 	$Page->Print("</td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\" colspan=4>Samba規制</td></tr>");
 	$Page->Print("<tr><td colspan=4>");
 	$Page->Print("一度書き込んだ人は<input type=text size=5 name=BBS_SAMBATIME value=\"$setSambaTime\" style=\"text-align: right\">秒(0で無効)経たないと書き込めません。(無記入=".$Sys->Get('DEFSAMBA').")<br>");
 	$Page->Print("指定秒数を待たず何度も書き込もうとした場合は<input type=text size=5 name=BBS_HOUSHITIME value=\"$setHoushiTime\" style=\"text-align: right\">分間書き込みを禁止します。(無記入=".$Sys->Get('DEFHOUSHI').")");
 	$Page->Print("</td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\" colspan=4>スレッド立てすぎ規制 (時間非依存)</td></tr>");
 	$Page->Print("<tr><td colspan=4>");
 	$Page->Print("直近<input type=text size=5 name=BBS_THREAD_TATESUGI value=\"$setTateClose\" style=\"text-align: right\">スレッド(0で無効)のうち、");
 	$Page->Print("一人が<input type=text size=5 name=BBS_TATESUGI_COUNT2 value=\"$setTateCount2\" style=\"text-align: right\">スレッドまで立てられる");
 	$Page->Print("</td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\" colspan=4>スレッド立てすぎ規制 (時間依存)</td></tr>");
 	$Page->Print("<tr><td colspan=4>");
 	$Page->Print("<input type=text size=5 name=BBS_TATESUGI_HOUR value=\"$setTateHour\" style=\"text-align: right\">時間(0で無効)に");
 	$Page->Print("全体で<input type=text size=5 name=BBS_TATESUGI_COUNT value=\"$setTateCount\" style=\"text-align: right\">スレッドまで立てられる");
 	$Page->Print("</td></tr>");
-	
+
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
 	$Page->Print("<tr><td colspan=4 align=left><input type=button value=\"　設定　\"");
 	$Page->Print("onclick=\"DoSubmit('bbs.setting','FUNC','SETLIMIT');\"></td></tr></table>");
@@ -537,13 +537,13 @@ sub PrintLimitSetting
 sub PrintOtherSetting
 {
 	my ($Page, $Sys, $Form) = @_;
-	
+
 	$Sys->Set('_TITLE', 'BBS Other Setting');
-	
+
 	require './module/isildur.pl';
 	my $Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	my $setIPSave		= $Setting->Get('BBS_SLIP');
 	my $setIDForce		= $Setting->Get('BBS_FORCE_ID');
 	my $setIDNone		= $Setting->Get('BBS_NO_ID');
@@ -555,7 +555,7 @@ sub PrintOtherSetting
 	my $selIDhost		= ($setIDHost eq 'checked' ? 'selected' : '');
 	my $selIDsakhalin	= ($setIDHost eq 'sakhalin' ? 'selected' : '');
 	my $selIDsiberia	= ($setIDHost eq 'siberia' ? 'selected' : '');
-	
+
 	my $setThreadNum	= $Setting->Get('BBS_THREAD_NUMBER');
 	my $setContentNum	= $Setting->Get('BBS_CONTENTS_NUMBER');
 	my $setContentLine	= $Setting->Get('BBS_INDEX_LINE_NUMBER');
@@ -568,15 +568,15 @@ sub PrintOtherSetting
 	my $setConfirm		= $Setting->Get('BBS_NEWSUBJECT');
 	my $setWeek			= $Setting->Get('BBS_YMD_WEEKS');
 	my $setTripColumn	= $Setting->Get('BBS_TRIPCOLUMN');
-	
+
 	$setUnicode			= ($setUnicode eq 'pass' ? 'checked' : '');
 	$setCookie			= ($setCookie eq '1' ? 'checked' : '');
 	$setConfirm			= ($setConfirm eq '1' ? 'checked' : '');
-	
+
 	$Page->Print("<center><table cellspcing=2 width=100%>");
 	$Page->Print("<tr><td colspan=4>各設定値を入力して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">ID表\示</td><td><select name=ID_DISP>");
 	$Page->Print("<option value=BBS_FORCE_ID $selIDforce>強制ID");
 	$Page->Print("<option value=BBS_ID_DISP $selIDdisp>任意ID");
@@ -587,12 +587,12 @@ sub PrintOtherSetting
 	$Page->Print("</select></td>");
 	$Page->Print("<td class=\"DetailTitle\">機種識別子(ID末尾)</td><td>");
 	$Page->Print("<input type=checkbox name=BBS_SLIP $setIPSave value=on>付加する</td></tr>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">曜日文字</td><td>");
 	$Page->Print("<input type=text size=20 name=BBS_YMD_WEEKS value=\"$setWeek\"></td>");
 	$Page->Print("<td class=\"DetailTitle\"><s>文字参照</s></td><td>");
 	$Page->Print("<input type=checkbox name=BBS_UNICODE $setUnicode value=on>使用可能</td>");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">トリップ桁数</td><td>");
 	$Page->Print("<input type=text size=8 name=BBS_TRIPCOLUMN value=\"$setTripColumn\"></td>");
 	$Page->Print("<td class=\"DetailTitle\">cookie確認</td><td>");
@@ -613,7 +613,7 @@ sub PrintOtherSetting
 	$Page->Print("<input type=text size=8 name=BBS_MAX_MENU_THREAD value=\"$setThreadMenu\"></td>");
 	$Page->Print("<td class=\"DetailTitle\">スレッド作成確認画面</td><td>");
 	$Page->Print("<input type=checkbox name=BBS_NEWSUBJECT $setConfirm value=on>確認あり</td></tr>");
-	
+
 	$Page->Print("<tr><td colspan=4><hr></td></tr>");
 	$Page->Print("<tr><td colspan=4 align=left><input type=button value=\"　設定　\"");
 	$Page->Print("onclick=\"DoSubmit('bbs.setting','FUNC','SETOTHER');\"></td></tr></table>");
@@ -634,24 +634,24 @@ sub PrintSettingImport
 {
 	my ($Page, $SYS, $Form, $BBS) = @_;
 	my (@bbsSet, $id, $name);
-	
+
 	$SYS->Set('_TITLE', 'BBS Setting Import');
-	
+
 	# 所属BBSを取得
 	$SYS->Get('ADMIN')->{'SECINFO'}->GetBelongBBSList($SYS->Get('ADMIN')->{'USER'}, $BBS, \@bbsSet);
-	
+
 	$Page->Print("<center><table cellspcing=2 width=100%>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>");
 	$Page->Print("<tr><td class=\"DetailTitle\"><input type=radio name=IMPORT_KIND value=FROM_BBS");
 	$Page->Print(" checked>既存BBSからインポート</td>");
 	$Page->Print("<td><select name=IMPORT_BBS><option value=\"\">--掲示板を選択--</option>");
-	
+
 	# 掲示板一覧の出力
 	foreach $id (@bbsSet) {
 		$name = $BBS->Get('NAME', $id);
 		$Page->Print("<option value=$id>$name</option>\n");
 	}
-	
+
 	$Page->Print("</select></td></tr>");
 	$Page->Print("<tr><td valign=top class=\"DetailTitle\">");
 	$Page->Print("<input type=radio name=IMPORT_KIND value=FROM_DIRECT>直接インポート</td>");
@@ -675,12 +675,12 @@ sub FunctionBaseSetting
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($Setting);
-	
+
 	# 権限チェック
 	{
 		my $SEC	= $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_BBSSETTING, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
@@ -698,7 +698,7 @@ sub FunctionBaseSetting
 	require './module/isildur.pl';
 	$Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	$Setting->Set('BBS_SUBTITLE', $Form->Get('BBS_SUBTITLE'));
 	$Setting->Set('BBS_TITLE_PICTURE', $Form->Get('BBS_TITLE_PICTURE'));
 	$Setting->Set('BBS_TITLE_LINK', $Form->Get('BBS_TITLE_LINK'));
@@ -707,9 +707,9 @@ sub FunctionBaseSetting
 	$Setting->Set('BBS_DELETE_NAME', $Form->Get('BBS_DELETE_NAME'));
 	$Setting->Set('BBS_COOKIEPATH', $Form->Get('BBS_COOKIEPATH'));
 	$Setting->Set('BBS_REFERER_CUSHION', $Form->Get('BBS_REFERER_CUSHION'));
-	
+
 	$Setting->Save($Sys);
-	
+
 	return 0;
 }
 
@@ -727,12 +727,12 @@ sub FunctionColorSetting
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($Setting, $capColor);
-	
+
 	# 権限チェック
 	{
 		my $SEC	= $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_BBSSETTING, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
@@ -752,7 +752,7 @@ sub FunctionColorSetting
 	require './module/isildur.pl';
 	$Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	$Setting->Set('BBS_TITLE_COLOR', $Form->Get('BBS_TITLE_COLOR'));
 	$Setting->Set('BBS_SUBJECT_COLOR', $Form->Get('BBS_SUBJECT_COLOR'));
 	$Setting->Set('BBS_BG_COLOR', $Form->Get('BBS_BG_COLOR'));
@@ -767,9 +767,9 @@ sub FunctionColorSetting
 	$capColor = $Form->Get('BBS_CAP_COLOR');
 	$capColor =~ s/[^\w\d\#]//ig;
 	$Setting->Set('BBS_CAP_COLOR', $capColor);
-	
+
 	$Setting->Save($Sys);
-	
+
 	return 0;
 }
 
@@ -787,12 +787,12 @@ sub FunctionLimitSetting
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($Setting);
-	
+
 	# 権限チェック
 	{
 		my $SEC = $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_BBSSETTING, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
@@ -823,12 +823,12 @@ sub FunctionLimitSetting
 	require './module/isildur.pl';
 	$Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	if ( $Form->Get('timeclose') eq 0 && $Form->Get('timecount') eq 0 ) {
 		$Form->Set('timeclose' ,'');
 		$Form->Set('timecount' ,'');
 	}
-	
+
 	$Setting->Set('BBS_SUBJECT_MAX', $Form->Get('BBS_SUBJECT_MAX'));
 	$Setting->Set('BBS_RES_MAX', $Form->Get('BBS_RES_MAX'));
 	$Setting->Set('BBS_SUBJECT_COUNT', $Form->Get('BBS_SUBJECT_COUNT'));
@@ -853,9 +853,9 @@ sub FunctionLimitSetting
 	$Setting->Set('BBS_TATESUGI_HOUR', $Form->Get('BBS_TATESUGI_HOUR'));
 	$Setting->Set('BBS_TATESUGI_COUNT', $Form->Get('BBS_TATESUGI_COUNT'));
 	$Setting->Set('BBS_TATESUGI_COUNT2', $Form->Get('BBS_TATESUGI_COUNT2'));
-	
+
 	$Setting->Save($Sys);
-	
+
 	return 0;
 }
 
@@ -873,12 +873,12 @@ sub FunctionOtherSetting
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($Setting);
-	
+
 	# 権限チェック
 	{
 		my $SEC	= $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_BBSSETTING, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
@@ -896,7 +896,7 @@ sub FunctionOtherSetting
 	require './module/isildur.pl';
 	$Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	$Setting->Set('BBS_THREAD_NUMBER', $Form->Get('BBS_THREAD_NUMBER'));
 	$Setting->Set('BBS_CONTENTS_NUMBER', $Form->Get('BBS_CONTENTS_NUMBER'));
 	$Setting->Set('BBS_INDEX_LINE_NUMBER', $Form->Get('BBS_INDEX_LINE_NUMBER'));
@@ -910,7 +910,7 @@ sub FunctionOtherSetting
 	$Setting->Set('BBS_YMD_WEEKS', $Form->Get('BBS_YMD_WEEKS'));
 	$Setting->Set('BBS_TRIPCOLUMN', $Form->Get('BBS_TRIPCOLUMN'));
 	$Setting->Set('BBS_SLIP', ($Form->Equal('BBS_SLIP', 'on') ? 'checked' : ''));
-	
+
 	# ID表示設定
 	# 酷いけど仕方ないね…
 	# HOST表示
@@ -946,9 +946,9 @@ sub FunctionOtherSetting
 		$Setting->Set('BBS_FORCE_ID', '');
 		$Setting->Set('BBS_NO_ID', '');
 	}
-	
+
 	$Setting->Save($Sys);
-	
+
 	return 0;
 }
 
@@ -966,12 +966,12 @@ sub FunctionSettingImport
 {
 	my ($Sys, $Form, $pLog, $BBS) = @_;
 	my ($Setting, @setKeys, @importKeys, $key);
-	
+
 	# 権限チェック
 	{
 		my $SEC	= $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_BBSSETTING, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
@@ -979,7 +979,7 @@ sub FunctionSettingImport
 	# 入力チェック
 	{
 		my @inList = ('IMPORT_BBS');
-		
+
 		# 既存掲示板からのインポート時のみ
 		if ($Form->Equal('IMPORT_KIND', 'FROM_BBS')) {
 			# 入力有無
@@ -991,7 +991,7 @@ sub FunctionSettingImport
 	require './module/isildur.pl';
 	$Setting = ISILDUR->new;
 	$Setting->Load($Sys);
-	
+
 	# importするキーを設定する
 	$Setting->GetKeySet(\@setKeys);
 	foreach (@setKeys) {
@@ -999,15 +999,15 @@ sub FunctionSettingImport
 			push @importKeys, $_;
 		}
 	}
-	
+
 	# 既存BBSからインポート
 	if ($Form->Equal('IMPORT_KIND', 'FROM_BBS')) {
 		my $bbs = $BBS->Get('DIR', $Form->Get('IMPORT_BBS'));
 		my $baseSetting = ISILDUR->new;
 		my $path = $Sys->Get('BBSPATH') . "/$bbs/SETTING.TXT";
-		
+
 		push @$pLog, "■掲示板「$path」から設定情報をインポートします。";
-		
+
 		# 既存BBSのSETTING.TXTを読み込む
 		if ($baseSetting->LoadFrom($path)) {
 			# 設定情報を設定する
@@ -1022,9 +1022,9 @@ sub FunctionSettingImport
 		my $data = $Form->Get('IMPORT_DIRECT');
 		my @datas = split(/\r\n|\r|\n/, $data);
 		my (%setTemp, $line, $inKey);
-		
+
 		push @$pLog, '■入力内容をインポートします。';
-		
+
 		# フォーム情報から設定情報ハッシュを作成する
 		foreach $line (@datas){
 			($key, $data) = split(/=/, $line);
@@ -1042,7 +1042,7 @@ sub FunctionSettingImport
 	}
 	# 更新後保存
 	$Setting->Save($Sys);
-	
+
 	return 0;
 }
 

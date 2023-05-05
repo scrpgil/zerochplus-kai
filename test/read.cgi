@@ -184,6 +184,8 @@ sub PrintReadHead
 	$title = $Dat->GetSubject() if(!defined $title);
 	$title = '' if(!defined $title);
 
+	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
+
 	# HTMLヘッダの出力
 	$Page->Print("Content-type: text/html\n\n");
 	$Page->Print(<<HTML);
@@ -192,7 +194,8 @@ sub PrintReadHead
 <head>
 
  <meta http-equiv=Content-Type content="text/html;charset=Shift_JIS">
- <meta http-equiv="Content-Style-Type" content="text/css">
+ <meta http-equiv="Content-Style-Type" content="text/css">#
+ <link rel="stylesheet" href="$data_path/app.css" type="text/css">
 
 HTML
 

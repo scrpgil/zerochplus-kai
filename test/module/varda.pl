@@ -287,6 +287,8 @@ sub PrintIndexHead
 	my $title = $this->{'SET'}->Get('BBS_TITLE');
 	my $link = $this->{'SET'}->Get('BBS_TITLE_LINK');
 	my $image = $this->{'SET'}->Get('BBS_TITLE_PICTURE');
+	my $Sys = $this->{'SYS'};
+	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
 #	my $code = $this->{'CODE'};
 
 	# HTMLヘッダの出力
@@ -297,6 +299,7 @@ sub PrintIndexHead
 
  <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">
  <meta http-equiv="Content-Script-Type" content="text/javascript">
+ <link rel="stylesheet" href="$data_path/app.css" type="text/css">
 
 HEAD
 
