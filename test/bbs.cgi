@@ -255,7 +255,7 @@ sub PrintBBSThreadCreate
 
 	# HTMLヘッダの出力
 	$Page->Print("Content-type: text/html\n\n");
-	$Page->Print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
+	$Page->Print("<!DOCTYPE html>\n");
 	$Page->Print("<html lang=\"ja\">\n");
 	$Page->Print("<head>\n");
 	$Page->Print(' <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">'."\n\n");
@@ -422,7 +422,7 @@ sub PrintBBSCookieConfirm
 
 	$Page->Print("Content-type: text/html\n\n");
 	$Page->Print(<<HTML);
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <!-- 2ch_X:cookie -->
 <head>

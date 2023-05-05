@@ -19,7 +19,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'KEY'		=> undef,
 		'SUBJECT'	=> undef,
@@ -27,7 +27,7 @@ sub new
 		'PATH'		=> undef
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -43,29 +43,29 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'KEY'} = {};
 	$this->{'SUBJECT'} = {};
 	$this->{'DATE'} = {};
 	$this->{'PATH'} = {};
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/kako/kako.idx';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_);
 			if (scalar(@elem) < 5) {
 				warn "invalid line in $path";
 				next;
 			}
-			
+
 			my $id = $elem[0];
 			$this->{'KEY'}->{$id} = $elem[1];
 			$this->{'SUBJECT'}->{$id} = $elem[2];
@@ -89,15 +89,15 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/kako/kako.idx';
-	
+
 	chmod($Sys->Get('PM-DAT'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'KEY'}}) {
 			my $data = join('<>',
 				$_,
@@ -106,10 +106,10 @@ sub Save
 				$this->{'DATE'}->{$_},
 				$this->{'PATH'}->{$_}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -133,9 +133,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		foreach my $key (keys %{$this->{'KEY'}}) {
 			if ($this->{'KEY'}->{$key} ne '0') {
@@ -150,7 +150,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -168,9 +168,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -189,15 +189,15 @@ sub Add
 {
 	my $this = shift;
 	my ($key, $subject, $date, $path) = @_;
-	
+
 	my $id = time;
 	$id++ while (exists $this->{'KEY'}->{$id});
-	
+
 	$this->{'KEY'}->{$id} = $key;
 	$this->{'SUBJECT'}->{$id} = $subject;
 	$this->{'DATE'}->{$id} = $date;
 	$this->{'PATH'}->{$id} = $path;
-	
+
 	return $id;
 }
 
@@ -215,7 +215,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -233,7 +233,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'KEY'}->{$id};
 	delete $this->{'SUBJECT'}->{$id};
 	delete $this->{'DATE'}->{$id};
@@ -252,22 +252,22 @@ sub UpdateInfo
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	require './module/earendil.pl';
-	
+
 	$this->{'KEY'} = {};
 	$this->{'SUBJECT'} = {};
 	$this->{'DATE'} = {};
 	$this->{'PATH'} = {};
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/kako';
-	
+
 	# ディレクトリ情報を取得
 	my $hierarchy = {};
 	my @dirList = ();
 	EARENDIL::GetFolderHierarchy($path, $hierarchy);
 	EARENDIL::GetFolderList($hierarchy, \@dirList, '');
-	
+
 	foreach my $dir (@dirList) {
 		my @fileList = ();
 		EARENDIL::GetFileList("$path/$dir", \@fileList, '([0-9]+)\.html');
@@ -287,7 +287,7 @@ sub UpdateInfo
 #	過去ログindexの更新
 #	-------------------------------------------------------------------------------------
 #	@param	$Sys	MELKOR
-#	@param	$Page	
+#	@param	$Page
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -295,14 +295,14 @@ sub UpdateIndex
 {
 	my $this = shift;
 	my ($Sys, $Page) = @_;
-	
+
 	# 告知情報読み込み
 	require './module/denethor.pl';
 	my $Banner = DENETHOR->new;
 	$Banner->Load($Sys);
-	
+
 	my $basePath = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS');
-	
+
 	# パスをキーにしてハッシュを作成
 	my %PATHES = ();
 	foreach my $id (keys %{$this->{'KEY'}}) {
@@ -311,18 +311,18 @@ sub UpdateIndex
 	}
 	my @dirs = keys %PATHES;
 	unshift @dirs, '';
-	
+
 	# パスごとにindexを生成する
 	foreach my $path (@dirs) {
 		my @info = ();
-		
+
 		# 1階層下のサブフォルダを取得する
 		my @folderList = ();
 		GetSubFolders($path, \@dirs, \@folderList);
 		foreach my $dir (sort @folderList) {
 			push @info, "0<>0<>0<>$dir";
 		}
-		
+
 		# ログデータがあれば情報配列に追加する
 		foreach my $id (keys %{$this->{'KEY'}}) {
 			if ($path eq $this->{'PATH'}->{$id} && $this->{'KEY'}->{$id} ne '0') {
@@ -335,7 +335,7 @@ sub UpdateIndex
 				push @info, "$data";
 			}
 		}
-		
+
 		# indexファイルを出力する
 		$Page->Clear();
 		OutputIndex($Sys, $Page, $Banner, \@info, $basePath, $path);
@@ -355,9 +355,9 @@ sub UpdateIndex
 #------------------------------------------------------------------------------------------------------------
 sub GetSubFolders
 {
-	
+
 	my ($base, $pDirs, $pList) = @_;
-	
+
 	# foreach my $dir とすると$pDirが破壊される
 	foreach (@$pDirs) {
 		my $dir = $_;
@@ -377,15 +377,15 @@ sub GetSubFolders
 #------------------------------------------------------------------------------------------------------------
 sub GetThreadSubject
 {
-	
+
 	my ($path) = @_;
 	my $title = undef;
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
-		
+
 		foreach (@lines) {
 			if ($_ =~ m|<title>(.*)</title>|) {
 				$title = $1;
@@ -415,30 +415,30 @@ sub GetThreadSubject
 #------------------------------------------------------------------------------------------------------------
 sub OutputIndex
 {
-	
+
 	my ($Sys, $Page, $Banner, $pInfo, $base, $path, $Set) = @_;
-	
+
 	my $cgipath	= $Sys->Get('CGIPATH');
-	
+
 	require './module/legolas.pl';
 	my $Caption = LEGOLAS->new;
 	$Caption->Load($Sys, 'META');
-	
+
 	my $version = $Sys->Get('VERSION');
 	my $bbsRoot = $Sys->Get('CGIPATH') . '/' . $Sys->Get('BBSPATH') . '/'. $Sys->Get('BBS');
 	my $board = $Sys->Get('BBS');
-	
+
 	$Page->Print(<<HTML);
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 
  <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">
 
 HTML
-	
+
 	$Caption->Print($Page, undef);
-	
+
 	$Page->Print(<<HTML);
  <title>過去ログ倉庫 - $board$path</title>
 
@@ -446,10 +446,10 @@ HTML
 <!--nobanner-->
 <body>
 HTML
-	
+
 	# 告知欄出力
 	$Banner->Print($Page, 100, 2, 0) if ($Sys->Get('BANNER') & 5);
-	
+
 	$Page->Print(<<HTML);
 
 <h1 align="center" style="margin-bottom:0.2em;">過去ログ倉庫</h1>
@@ -462,10 +462,10 @@ HTML
   <th>date</th>
  </tr>
 HTML
-	
+
 	foreach (@$pInfo) {
 		my @elem = split(/<>/, $_, -1);
-		
+
 		# サブフォルダ情報
 		if ($elem[0] eq '0') {
 			$Page->Print(" <tr>\n  <td>Directory</td>\n  <td><a href=\"$elem[3]/\">");
@@ -490,7 +490,7 @@ $version
 </body>
 </html>
 HTML
-	
+
 	# index.htmlを出力する
 	$Page->Flush(1, 0666, "$base/kako$path/index.html");
 }
