@@ -297,6 +297,7 @@ sub PrintIndexHead
 <html lang="ja">
 <head>
 
+ <meta name="viewport" content="viewport-fit=cover, width=device-width" />
  <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">
  <meta http-equiv="Content-Script-Type" content="text/javascript">
  <link rel="stylesheet" href="$data_path/app.css" type="text/css">
