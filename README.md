@@ -1,4 +1,4 @@
-# zerochplus
+# zerochplus改造PJ
 zerochplusを改造してやる夫スレ＆アスキーアート用機能を拡張していくプロジェクトです。
 
 ## ご意見、ご要望について
