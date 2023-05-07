@@ -480,6 +480,7 @@ sub PrintIndexPreview
 
 		# ƒwƒbƒ_•”•ª‚Ì•\Ž¦
 		$Page->Print(<<THREAD);
+<main class="threads">
 <table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="$tblCol" style="margin-bottom:1.2em;" align="center">
  <tr>
   <td>
@@ -514,6 +515,7 @@ THREAD
   </td>
  </tr>
 </table>
+</main>
 
 KAKIKO
 
