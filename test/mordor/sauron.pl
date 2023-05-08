@@ -186,6 +186,14 @@ $Page->Print(<<HTML);
 
  <link rel="stylesheet" href=".$data/admin.css" type="text/css">
  <script language="javascript" src=".$data/admin.js"></script>
+<script src="
+https://cdn.jsdelivr.net/npm/trix\@2.0.4/dist/trix.umd.min.js
+"></script>
+<link href="
+https://cdn.jsdelivr.net/npm/trix\@2.0.4/dist/trix.min.css
+" rel="stylesheet">
+
+
 
 </head>
 <!--nobanner-->
