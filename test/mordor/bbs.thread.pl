@@ -736,7 +736,7 @@ sub FunctionThreadPooling
 		}
 	}
 	require './module/baggins.pl';
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 	$Threads = THREADS->new;
 	$Pools = FRODO->new;
 
@@ -753,7 +753,7 @@ sub FunctionThreadPooling
 		$Pools->Add($id, $Threads->Get('SUBJECT', $id), $Threads->Get('RES', $id));
 		$Threads->Delete($id);
 
-		EARENDIL::Copy("$path/dat/$id.dat","$path/pool/$id.cgi");
+		FILE_UTILS::Copy("$path/dat/$id.dat","$path/pool/$id.cgi");
 		unlink "$path/dat/$id.dat";
 	}
 	$Threads->Save($Sys);
@@ -907,7 +907,7 @@ sub FunctionThreadAutoPooling
 	}
 	require './module/gondor.pl';
 	require './module/baggins.pl';
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 	$Threads = THREADS->new;
 	$Pools = FRODO->new;
 
@@ -967,7 +967,7 @@ sub FunctionThreadAutoPooling
 			$Pools->Add($id, $Threads->Get('SUBJECT', $id), $Threads->Get('RES', $id));
 			$Threads->Delete($id);
 
-			EARENDIL::Copy("$base/dat/$id.dat", "$base/pool/$id.cgi");
+			FILE_UTILS::Copy("$base/dat/$id.dat", "$base/pool/$id.cgi");
 			unlink "$base/dat/$id.dat";
 		}
 	}

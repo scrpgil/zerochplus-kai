@@ -200,7 +200,7 @@ sub Write
 		# subject.txtの更新
 		# スレッド作成モードなら新規に追加する
 		if ($Sys->Equal('MODE', 1)) {
-			require './module/earendil.pl';
+			require './module/file_utils.pl';
 			my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS');
 			my $Pools = FRODO->new;
 			$Pools->Load($Sys);
@@ -218,7 +218,7 @@ sub Write
 
 				$Pools->Add($lid, $Threads->Get('SUBJECT', $lid), $Threads->Get('RES', $lid));
 				$Threads->Delete($lid);
-				EARENDIL::Copy("$path/dat/$lid.dat", "$path/pool/$lid.cgi");
+				FILE_UTILS::Copy("$path/dat/$lid.dat", "$path/pool/$lid.cgi");
 				unlink "$path/dat/$lid.dat";
 			}
 

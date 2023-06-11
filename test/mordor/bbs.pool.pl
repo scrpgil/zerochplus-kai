@@ -435,7 +435,7 @@ sub FunctionThreadRepare
 		}
 	}
 	require './module/baggins.pl';
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 	$Threads = THREADS->new;
 	$Pools = FRODO->new;
 
@@ -452,7 +452,7 @@ sub FunctionThreadRepare
 		$Threads->Add($id, $Pools->Get('SUBJECT', $id), $Pools->Get('RES', $id));
 		$Pools->Delete($id);
 
-		EARENDIL::Move("$path/pool/$id.cgi", "$path/dat/$id.dat");
+		FILE_UTILS::Move("$path/pool/$id.cgi", "$path/dat/$id.dat");
 	}
 	$Threads->Save($Sys);
 	$Pools->Save($Sys);
@@ -716,7 +716,7 @@ sub CreateKAKOLog
 	$color[4]	= $Set->Get('BBS_ALINK_COLOR');
 	$color[5]	= $Set->Get('BBS_VLINK_COLOR');
 
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 
 	$Page->Clear();
 
@@ -786,8 +786,8 @@ HTML
 	$Dat->Close();
 
 	# ‰ß‹ŽƒƒO‚Ìo—Í
-	EARENDIL::CreateFolderHierarchy($logDir, $Sys->Get('PM-KDIR'));
-	EARENDIL::Copy($datPath, "$logDir/$key.dat") or return 0;
+	FILE_UTILS::CreateFolderHierarchy($logDir, $Sys->Get('PM-KDIR'));
+	FILE_UTILS::Copy($datPath, "$logDir/$key.dat") or return 0;
 	$Page->Flush(1, $Sys->Get('PM-TXT'), $logPath);
 
 	return 1;

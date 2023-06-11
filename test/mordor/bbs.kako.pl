@@ -340,7 +340,7 @@ sub FunctionLogDelete
 	@logSet = $Form->GetAtArray('LOGS');
 	$base = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/kako';
 
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 	require './module/kako_log.pl';
 	$Logs = KAKO_LOG->new;
 	$Logs->Load($Sys);
@@ -361,7 +361,7 @@ sub FunctionLogDelete
 		# グループ内のログがすべて削除された場合はディレクトリを削除する
 		if ($Logs->GetKeySet('PATH', $logPath, \@pathList) == 1) {
 			if ($Logs->Get('PATH', $pathList[0], '') eq '') {
-				EARENDIL::DeleteDirectory($removePath);
+				FILE_UTILS::DeleteDirectory($removePath);
 				$Logs->Delete($pathList[0]);
 			}
 		}
@@ -373,11 +373,11 @@ sub FunctionLogDelete
 
 			%Dirs = ();
 			@DirList = ();
-			EARENDIL::GetFolderHierarchy($removePath2, \%Dirs);
-			EARENDIL::GetFolderList(\%Dirs, \@DirList, '');
+			FILE_UTILS::GetFolderHierarchy($removePath2, \%Dirs);
+			FILE_UTILS::GetFolderList(\%Dirs, \@DirList, '');
 
 			if ($#DirList == -1) {
-				EARENDIL::DeleteDirectory($removePath2);
+				FILE_UTILS::DeleteDirectory($removePath2);
 				$Logs->Delete((grep { $Logs->{'PATH'}->{$_} eq $logPath2 } keys %{$Logs->{'PATH'}})[0]);
 			}
 			else {

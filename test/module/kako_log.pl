@@ -253,7 +253,7 @@ sub UpdateInfo
 	my $this = shift;
 	my ($Sys) = @_;
 
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 
 	$this->{'KEY'} = {};
 	$this->{'SUBJECT'} = {};
@@ -265,12 +265,12 @@ sub UpdateInfo
 	# ディレクトリ情報を取得
 	my $hierarchy = {};
 	my @dirList = ();
-	EARENDIL::GetFolderHierarchy($path, $hierarchy);
-	EARENDIL::GetFolderList($hierarchy, \@dirList, '');
+	FILE_UTILS::GetFolderHierarchy($path, $hierarchy);
+	FILE_UTILS::GetFolderList($hierarchy, \@dirList, '');
 
 	foreach my $dir (@dirList) {
 		my @fileList = ();
-		EARENDIL::GetFileList("$path/$dir", \@fileList, '([0-9]+)\.html');
+		FILE_UTILS::GetFileList("$path/$dir", \@fileList, '([0-9]+)\.html');
 		$this->Add(0, 0, 0, $dir);
 		foreach my $file (sort @fileList) {
 			my @elem = split(/\./, $file);

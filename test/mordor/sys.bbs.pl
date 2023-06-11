@@ -611,7 +611,7 @@ sub FunctionBBSCreate
 			return 1002;
 		}
 	}
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 
 	# POSTデータの取得
 	$bbsCategory	= $Form->Get('BBS_CATEGORY');
@@ -625,26 +625,26 @@ sub FunctionBBSCreate
 	$dataPath		= '.' . $Sys->Get('DATA');
 
 	# 掲示板ディレクトリの作成に成功したら、その下のディレクトリを作成する
-	if (! (EARENDIL::CreateDirectory($createPath, $Sys->Get('PM-BDIR')))) {
+	if (! (FILE_UTILS::CreateDirectory($createPath, $Sys->Get('PM-BDIR')))) {
 		return 2000;
 	}
 
 	# サブディレクトリ生成
-	EARENDIL::CreateDirectory("$createPath/i", $Sys->Get('PM-BDIR'));
-	EARENDIL::CreateDirectory("$createPath/dat", $Sys->Get('PM-BDIR'));
-	EARENDIL::CreateDirectory("$createPath/log", $Sys->Get('PM-LDIR'));
-	EARENDIL::CreateDirectory("$createPath/kako", $Sys->Get('PM-BDIR'));
-	EARENDIL::CreateDirectory("$createPath/pool", $Sys->Get('PM-ADIR'));
-	EARENDIL::CreateDirectory("$createPath/info", $Sys->Get('PM-ADIR'));
+	FILE_UTILS::CreateDirectory("$createPath/i", $Sys->Get('PM-BDIR'));
+	FILE_UTILS::CreateDirectory("$createPath/dat", $Sys->Get('PM-BDIR'));
+	FILE_UTILS::CreateDirectory("$createPath/log", $Sys->Get('PM-LDIR'));
+	FILE_UTILS::CreateDirectory("$createPath/kako", $Sys->Get('PM-BDIR'));
+	FILE_UTILS::CreateDirectory("$createPath/pool", $Sys->Get('PM-ADIR'));
+	FILE_UTILS::CreateDirectory("$createPath/info", $Sys->Get('PM-ADIR'));
 
 	# デフォルトデータのコピー
-	EARENDIL::Copy("$dataPath/default_img.gif", "$createPath/kanban.gif");
-	EARENDIL::Copy("$dataPath/default_bac.gif", "$createPath/ba.gif");
-	EARENDIL::Copy("$dataPath/default_hed.txt", "$createPath/head.txt");
-	EARENDIL::Copy("$dataPath/default_fot.txt", "$createPath/foot.txt");
-	EARENDIL::Copy("$dataPath/index.html", "$createPath/log/index.html");
-	EARENDIL::Copy("$dataPath/index.html", "$createPath/pool/index.html");
-	EARENDIL::Copy("$dataPath/index.html", "$createPath/info/index.html");
+	FILE_UTILS::Copy("$dataPath/default_img.gif", "$createPath/kanban.gif");
+	FILE_UTILS::Copy("$dataPath/default_bac.gif", "$createPath/ba.gif");
+	FILE_UTILS::Copy("$dataPath/default_hed.txt", "$createPath/head.txt");
+	FILE_UTILS::Copy("$dataPath/default_fot.txt", "$createPath/foot.txt");
+	FILE_UTILS::Copy("$dataPath/index.html", "$createPath/log/index.html");
+	FILE_UTILS::Copy("$dataPath/index.html", "$createPath/pool/index.html");
+	FILE_UTILS::Copy("$dataPath/index.html", "$createPath/info/index.html");
 
 	push @$pLog, "■掲示板ディレクトリ生成完了...[$createPath]";
 
@@ -656,9 +656,9 @@ sub FunctionBBSCreate
 		$BBS->Load($Sys);
 
 		$inheritPath = $Sys->Get('BBSPATH') . '/' . $BBS->Get('DIR', $bbsInherit);
-		EARENDIL::Copy("$inheritPath/SETTING.TXT", "$createPath/SETTING.TXT");
-		EARENDIL::Copy("$inheritPath/info/groups.cgi", "$createPath/info/groups.cgi");
-		EARENDIL::Copy("$inheritPath/info/capgroups.cgi", "$createPath/info/capgroups.cgi");
+		FILE_UTILS::Copy("$inheritPath/SETTING.TXT", "$createPath/SETTING.TXT");
+		FILE_UTILS::Copy("$inheritPath/info/groups.cgi", "$createPath/info/groups.cgi");
+		FILE_UTILS::Copy("$inheritPath/info/capgroups.cgi", "$createPath/info/capgroups.cgi");
 
 		push @$pLog, "■設定継承完了...[$inheritPath]";
 	}
@@ -829,7 +829,7 @@ sub FunctionBBSDelete
 		}
 	}
 	require './module/nazguls.pl';
-	require './module/earendil.pl';
+	require './module/file_utils.pl';
 	$BBS = NAZGUL->new;
 	$BBS->Load($Sys);
 
@@ -842,7 +842,7 @@ sub FunctionBBSDelete
 		$path	= $Sys->Get('BBSPATH') . "/$dir";
 
 		# 掲示板ディレクトリと掲示板情報の削除
-		EARENDIL::DeleteDirectory($path);
+		FILE_UTILS::DeleteDirectory($path);
 		$BBS->Delete($id);
 
 		push @$pLog, "■掲示板「$name($dir)」を削除しました。<br>";
