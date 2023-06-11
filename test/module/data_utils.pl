@@ -3,7 +3,7 @@
 #	汎用データ変換・取得モジュール
 #
 #============================================================================================================
-package	GALADRIEL;
+package	DATA_UTILS;
 
 use strict;
 #use warnings;
@@ -1286,7 +1286,7 @@ sub CheckDNSBL
 #------------------------------------------------------------------------------------------------------------
 sub MakePath
 {
-	my $this = (ref($_[0]) eq 'GALADRIEL' ? shift : undef);
+	my $this = (ref($_[0]) eq 'DATA_UTILS' ? shift : undef);
 	my ($path1, $path2) = @_;
 
 	$path1 = '.' if (! defined $path1 || $path1 eq '');

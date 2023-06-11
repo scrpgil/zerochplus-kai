@@ -175,7 +175,7 @@ sub PrintKakoLogList
 
 	$SYS->Set('_TITLE', 'LOG List');
 
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/kako_log.pl';
 	$Logs = KAKO_LOG->new;
 
@@ -216,7 +216,7 @@ sub PrintKakoLogList
 		$n		= $i + 1;
 		$key	= $Logs->Get('KEY', $logSet[$i]);
 		$subj	= $Logs->Get('SUBJECT', $logSet[$i]);
-		$date	= GALADRIEL::GetDateFromSerial(undef, $Logs->Get('DATE', $logSet[$i]), 0);
+		$date	= DATA_UTILS::GetDateFromSerial(undef, $Logs->Get('DATE', $logSet[$i]), 0);
 
 		$Page->Print("<tr><td><input type=checkbox name=LOGS value=$logSet[$i]></td>");
 		$Page->Print("<td>$n: $subj</td><td align=center>$key</td>");

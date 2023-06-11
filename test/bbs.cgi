@@ -110,12 +110,12 @@ sub Initialize
 	require './module/melkor.pl';
 	require './module/isildur.pl';
 	require './module/radagast.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/samwise.pl';
 	require './module/baggins.pl';
 
 	my $Sys = MELKOR->new;
-	my $Conv = GALADRIEL->new;
+	my $Conv = DATA_UTILS->new;
 	my $Set = ISILDUR->new;
 	my $Cookie = RADAGAST->new;
 	my $Threads = THREADS->new;

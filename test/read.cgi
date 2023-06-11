@@ -83,10 +83,10 @@ sub Initialize
 	require './module/melkor.pl';
 	require './module/isildur.pl';
 	require './module/gondor.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 
 	my $Sys = MELKOR->new;
-	my $Conv = GALADRIEL->new;
+	my $Conv = DATA_UTILS->new;
 	my $Set = ISILDUR->new;
 	my $Dat = ARAGORN->new;
 

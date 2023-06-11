@@ -611,13 +611,13 @@ sub FunctionCreateLogs
 	require './module/gondor.pl';
 	require './module/thorin.pl';
 	require './module/isildur.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/banner.pl';
 	require './module/kako_log.pl';
 	my $Dat = ARAGORN->new;
 	my $Set = ISILDUR->new;
 	my $Banner = BANNER->new;
-	my $Conv = GALADRIEL->new;
+	my $Conv = DATA_UTILS->new;
 	my $Page = THORIN->new;
 	my $Logs = KAKO_LOG->new;
 

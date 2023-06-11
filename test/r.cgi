@@ -86,11 +86,11 @@ sub Initialize
 	require './module/melkor.pl';
 	require './module/isildur.pl';
 	require './module/gondor.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 
 	$oSYS	= new MELKOR;
 	$oSET	= new ISILDUR;
-	$oCONV	= new GALADRIEL;
+	$oCONV	= new DATA_UTILS;
 	$oDAT	= new ARAGORN;
 
 	%$pSYS = (

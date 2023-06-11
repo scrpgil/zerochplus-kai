@@ -291,8 +291,8 @@ sub Search
 
 	# ŒŸõƒqƒbƒg‚ª1ŒˆÈã‚ ‚è
 	if ($n > 0) {
-		require './module/galadriel.pl';
-		my $Conv = new GALADRIEL;
+		require './module/data_utils.pl';
+		my $Conv = new DATA_UTILS;
 		$n = 1;
 		foreach (@$Result) {
 			@elem = split(/<>/);

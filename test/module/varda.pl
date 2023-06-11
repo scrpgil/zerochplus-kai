@@ -48,13 +48,13 @@ sub Init
 	my ($Sys, $Setting) = @_;
 
 	require './module/baggins.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/banner.pl';
 
 	# 使用モジュールを設定
 	$this->{'SYS'} = $Sys;
 	$this->{'THREADS'} = THREADS->new;
-	$this->{'CONV'} = GALADRIEL->new;
+	$this->{'CONV'} = DATA_UTILS->new;
 	$this->{'BANNER'} = BANNER->new;
 	$this->{'CODE'} = 'sjis';
 

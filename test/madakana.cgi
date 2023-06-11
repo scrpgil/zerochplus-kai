@@ -73,11 +73,11 @@ sub Initialize
 	my ($oSYS, $oCONV);
 
 	require './module/melkor.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/samwise.pl';
 
 	$oSYS	= new MELKOR;
-	$oCONV	= new GALADRIEL;
+	$oCONV	= new DATA_UTILS;
 
 	%$pSYS = (
 		'SYS'	=> $oSYS,

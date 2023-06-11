@@ -672,9 +672,9 @@ sub FunctionBBSCreate
 	$Sys->Set('BBS', $bbsDir);
 	$bbsSetting->Load($Sys);
 
-	require './module/galadriel.pl';
-	my $createPath2 = GALADRIEL::MakePath($Sys->Get('CGIPATH'), $createPath);
-	my $cookiePath = GALADRIEL::MakePath($Sys->Get('CGIPATH'), $Sys->Get('BBSPATH'));
+	require './module/data_utils.pl';
+	my $createPath2 = DATA_UTILS::MakePath($Sys->Get('CGIPATH'), $createPath);
+	my $cookiePath = DATA_UTILS::MakePath($Sys->Get('CGIPATH'), $Sys->Get('BBSPATH'));
 	$cookiePath .= '/' if ($cookiePath ne '/');
 	$bbsSetting->Set('BBS_TITLE', $bbsName);
 	$bbsSetting->Set('BBS_SUBTITLE', $bbsExplanation);

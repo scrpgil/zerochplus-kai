@@ -82,14 +82,14 @@ sub Initialize
 	require './module/melkor.pl';
 	require './module/isildur.pl';
 	require './module/radagast.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/samwise.pl';
 
 	%$Sys = (
 		'SYS'		=> new MELKOR,
 		'SET'		=> new ISILDUR,
 		'COOKIE'	=> new RADAGAST,
-		'CONV'		=> new GALADRIEL,
+		'CONV'		=> new DATA_UTILS,
 		'FORM'		=> SAMWISE->new(1),
 		'PAGE'		=> $Page,
 	);

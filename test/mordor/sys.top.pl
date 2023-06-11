@@ -167,7 +167,7 @@ sub PrintNoticeList
 	$Sys->Set('_TITLE', 'User Notice List');
 
 	require './module/gandalf.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	$Notices = GANDALF->new;
 
 	# ’Ê’mî•ñ‚Ì“Ç‚İ‚İ
@@ -225,7 +225,7 @@ HTML
 			}
 			$subj = $Notices->Get('SUBJECT', $id);
 			$text = $Notices->Get('TEXT', $id);
-			$date = GALADRIEL::GetDateFromSerial(undef, $Notices->Get('DATE', $id), 0);
+			$date = DATA_UTILS::GetDateFromSerial(undef, $Notices->Get('DATE', $id), 0);
 
 $Page->Print(<<HTML);
    <tr>
@@ -399,15 +399,15 @@ $Page->Print(<<HTML);
    </tr>
 HTML
 
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 
 	# ƒƒOˆê——‚ğo—Í
 	for ($i = $dispSt ; $i < $dispEd ; $i++) {
 		$data = $Logger->Get($listNum - $i - 1);
 		@elem = split(/<>/, $data);
 		if (1) {
-			$elem[0] = GALADRIEL::GetDateFromSerial(undef, $elem[0], 0);
-			GALADRIEL::ConvertCharacter1(undef, \$elem[1], 0);
+			$elem[0] = DATA_UTILS::GetDateFromSerial(undef, $elem[0], 0);
+			DATA_UTILS::ConvertCharacter1(undef, \$elem[1], 0);
 			$Page->Print("   <tr><td>$elem[0]</td><td>$elem[1]</td><td>$elem[2]</td><td>$elem[3]</td></tr>\n");
 		}
 		else {
@@ -479,9 +479,9 @@ sub FunctionNoticeCreate
 	$subject = $Form->Get('NOTICE_TITLE');
 	$content = $Form->Get('NOTICE_CONTENT');
 
-	require './module/galadriel.pl';
-	GALADRIEL::ConvertCharacter1(undef, \$subject, 0);
-	GALADRIEL::ConvertCharacter1(undef, \$content, 2);
+	require './module/data_utils.pl';
+	DATA_UTILS::ConvertCharacter1(undef, \$subject, 0);
+	DATA_UTILS::ConvertCharacter1(undef, \$content, 2);
 
 	if ($Form->Equal('NOTICE_KIND', 'ALL')) {
 		$users = '*';

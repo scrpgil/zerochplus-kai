@@ -34,13 +34,13 @@ sub PCGI
 
 	require './module/baggins.pl';
 	require './module/isildur.pl';
-	require './module/galadriel.pl';
+	require './module/data_utils.pl';
 	require './module/melkor.pl';
 	require './module/samwise.pl';
 	require './module/thorin.pl';
 
 	$Threads	= new THREADS;
-	$Conv		= new GALADRIEL;
+	$Conv		= new DATA_UTILS;
 	$Set		= new ISILDUR;
 	$Sys		= new MELKOR;
 	$Form		= SAMWISE->new(0);
@@ -128,7 +128,7 @@ sub PrintHead
 #	-------------------------------------------------------------------------------------
 #	@param	$Page	THORIN
 #	@param	$Sys	MELKOR
-#	@param	$Conv	GALADRIEL
+#	@param	$Conv	DATA_UTILS
 #	@param	$pList	リスト格納バッファ
 #	@param	$base	ベースパス
 #	@return	なし

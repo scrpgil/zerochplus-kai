@@ -42,7 +42,7 @@ sub new
 #	@param	$Form	SAMWISE(必須)
 #	@param	$Set	ISILDUR
 #	@param	$Thread	THREADS
-#	@param	$Conv	GALADRIEL
+#	@param	$Conv	DATA_UTILS
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -69,8 +69,8 @@ sub Init
 		$this->{'THREADS'}->Load($Sys);
 	}
 	if (!defined $Conv) {
-		require './module/galadriel.pl';
-		$this->{'CONV'} = GALADRIEL->new;
+		require './module/data_utils.pl';
+		$this->{'CONV'} = DATA_UTILS->new;
 	}
 
 	# キャップ管理モジュールロード
