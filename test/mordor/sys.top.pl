@@ -619,7 +619,7 @@ sub CheckVersionUpdate
 		my $from = '0000000000';
 
 		# ’Ê’mæ ŠÇ—ŽÒŒ ŒÀ‚ðŽ‚Âƒ†[ƒU
-		require './module/elves.pl';
+		require './module/sys_security.pl';
 		my $User = SYS_SECURITY->new;
 		$User->Load($Sys);
 		my @toSet = ();

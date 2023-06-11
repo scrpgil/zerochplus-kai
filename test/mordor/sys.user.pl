@@ -166,7 +166,7 @@ sub PrintUserList
 
 	$Sys->Set('_TITLE', 'Users List');
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 
 	# ユーザ情報の読み込み
@@ -255,7 +255,7 @@ sub PrintUserSetting
 	$Sys->Set('_TITLE', 'User Edit')	if ($mode == 1);
 	$Sys->Set('_TITLE', 'User Create')	if ($mode == 0);
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 
 	# ユーザ情報の読み込み
@@ -322,7 +322,7 @@ sub PrintUserDelete
 
 	$SYS->Set('_TITLE', 'User Delete Confirm');
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 
 
@@ -396,7 +396,7 @@ sub FuncUserSetting
 			return 1002;
 		}
 	}
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 
 	$User->Load($Sys);
@@ -465,7 +465,7 @@ sub FuncUserDelete
 			return 1000;
 		}
 	}
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 	$Sec = ARWEN->new;
 

@@ -193,7 +193,7 @@ sub PrintGroupList
 
 	$Sys->Set('_TITLE', 'Group List');
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$Group = GILDOR->new;
 
 	# グループ情報の読み込み
@@ -262,7 +262,7 @@ sub PrintGroupSetting
 	$Sys->Set('_TITLE', 'Group Edit')	if ($mode == 1);
 	$Sys->Set('_TITLE', 'Group Create')	if ($mode == 0);
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 	$Group = GILDOR->new;
 
@@ -376,7 +376,7 @@ sub PrintGroupDelete
 
 	$SYS->Set('_TITLE', 'Group Delete Confirm');
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$Group = GILDOR->new;
 	$Group->Load($SYS);
 
@@ -483,7 +483,7 @@ sub FunctionGroupSetting
 			return 1001;
 		}
 	}
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$User = SYS_SECURITY->new;
 	$Group = GILDOR->new;
 
@@ -580,7 +580,7 @@ sub FunctionGroupDelete
 			return 1000;
 		}
 	}
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	$Group = GILDOR->new;
 
 	# ユーザ情報の読み込み

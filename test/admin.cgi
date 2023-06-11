@@ -114,7 +114,7 @@ sub SystemSetting
 		'NEWRELEASE'=> undef,		# バージョンチェック
 	);
 
-	require './module/elves.pl';
+	require './module/sys_security.pl';
 	require './module/log.pl';
 	require './module/newrelease.pl';
 
