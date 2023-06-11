@@ -32,7 +32,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NAME'		=> undef,
 		'PASS'		=> undef,
@@ -42,7 +42,7 @@ sub new
 		'CUSTOMID'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -50,7 +50,7 @@ sub new
 #
 #	キャップ情報読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ハッシュ初期化
 	$this->{'NAME'} = {};
 	$this->{'PASS'} = {};
@@ -66,25 +66,25 @@ sub Load
 	$this->{'EXPL'} = {};
 	$this->{'SYSAD'} = {};
 	$this->{'CUSTOMID'} = {};
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/caps.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 6) { # 7
 				warn "invalid line in $path";
 				next;
 			}
 			push @elem, '';
-			
+
 			my $id = $elem[0];
 			$this->{'NAME'}->{$id} = $elem[1];
 			$this->{'PASS'}->{$id} = $elem[2];
@@ -100,7 +100,7 @@ sub Load
 #
 #	キャップ情報保存
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -108,15 +108,15 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/caps.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'NAME'}}) {
 			my $data = join('<>',
 				$_,
@@ -127,10 +127,10 @@ sub Save
 				$this->{'SYSAD'}->{$_},
 				$this->{'CUSTOMID'}->{$_},
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -151,9 +151,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, keys %{$this->{'NAME'}};
 	}
@@ -164,7 +164,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -182,9 +182,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -204,7 +204,7 @@ sub Add
 {
 	my $this = shift;
 	my ($name, $pass, $full, $explan, $sysad, $customid) = @_;
-	
+
 	my $id = time;
 	$this->{'NAME'}->{$id} = $name;
 	$this->{'PASS'}->{$id} = $this->GetStrictPass($pass, $id);
@@ -212,7 +212,7 @@ sub Add
 	$this->{'FULL'}->{$id} = $full;
 	$this->{'SYSAD'}->{$id} = $sysad;
 	$this->{'CUSTOMID'}->{$id} = $customid;
-	
+
 	return $id;
 }
 
@@ -230,7 +230,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		if ($kind eq 'PASS') {
 			$val = $this->GetStrictPass($val, $id);
@@ -251,7 +251,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'NAME'}->{$id};
 	delete $this->{'PASS'}->{$id};
 	delete $this->{'FULL'}->{$id};
@@ -273,7 +273,7 @@ sub GetStrictPass
 {
 	my $this = shift;
 	my ($pass, $key) = @_;
-	
+
 	my $hash;
 	if (length($pass) >= 9) {
 		require Digest::SHA::PurePerl;
@@ -284,7 +284,7 @@ sub GetStrictPass
 	else {
 		$hash = substr(crypt($pass, substr(crypt($key, 'ZC'), -2)), -10);
 	}
-	
+
 	return $hash;
 }
 
@@ -310,7 +310,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NAME'		=> undef,
 		'EXPL'		=> undef,
@@ -320,7 +320,7 @@ sub new
 		'ISCOMMON'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -328,7 +328,7 @@ sub new
 #
 #	グループ情報読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys		MELKOR
+#	@param	$Sys		SYS_DATA
 #	@param	$sysgroup	共通グループかどうか
 #	@return	なし
 #
@@ -337,7 +337,7 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys, $sysgroup) = @_;
-	
+
 	# ハッシュ初期化
 	$this->{'NAME'} = {};
 	$this->{'EXPL'} = {};
@@ -345,23 +345,23 @@ sub Load
 	$this->{'AUTH'} = {};
 	$this->{'CAPS'} = {};
 	$this->{'ISCOMMON'} = {};
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/capgroups.cgi';
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 6) {
 				warn "invalid line in $path";
 				#next;
 			}
-			
+
 			my $id = $elem[0];
 			$elem[4] = '' if (!defined $elem[4]);
 			$elem[5] = '' if (!defined $elem[5]);
@@ -373,7 +373,7 @@ sub Load
 			$this->{'ISCOMMON'}->{$id} = 1;
 		}
 	}
-	
+
 	if (!$sysgroup) {
 		$path = $Sys->Get('BBSPATH') . '/' .  $Sys->Get('BBS') . '/info/capgroups.cgi';
 		if (open(my $fh, '<', $path)) {
@@ -381,16 +381,16 @@ sub Load
 			my @lines = <$fh>;
 			close($fh);
 			map { s/[\r\n]+\z// } @lines;
-			
+
 			foreach (@lines) {
 				next if ($_ eq '');
-				
+
 				my @elem = split(/<>/, $_, -1);
 				if (scalar(@elem) < 6) {
 					warn "invalid line in $path";
 					#next;
 				}
-				
+
 				my $id = $elem[0];
 				$elem[4] = '' if (!defined $elem[4]);
 				$elem[5] = '' if (!defined $elem[5]);
@@ -409,7 +409,7 @@ sub Load
 #
 #	グループ情報保存
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$sysgroup	共通グループかどうか
 #	@return	なし
 #
@@ -418,9 +418,9 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys, $sysgroup) = @_;
-	
+
 	my $commflg = ($sysgroup ? 1 : 0);
-	
+
 	my $path;
 	if ($commflg) {
 		$path = '.' . $Sys->Get('INFO') . '/capgroups.cgi';
@@ -428,17 +428,17 @@ sub Save
 	else {
 		$path = $Sys->Get('BBSPATH') . '/' .  $Sys->Get('BBS') . '/info/capgroups.cgi';
 	}
-	
-	
+
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'NAME'}}) {
 			next if ($this->{'ISCOMMON'}->{$_} ne $commflg);
-			
+
 			my $data = join('<>',
 				$_,
 				$this->{'NAME'}->{$_},
@@ -447,10 +447,10 @@ sub Save
 				$this->{'CAPS'}->{$_},
 				$this->{'COLOR'}->{$_},
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -470,10 +470,10 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($pBuf, $sysgroup) = @_;
-	
+
 	my $n = 0;
 	my $commflg = ($sysgroup ? 1 : 0);
-	
+
 	foreach (keys %{$this->{'NAME'}}) {
 		next if ($this->{'ISCOMMON'}->{$_} ne $commflg);
 		$n += push @$pBuf, $_;
@@ -495,9 +495,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -516,7 +516,7 @@ sub Add
 {
 	my $this = shift;
 	my ($name, $explan, $color, $authors, $caps, $sysgroup) = @_;
-	
+
 	my $id = time;
 	$this->{'NAME'}->{$id}	= $name;
 	$this->{'EXPL'}->{$id}	= $explan;
@@ -524,7 +524,7 @@ sub Add
 	$this->{'AUTH'}->{$id}	= $authors;
 	$this->{'CAPS'}->{$id}	= $caps;
 	$this->{'ISCOMMON'}->{$id}	= ($sysgroup ? 1 : 0);
-	
+
 	return $id;
 }
 
@@ -541,11 +541,11 @@ sub AddCap
 {
 	my $this = shift;
 	my ($id, $cap) = @_;
-	
+
 	my @users = split(/\,/, $this->{'CAPS'}->{$id});
 	my @match = grep($cap, @users);
 	my $nuser = scalar(@match);
-	
+
 	# 登録済みのキャップは重複登録しない
 	if ($nuser == 0) {
 		$this->{'CAPS'}->{$id} .= ",$cap";
@@ -566,7 +566,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -584,7 +584,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'NAME'}->{$id};
 	delete $this->{'EXPL'}->{$id};
 	delete $this->{'COLOR'}->{$id};
@@ -605,9 +605,9 @@ sub GetBelong
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $ret = '';
-	
+
 	foreach my $group (keys %{$this->{'CAPS'}}) {
 		my @users = split(/\,/, $this->{'CAPS'}->{$group});
 		foreach my $user (@users) {
@@ -645,14 +645,14 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'SYS'	=> undef,
 		'CAP'	=> undef,
 		'GROUP'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -660,7 +660,7 @@ sub new
 #
 #	初期化
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -668,9 +668,9 @@ sub Init
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SYS'} = $Sys;
-	
+
 	# 2重ロード防止
 	if (! defined $this->{'CAP'}) {
 		$this->{'CAP'} = UNGOLIANT->new;
@@ -694,7 +694,7 @@ sub Get
 {
 	my $this = shift;
 	my ($id, $key, $f, $default) = @_;
-	
+
 	if ($f) {
 		return $this->{'CAP'}->Get($key, $id, $default);
 	}
@@ -715,9 +715,9 @@ sub GetCapID
 {
 	my $this = shift;
 	my ($pass) = @_;
-	
+
 	my $Cap = $this->{'CAP'};
-	
+
 	my @capSet = ();
 	$Cap->GetKeySet('ALL', '', \@capSet);
 	foreach my $id (@capSet) {
@@ -741,9 +741,9 @@ sub SetGroupInfo
 {
 	my $this = shift;
 	my ($bbs) = @_;
-	
+
 	my $oldBBS = $this->{'SYS'}->Get('BBS');
-	
+
 	$this->{'SYS'}->Set('BBS', $bbs);
 	$this->{'GROUP'}->Load($this->{'SYS'});
 	$this->{'SYS'}->Set('BBS', $oldBBS);
@@ -763,17 +763,17 @@ sub IsAuthority
 {
 	my $this = shift;
 	my ($id, $author, $bbs) = @_;
-	
+
 	# システム管理権限グループなら無条件OK
 	my $sysad = $this->{'CAP'}->Get('SYSAD', $id);
 	return 1 if ($sysad);
-	
+
 	return 0 if ($bbs eq '*');
-	
+
 	# 対象BBSに所属しているか確認
 	my $group = $this->{'GROUP'}->GetBelong($id);
 	return 0 if ($group eq '');
-	
+
 	# 権限を持っているか確認
 	my $authors = $this->{'GROUP'}->Get('AUTH', $group);
 	my @authors = split(/\,/, $authors);

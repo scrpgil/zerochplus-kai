@@ -80,12 +80,12 @@ sub Initialize
 	my ($CGI, $Page) = @_;
 
 	# 各使用モジュールの生成と初期化
-	require './module/melkor.pl';
+	require './module/sys_data.pl';
 	require './module/settings.pl';
 	require './module/gondor.pl';
 	require './module/data_utils.pl';
 
-	my $Sys = MELKOR->new;
+	my $Sys = SYS_DATA->new;
 	my $Conv = DATA_UTILS->new;
 	my $Set = SETTINGS->new;
 	my $Dat = DAT->new;

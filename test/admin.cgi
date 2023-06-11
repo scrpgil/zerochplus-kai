@@ -33,8 +33,8 @@ sub AdminCGI
 	SystemSetting($CGI);
 
 	# 0chƒVƒXƒeƒ€î•ñ‚ðŽæ“¾
-	require "./module/melkor.pl";
-	my $Sys = MELKOR->new;
+	require "./module/sys_data.pl";
+	my $Sys = SYS_DATA->new;
 	$Sys->Init();
 	$Sys->Set('BBS', '');
 	$CGI->{'LOGGER'}->Open('.'.$Sys->Get('INFO').'/AdminLog', 100, 2 | 4);

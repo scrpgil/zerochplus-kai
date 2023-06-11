@@ -27,7 +27,7 @@ sub new
 	my ($obj, @MnuStr, @MnuUrl);
 
 	$obj = {
-		'SYS'		=> undef,														# MELKOR保持
+		'SYS'		=> undef,														# SYS_DATA保持
 		'FORM'		=> undef,														# SAMWISE保持
 		'INN'		=> undef,														# THORIN保持
 		'MNUSTR'	=> \@MnuStr,													# 機能リスト文字列
@@ -43,7 +43,7 @@ sub new
 #
 #	オブジェクト生成 - Create
 #	-------------------------------------------------------------------------------------
-#	引　数：$M : MELKORモジュール
+#	引　数：$SYS_DATALKORモジュール
 #			$S : SAMWISEモジュール
 #	戻り値：THORINモジュール
 #

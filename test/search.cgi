@@ -32,14 +32,14 @@ sub SearchCGI
 {
 	my ($Sys, $Page, $Form, $BBS);
 
-	require './module/melkor.pl';
+	require './module/sys_data.pl';
 	require './module/thorin.pl';
 	require './module/samwise.pl';
-	require './module/nazguls.pl';
-	$Sys	= new MELKOR;
+	require './module/bbs_manage.pl';
+	$Sys	= new SYS_DATA;
 	$Page	= new THORIN;
 	$Form	= SAMWISE->new(1);
-	$BBS	= new NAZGUL;
+	$BBS	= new BBS_MANAGE;
 
 	$Form->DecodeForm(1);
 	$Sys->Init();

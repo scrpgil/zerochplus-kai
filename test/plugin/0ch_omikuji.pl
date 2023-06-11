@@ -70,7 +70,7 @@ sub getType
 #
 #	Šg’£‹@”\ÀsƒCƒ“ƒ^ƒtƒFƒCƒX
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
+#	@param	$sys	SYS_DATA
 #	@param	$form	SAMWISE
 #	@return	³íI—¹‚Ìê‡‚Í0
 #
@@ -79,7 +79,7 @@ sub execute
 {
 	my	$this = shift;
 	my	($sys,$form) = @_;
-	
+
 	if($form->Contain('FROM','!omikuji')){
 		my $from = $form->Get('FROM');
 		my $res = OMIKUJI(time());
@@ -101,10 +101,10 @@ sub OMIKUJI
 {
 	my	($seed) = @_;
 	my	(@results,$count);
-	
+
 	@results = ('‘å‹g','’†‹g','¬‹g','‹g','––‹g','‹¥','‘å‹¥');
 	$count = @results;
-	
+
 	srand($seed);
 	return($results[int(rand(65535)) % $count]);
 }

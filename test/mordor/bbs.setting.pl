@@ -36,7 +36,7 @@ sub new
 #
 #	表示メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -54,8 +54,8 @@ sub DoPrint
 
 	# 掲示板情報の読み込みとグループ設定
 	if (! defined $BBS) {
-		require './module/nazguls.pl';
-		$BBS = NAZGUL->new;
+		require './module/bbs_manage.pl';
+		$BBS = BBS_MANAGE->new;
 
 		$BBS->Load($Sys);
 		$Sys->Set('BBS', $BBS->Get('DIR', $Form->Get('TARGET_BBS')));
@@ -109,7 +109,7 @@ sub DoPrint
 #
 #	機能メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -121,8 +121,8 @@ sub DoFunction
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $err, $BBS);
 
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 
 	# 管理情報を登録
 	$BBS->Load($Sys);

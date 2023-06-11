@@ -79,14 +79,14 @@ sub Initialize
 	my ($bbs);
 
 	# 使用モジュールの初期化
-	require './module/melkor.pl';
+	require './module/sys_data.pl';
 	require './module/settings.pl';
 	require './module/radagast.pl';
 	require './module/data_utils.pl';
 	require './module/samwise.pl';
 
 	%$Sys = (
-		'SYS'		=> new MELKOR,
+		'SYS'		=> new SYS_DATA,
 		'SET'		=> new SETTINGS,
 		'COOKIE'	=> new RADAGAST,
 		'CONV'		=> new DATA_UTILS,

@@ -76,7 +76,7 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
+#	@param	$sys	SYS_DATA
 #	@param	$form	SAMWISE
 #	@return	正常終了の場合は0
 #
@@ -120,7 +120,7 @@ sub execute
 #
 #	なんちゃってbbs.cgiエラーページ表示
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
+#	@param	$sys	SYS_DATA
 #	@param	$form	SAMWISE
 #	@param	$err	エラー番号
 #	@return	なし

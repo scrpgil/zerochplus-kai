@@ -81,7 +81,7 @@ sub GetArgument
 #
 #	表示レス数正規化 - RegularDispNum
 #	-------------------------------------------
-#	引　数：$Sys   : MELKOR
+#	引　数：$Sys   : SYS_DATA
 #			$Dat   : DATオブジェクト
 #			$last  : lastフラグ
 #			$start : 開始行
@@ -139,7 +139,7 @@ sub RegularDispNum
 #
 #	URL変換 - ConvertURL
 #	--------------------------------------------
-#	引　数：$Sys : MELKORモジュール
+#	引　数：$Sys : SYS_DATAモジュール
 #			$Set : SETTING
 #			$mode : エージェント
 #			$text : 変換テキスト(リファレンス)
@@ -210,7 +210,7 @@ sub ConvertURL
 #
 #	引用変換 - ConvertQuotation
 #	--------------------------------------------
-#	引　数：$Sys : MELKORオブジェクト
+#	引　数：$Sys : SYS_DATAオブジェクト
 #			$text : 変換テキスト
 #			$mode : エージェント
 #	戻り値：変換後のメッセージ
@@ -266,7 +266,7 @@ sub ConvertQuotation
 #
 #	特殊引用変換 - ConvertSpecialQuotation
 #	--------------------------------------------
-#	引　数：$Sys : MELKORオブジェクト
+#	引　数：$Sys : SYS_DATAオブジェクト
 #			$text : 変換テキスト
 #			$mode : エージェント
 #	戻り値：変換後のメッセージ
@@ -827,7 +827,7 @@ sub ConvertOption
 #
 #	パス生成 - CreatePath
 #	-------------------------------------------
-#	引　数：$Sys  : MELKOR
+#	引　数：$Sys  : SYS_DATA
 #			$mode : 0:read 1:r
 #			$bbs  : BBSキー
 #			$key  : スレッドキー
@@ -1174,7 +1174,7 @@ sub IsAnker
 #
 #	リファラ判断 - IsReferer
 #	--------------------------------------
-#	引　数：$Sys : MELKOR
+#	引　数：$Sys : SYS_DATA
 #	戻り値：許可なら0,NGなら1
 #
 #------------------------------------------------------------------------------------------------------------
@@ -1197,7 +1197,7 @@ sub IsReferer
 #
 #	プロクシチェック - IsProxy
 #	--------------------------------------
-#	引　数：$Sys   : MELKOR
+#	引　数：$Sys   : SYS_DATA
 #			$Form  :
 #			$from  : 名前欄
 #			$mode  : エージェント

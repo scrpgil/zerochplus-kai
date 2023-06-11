@@ -37,7 +37,7 @@ sub new
 #
 #	èâä˙âª
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys		MELKOR
+#	@param	$Sys		SYS_DATA
 #	@param	$Setting	SETTINGS
 #	@return	Ç»Çµ
 #

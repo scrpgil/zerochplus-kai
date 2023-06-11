@@ -5,7 +5,7 @@
 #	このモジュールは管理CGIの掲示板情報を管理します。
 #	以下の2つのパッケージによって構成されます
 #
-#	NAZGUL	: 掲示板情報管理
+#	BBS_MANAGE	: 掲示板情報管理
 #	ANGMAR	: カテゴリ情報管理
 #
 #============================================================================================================
@@ -15,7 +15,7 @@
 #	掲示板情報管理パッケージ
 #
 #============================================================================================================
-package	NAZGUL;
+package	BBS_MANAGE;
 
 use strict;
 #use warnings;
@@ -31,16 +31,16 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NAME'		=> undef,
 		'DIR'		=> undef,
 		'SUBJECT'	=> undef,
 		'CATEGORY'	=> undef,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -48,7 +48,7 @@ sub new
 #
 #	掲示板情報読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -56,29 +56,29 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'NAME'} = {};
 	$this->{'DIR'} = {};
 	$this->{'SUBJECT'} = {};
 	$this->{'CATEGORY'} = {};
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/bbss.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 5) {
 				warn "invalid line in $path";
 				next;
 			}
-			
+
 			my $id = $elem[0];
 			$this->{'NAME'}->{$id} = $elem[1];
 			$this->{'DIR'}->{$id} = $elem[2];
@@ -95,7 +95,7 @@ sub Load
 #
 #	掲示板情報保存
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -103,15 +103,15 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/bbss.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'NAME'}}) {
 			my $data = join('<>',
 				$_,
@@ -120,10 +120,10 @@ sub Save
 				$this->{'SUBJECT'}->{$_},
 				$this->{'CATEGORY'}->{$_}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -147,9 +147,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, sort keys %{$this->{'NAME'}};
 	}
@@ -160,7 +160,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -178,9 +178,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -199,13 +199,13 @@ sub Add
 {
 	my $this = shift;
 	my ($name, $dir, $subject, $category) = @_;
-	
+
 	my $id = time;
 	$this->{'NAME'}->{$id}		= $name;
 	$this->{'DIR'}->{$id}		= $dir;
 	$this->{'SUBJECT'}->{$id}	= $subject;
 	$this->{'CATEGORY'}->{$id}	= $category;
-	
+
 	return $id;
 }
 
@@ -223,7 +223,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -241,7 +241,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'NAME'}->{$id};
 	delete $this->{'DIR'}->{$id};
 	delete $this->{'SUBJECT'}->{$id};
@@ -252,7 +252,7 @@ sub Delete
 #
 #	掲示板情報更新
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$skey	掲示板名称のキー
 #	@return	なし
 #
@@ -261,40 +261,40 @@ sub Update
 {
 	my $this = shift;
 	my ($Sys, $skey) = @_;
-	
+
 	# 現在の情報をすべてクリア
 	$this->{'NAME'} = {};
 	$this->{'DIR'} = {};
 	$this->{'SUBJECT'} = {};
 	$this->{'CATEGORY'} = {};
-	
+
 	my $bbsroot = $Sys->Get('BBSPATH');
 	$skey = 'BBS_TITLE' if ($skey eq '');
-	
+
 	# BBSルート対象
 	my @dirs = ();
 	if (opendir(my $dh, $bbsroot)) {
 		@dirs = readdir($dh);
 		closedir($dh);
 	}
-	
+
 	# 掲示板ルート検索
 	foreach my $dir (@dirs) {
 		# ディレクトリ発見, SETTING.TXT存在
 		if (-d "$bbsroot/$dir" && -e "$bbsroot/$dir/SETTING.TXT") {
 			my $id = time;
 			$id++ while (exists $this->{'DIR'}->{$id});
-			
+
 			$this->{'DIR'}->{$id} = $dir;
 			$this->{'CATEGORY'}->{$id} = '0000000001';
-			
+
 			my $path = "$bbsroot/$dir/SETTING.TXT";
 			if (open(my $fh, '<', $path)) {
 				flock($fh, 2);
 				my @lines = <$fh>;
 				close($fh);
 				map { s/[\r\n]+\z// } @lines;
-				
+
 				# SETTING.TXTから必要な情報を取得する
 				my $f = 0;
 				foreach (@lines) {
@@ -322,7 +322,7 @@ sub Update
 #
 #	掲示板コンテンツ生成 - CreateContents
 #	-------------------------------------------
-#	引　数：$Sys : MELKOR
+#	引　数：$SSYS_DATAELKOR
 #			$Page : THORIN
 #	戻り値：なし
 #
@@ -331,42 +331,42 @@ sub CreateContents
 {
 	my $this = shift;
 	my ($Sys, $Page) = @_;
-	
+
 	# カテゴリ情報を読み込み
 	my @catSet = ();
 	my $Category = ANGMAR->new;
 	$Category->Load($Sys);
 	$Category->GetKeySet(\@catSet);
-	
+
 	$Page->Print('<html><!--nobanner--><body><small><center><br>');
-	
+
 	# ここらへんに自分の掲示板の名前を入れる
 	$Page->Print('<b>0ch+ BBS<br>');
 	$Page->Print("Contents</b><br><br><hr></center><br>\n");
-	
+
 	foreach my $cid (@catSet) {
 		# カテゴリ出力
 		my $name = $Category->Get('NAME', $cid);
 		$Page->Print("<b>$name</b><br>\n");
-		
+
 		my @keySet = ();
 		$this->GetKeySet('CATEGORY', $cid, \@keySet);
 		foreach my $id (@keySet) {
 			my $name = $this->{'NAME'}->{$id};
 			my $dir = $this->{'DIR'}->{$id};
-			
+
 			# 掲示板リンク出力
 			$Page->Print("　<a href=\"./$dir/\" target=MAIN>");
 			$Page->Print("$name</a><br>\n");
 		}
 		$Page->Print('<br>');
 	}
-	
+
 	my $bbsroot = $Sys->Get('BBSPATH');
 	my $ver = $Sys->Get('VERSION');
-	
+
 	$Page->Print("<hr>$ver</body></html>\n");
-	
+
 	$Page->Flush(1, $Sys->Get('PM-TXT'), "$bbsroot/contents.html");
 }
 
@@ -392,14 +392,14 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NAME'		=> undef,
 		'SUBJECT'	=> undef,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -407,7 +407,7 @@ sub new
 #
 #	カテゴリ情報読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -415,24 +415,24 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/category.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 3) {
 				warn "invalid line in $path";
 				next;
 			}
-			
+
 			my $id = $elem[0];
 			$this->{'NAME'}->{$id} = $elem[1];
 			$this->{'SUBJECT'}->{$id} = $elem[2];
@@ -447,7 +447,7 @@ sub Load
 #
 #	カテゴリ情報保存
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -455,25 +455,25 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/category.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'NAME'}}) {
 			my $data = join('<>',
 				$_,
 				$this->{'NAME'}->{$_},
 				$this->{'SUBJECT'}->{$_}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -495,9 +495,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($pBuf) = @_;
-	
+
 	my $n = push @$pBuf, keys %{$this->{'NAME'}};
-	
+
 	return $n;
 }
 
@@ -515,9 +515,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -534,11 +534,11 @@ sub Add
 {
 	my $this = shift;
 	my ($name, $subject) = @_;
-	
+
 	my $id = time;
 	$this->{'NAME'}->{$id}		= $name;
 	$this->{'SUBJECT'}->{$id}	= $subject;
-	
+
 	return $id;
 }
 
@@ -556,7 +556,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -574,7 +574,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'NAME'}->{$id};
 	delete $this->{'SUBJECT'}->{$id};
 }

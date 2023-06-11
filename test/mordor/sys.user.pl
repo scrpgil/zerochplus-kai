@@ -36,7 +36,7 @@ sub new
 #
 #	表示メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -86,7 +86,7 @@ sub DoPrint
 #
 #	機能メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -129,7 +129,7 @@ sub DoFunction
 #	メニューリスト設定
 #	-------------------------------------------------------------------------------------
 #	@param	$Base	SAURON
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$pSys	管理システム
 #	@param	$Form	SAMWISE
 #	@return	なし

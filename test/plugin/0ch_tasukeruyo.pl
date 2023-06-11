@@ -70,7 +70,7 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
+#	@param	$sys	SYS_DATA
 #	@param	$form	SAMWISE
 #	@return	正常終了の場合は0
 #
@@ -79,7 +79,7 @@ sub execute
 {
 	my	$this = shift;
 	my	($sys, $form, $type) = @_;
-	
+
 	if ( $type & 16 ) {
 		my	($from, $koyuu, $agent, $tasuke, $mes, $ua);
 		$from	= $form->Get('FROM');
@@ -88,7 +88,7 @@ sub execute
 		$agent	= $sys->Get('AGENT');
 		$mes	= $form->Get('MESSAGE');
 		$ua		= $ENV{'HTTP_USER_AGENT'};
-		
+
 		if ( $from =~ /^(?:[\x00-\x7f\xa1-\xdf]|[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc])*?tasukeruyo/ ) {
 			if ( $agent eq 'O' || $agent eq 'P' || $agent eq 'i' ) {
 				$tasuke = "$ENV{'REMOTE_HOST'}($koyuu)";
@@ -96,16 +96,16 @@ sub execute
 			else {
 				$tasuke = "$ENV{'REMOTE_HOST'}($ENV{'REMOTE_ADDR'})";
 			}
-			
+
 			$from =~ s#^((?:[\x00-\x7f\xa1-\xdf]|[\x81-\x9f\xe0-\xef][\x40-\x7e\x80-\xfc])*?)tasukeruyo#$1</b>$tasuke<b>#g;
 			$form->Set('FROM', $from);
-			
+
 			$ua =~ s/</&lt;/g;
 			$ua =~ s/>/&gt;/g;
 			$form->Set('MESSAGE',"$mes<br> <hr> <font color=\"blue\">$ua</font>");
 		}
 	}
-	
+
 	return 0;
 }
 

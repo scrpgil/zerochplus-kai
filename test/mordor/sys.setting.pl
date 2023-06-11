@@ -39,7 +39,7 @@ sub new
 #
 #	表示メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -112,7 +112,7 @@ sub DoPrint
 #
 #	機能メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -911,8 +911,8 @@ sub FunctionBasicSetting
 			return 1001;
 		}
 	}
-	require './module/melkor.pl';
-	$SYSTEM = MELKOR->new;
+	require './module/sys_data.pl';
+	$SYSTEM = SYS_DATA->new;
 	$SYSTEM->Init();
 
 	$SYSTEM->Set('SERVER', $Form->Get('SERVER'));
@@ -959,8 +959,8 @@ sub FunctionPermissionSetting
 			return 1000;
 		}
 	}
-	require './module/melkor.pl';
-	$SYSTEM = MELKOR->new;
+	require './module/sys_data.pl';
+	$SYSTEM = SYS_DATA->new;
 	$SYSTEM->Init();
 
 	$SYSTEM->Set('PM-DAT', oct($Form->Get('PERM_DAT')));
@@ -1015,8 +1015,8 @@ sub FunctionLimitterSetting
 			return 1000;
 		}
 	}
-	require './module/melkor.pl';
-	$SYSTEM = MELKOR->new;
+	require './module/sys_data.pl';
+	$SYSTEM = SYS_DATA->new;
 	$SYSTEM->Init();
 
 	$SYSTEM->Set('RESMAX', $Form->Get('RESMAX'));
@@ -1065,8 +1065,8 @@ sub FunctionOtherSetting
 			return 1000;
 		}
 	}
-	require './module/melkor.pl';
-	$SYSTEM = MELKOR->new;
+	require './module/sys_data.pl';
+	$SYSTEM = SYS_DATA->new;
 	$SYSTEM->Init();
 
 	$SYSTEM->Set('HEADTEXT', $Form->Get('HEADTEXT'));
@@ -1124,8 +1124,8 @@ sub FunctionPlusViewSetting
 			return 1000;
 		}
 	}
-	require './module/melkor.pl';
-	$SYSTEM = MELKOR->new;
+	require './module/sys_data.pl';
+	$SYSTEM = SYS_DATA->new;
 	$SYSTEM->Init();
 
 	$SYSTEM->Set('COUNTER', $Form->Get('COUNTER'));
@@ -1175,8 +1175,8 @@ sub FunctionPlusSecSetting
 			return 1000;
 		}
 	}
-	require './module/melkor.pl';
-	$SYSTEM = MELKOR->new;
+	require './module/sys_data.pl';
+	$SYSTEM = SYS_DATA->new;
 	$SYSTEM->Init();
 
 	$SYSTEM->Set('KAKIKO', ($Form->Equal('KAKIKO', 'on') ? 1 : 0));

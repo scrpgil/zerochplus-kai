@@ -19,16 +19,16 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'METHOD'	=> undef,
 		'SUBSTITUTE'=> undef,
 		'NGWORD'	=> undef,
 		'REPLACE'	=> undef,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -36,7 +36,7 @@ sub new
 #
 #	NGワード読み込み - Load
 #	-------------------------------------------
-#	引　数：$Sys : MELKOR
+#	引　数：$SSYS_DATAELKOR
 #	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -44,21 +44,21 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'NGWORD'} = [];
 	$this->{'REPLACE'} = [];
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/info/ngwords.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @datas = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @datas;
-		
+
 		my @head = split(/<>/, shift @datas);
 		$this->{'METHOD'} = $head[0];
 		$this->{'SUBSTITUTE'} = $head[1];
-		
+
 		foreach (@datas) {
 			my ($word, $repl) = split(/<>/, $_, -1);
 			next if (!defined $word || $word eq '');
@@ -76,7 +76,7 @@ sub Load
 #
 #	NGワード書き込み - Save
 #	-------------------------------------------
-#	引　数：$Sys : MELKOR
+#	引　数：$SSYS_DATAELKOR
 #	戻り値：0
 #
 #------------------------------------------------------------------------------------------------------------
@@ -84,27 +84,27 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . "/info/ngwords.cgi";
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		print $fh "$this->{'METHOD'}<>$this->{'SUBSTITUTE'}\n";
 		foreach my $i (0 .. $#{$this->{'NGWORD'}}) {
 			print $fh $this->{'NGWORD'}->[$i];
 			print $fh '<>'.$this->{'REPLACE'}->[$i] if (defined $this->{'REPLACE'}->[$i]);
 			print $fh "\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
 	chmod($Sys->Get('PM-ADM'), $path);
-	
+
 	return 0;
 }
 
@@ -120,7 +120,7 @@ sub Add
 {
 	my $this = shift;
 	my ($word, $repl) = @_;
-	
+
 	return if (!defined $word || $word eq '');
 	$word =~ s/</&lt;/g;
 	$word =~ s/>/&gt;/g;
@@ -146,9 +146,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -165,7 +165,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	$this->{$key} = $data;
 }
 
@@ -180,7 +180,7 @@ sub Set
 sub Clear
 {
 	my $this = shift;
-	
+
 	$this->{'NGWORD'} = [];
 	$this->{'REPLACE'} = [];
 }
@@ -198,7 +198,7 @@ sub Check
 {
 	my $this = shift;
 	my ($Form, $pList) = @_;
-	
+
 	foreach my $word (@{$this->{'NGWORD'}}) {
 		next if ($word eq '');
 		foreach my $key (@$pList) {
@@ -232,10 +232,10 @@ sub Method
 {
 	my $this = shift;
 	my ($Form, $pList) = @_;
-	
+
 	# 処理種別が代替か削除の場合のみ処理
 	return unless ($this->{'METHOD'} eq 'delete' || $this->{'METHOD'} eq 'substitute');
-	
+
 	# 代替用文字列を設定
 	my $substitute = '';
 	if ($this->{'METHOD'} eq 'delete') {
@@ -246,7 +246,7 @@ sub Method
 		$substitute = $this->{'SUBSTITUTE'};
 		$substitute = '' if (!defined $substitute);
 	}
-	
+
 	foreach my $i (0 .. $#{$this->{'NGWORD'}}) {
 		my $word = $this->{'NGWORD'}->[$i];
 		next if ($word eq '');

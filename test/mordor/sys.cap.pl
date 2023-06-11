@@ -23,12 +23,12 @@ sub new
 {
 	my $this = shift;
 	my ($obj, @LOG);
-	
+
 	$obj = {
 		'LOG'	=> \@LOG
 	};
 	bless $obj, $this;
-	
+
 	return $obj;
 }
 
@@ -36,7 +36,7 @@ sub new
 #
 #	表示メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -47,17 +47,17 @@ sub DoPrint
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
-	
+
 	require './mordor/sauron.pl';
 	$BASE = SAURON->new;
-	
+
 	# 管理マスタオブジェクトの生成
 	$Page		= $BASE->Create($Sys, $Form);
 	$subMode	= $Form->Get('MODE_SUB');
-	
+
 	# メニューの設定
 	SetMenuList($BASE, $pSys);
-	
+
 	if ($subMode eq 'LIST') {														# スレッド一覧画面
 		PrintCapList($Page, $Sys, $Form);
 	}
@@ -78,7 +78,7 @@ sub DoPrint
 		$Sys->Set('_TITLE', 'Process Failed');
 		$BASE->PrintError($this->{'LOG'});
 	}
-	
+
 	$BASE->Print($Sys->Get('_TITLE'), 1);
 }
 
@@ -86,7 +86,7 @@ sub DoPrint
 #
 #	機能メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -97,10 +97,10 @@ sub DoFunction
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $err);
-	
+
 	$subMode	= $Form->Get('MODE_SUB');
 	$err		= 0;
-	
+
 	if ($subMode eq 'CREATE') {														# キャップ作成
 		$err = FuncCapSetting($Sys, $Form, 0, $this->{'LOG'});
 	}
@@ -110,7 +110,7 @@ sub DoFunction
 	elsif ($subMode eq 'DELETE') {													# キャップ削除
 		$err = FuncCapDelete($Sys, $Form, $this->{'LOG'});
 	}
-	
+
 	# 処理結果表示
 	if ($err) {
 		$pSys->{'LOGGER'}->Put($Form->Get('UserName'),"CAP($subMode)", "ERROR:$err");
@@ -136,10 +136,10 @@ sub DoFunction
 sub SetMenuList
 {
 	my ($Base, $pSys) = @_;
-	
+
 	# 共通表示メニュー
 	$Base->SetMenu('キャップ一覧', "'sys.cap','DISP','LIST'");
-	
+
 	# システム管理権限のみ
 	if ($pSys->{'SECINFO'}->IsAuthority($pSys->{'USER'}, $ZP::AUTH_SYSADMIN, '*')) {
 		$Base->SetMenu('キャップ登録', "'sys.cap','DISP','CREATE'");
@@ -161,27 +161,27 @@ sub PrintCapList
 	my ($Page, $Sys, $Form) = @_;
 	my ($Cap, @userSet, $name, $expl, $full, $id, $common, $customid);
 	my ($dispNum, $i, $dispSt, $dispEd, $userNum, $isAuth);
-	
+
 	$Sys->Set('_TITLE', 'Caps List');
-	
+
 	require './module/ungoliants.pl';
 	$Cap = UNGOLIANT->new;
-	
+
 	# キャップ情報の読み込み
 	$Cap->Load($Sys);
-	
+
 	# キャップ情報を取得
 	$Cap->GetKeySet('ALL', '', \@userSet);
-	
+
 	# 表示数の設定
 	$userNum	= @userSet;
 	$dispNum	= ($Form->Get('DISPNUM') eq '' ? 10 : $Form->Get('DISPNUM'));
 	$dispSt		= ($Form->Get('DISPST') eq '' ? 0 : $Form->Get('DISPST'));
 	$dispSt		= ($dispSt < 0 ? 0 : $dispSt);
 	$dispEd		= (($dispSt + $dispNum) > $userNum ? $userNum : ($dispSt + $dispNum));
-	
+
 	$common		= "DoSubmit('sys.cap','DISP','LIST');";
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2 width=100%>");
 	$Page->Print("<tr><td colspan=3><b><a href=\"javascript:SetOption('DISPST', " . ($dispSt - $dispNum));
 	$Page->Print(");$common\">&lt;&lt; PREV</a> | <a href=\"javascript:SetOption('DISPST', ");
@@ -195,10 +195,10 @@ sub PrintCapList
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:100\">Cap Full Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:100\">Custom ID</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:200\">Explanation</td></tr>\n");
-	
+
 	# 権限取得
 	$isAuth = $Sys->Get('ADMIN')->{'SECINFO'}->IsAuthority($Sys->Get('ADMIN')->{'USER'}, $ZP::AUTH_SYSADMIN, '*');
-	
+
 	# キャップ一覧を出力
 	for ($i = $dispSt ; $i < $dispEd ; $i++) {
 		$id			= $userSet[$i];
@@ -206,10 +206,10 @@ sub PrintCapList
 		$full		= $Cap->Get('FULL', $id);
 		$expl		= $Cap->Get('EXPL', $id);
 		$customid	= $Cap->Get('CUSTOMID', $id);
-		
+
 		$common = "\"javascript:SetOption('SELECT_CAP','$id');";
 		$common .= "DoSubmit('sys.cap','DISP','EDIT')\"";
-		
+
 		# システム権限有無による表示抑制
 		if ($isAuth) {
 			$Page->Print("<tr><td><input type=checkbox name=CAPS value=$id></td>");
@@ -221,10 +221,10 @@ sub PrintCapList
 		$Page->Print("<td>$full</td><td>$customid</td><td>$expl</td></tr>\n");
 	}
 	$common = "onclick=\"DoSubmit('sys.cap','DISP'";
-	
+
 	$Page->HTMLInput('hidden', 'SELECT_CAP', '');
 	$Page->Print("<tr><td colspan=5><hr></td></tr>\n");
-	
+
 	# システム権限有無による表示抑制
 	if ($isAuth) {
 		$Page->Print("<tr><td colspan=5 align=left>");
@@ -232,7 +232,7 @@ sub PrintCapList
 		$Page->Print("</td></tr>\n");
 	}
 	$Page->Print("</table>");
-	
+
 	$Page->HTMLInput('hidden', 'DISPST', '');
 }
 
@@ -251,16 +251,16 @@ sub PrintCapSetting
 {
 	my ($Page, $Sys, $Form, $mode) = @_;
 	my ($User, $id, $common, $name, $pass, $expl, $full, $sysad, $customid);
-	
+
 	$Sys->Set('_TITLE', 'Cap Edit')		if ($mode == 1);
 	$Sys->Set('_TITLE', 'Cap Create')	if ($mode == 0);
-	
+
 	require './module/ungoliants.pl';
 	$User = UNGOLIANT->new;
-	
+
 	# キャップ情報の読み込み
 	$User->Load($Sys);
-	
+
 	# 編集モードならキャップ情報を取得する
 	if ($mode) {
 		$name		= $User->Get('NAME', $Form->Get('SELECT_CAP'));
@@ -278,11 +278,11 @@ sub PrintCapSetting
 		$full	= '';
 		$sysad	= '';
 	}
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2>");
 	$Page->Print("<tr><td colspan=2>各項目を設定して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>\n");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">キャップ表\示名</td><td>");
 	$Page->Print("<input type=text size=30 name=NAME value=\"$name\"></td></tr>");
 	$Page->Print("<tr><td class=\"DetailTitle\">パスワード</td><td>");
@@ -295,13 +295,13 @@ sub PrintCapSetting
 	$Page->Print("<input type=text size=30 name=CUSTOMID value=\"$customid\"></td></tr>");
 	$Page->Print("<tr><td class=\"DetailTitle\" colspan=2 valign=absmiddle>");
 	$Page->Print("<input type=checkbox name=SYSAD $sysad value=on>システム共通権限</td></tr>");
-	
+
 	$Page->HTMLInput('hidden', 'SELECT_CAP', $Form->Get('SELECT_CAP'));
-	
+
 	# submit設定
 	$common = "'" . $Form->Get('MODE_SUB') . "'";
 	$common = "onclick=\"DoSubmit('sys.cap','FUNC',$common)\"";
-	
+
 	$Page->Print("<tr><td colspan=2><hr></td></tr>\n");
 	$Page->Print("<tr><td colspan=2 align=center>");
 	$Page->Print("<input type=button value=\"　設定　\" $common></td></tr>\n");
@@ -322,37 +322,37 @@ sub PrintCapDelete
 {
 	my ($Page, $SYS, $Form) = @_;
 	my ($Cap, $Group, @userSet, $id, $name, $grop, $expl, $full);
-	
+
 	$SYS->Set('_TITLE', 'Cap Delete Confirm');
-	
+
 	require './module/ungoliants.pl';
 	$Cap = UNGOLIANT->new;
-	
+
 	# キャップ情報を取得
 	$Cap->Load($SYS);
 	@userSet = $Form->GetAtArray('CAPS');
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2 width=100%>");
 	$Page->Print("<tr><td colspan=3>以下のキャップを削除します。</td></tr>");
 	$Page->Print("<tr><td colspan=3><hr></td></tr>");
-	
+
 	$Page->Print("<tr bgcolor=silver>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">User Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">User Full Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:200\">Explanation</td></td>\n");
-	
+
 	# キャップリストを出力
 	foreach $id (@userSet) {
 		$name = $Cap->Get('NAME', $id);
 		$expl = $Cap->Get('EXPL', $id);
 		$full = $Cap->Get('FULL', $id);
-		
+
 		$Page->Print("<tr><td>$name</a></td>");
 		$Page->Print("<td>$full</td>");
 		$Page->Print("<td>$expl</td></tr>\n");
 		$Page->HTMLInput('hidden', 'CAPS', $id);
 	}
-	
+
 	$Page->Print("<tr><td colspan=3><hr></td></tr>");
 	$Page->Print("<tr><td bgcolor=yellow colspan=3><b><font color=red>");
 	$Page->Print("※注：削除したキャップを元に戻すことはできません。</td></tr>");
@@ -377,12 +377,12 @@ sub FuncCapSetting
 {
 	my ($Sys, $Form, $mode, $pLog) = @_;
 	my ($Cap, $name, $pass, $expl, $grop, $chg, $sysad, $full, $customid);
-	
+
 	# 権限チェック
 	{
 		my $SEC	= $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_SYSADMIN, '*')) == 0) {
 			return 1000;
 		}
@@ -399,9 +399,9 @@ sub FuncCapSetting
 	}
 	require './module/ungoliants.pl';
 	$Cap = UNGOLIANT->new;
-	
+
 	$Cap->Load($Sys);
-	
+
 	# 設定入力情報を取得
 	$name		= $Form->Get('NAME');
 	$pass		= $Form->Get('PASS');
@@ -410,7 +410,7 @@ sub FuncCapSetting
 	$customid	= $Form->Get('CUSTOMID');
 	$sysad		= $Form->Equal('SYSAD', 'on') ? 1 : 0;
 	$chg		= 0;
-	
+
 	if ($mode) {																	# 編集モード
 		# パスワードが変更されていたら再設定する
 		if ($pass ne $Cap->Get('PASS', $Form->Get('SELECT_CAP'))){
@@ -427,10 +427,10 @@ sub FuncCapSetting
 		$Cap->Add($name, $pass, $full, $expl, $sysad, $customid);
 		$chg = 1;
 	}
-	
+
 	# 設定情報を保存
 	$Cap->Save($Sys);
-	
+
 	# ログの設定
 	{
 		push @$pLog, "■ キャップ [ $name ] " . ($mode ? '設定' : '作成');
@@ -440,7 +440,7 @@ sub FuncCapSetting
 		push @$pLog, "　　　　専用ID：$customid";
 		push @$pLog, '　　　　システム管理：' . ($sysad ? '有り' : '無し');
 	}
-	
+
 	return 0;
 }
 
@@ -458,22 +458,22 @@ sub FuncCapDelete
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($Cap, @userSet);
-	
+
 	# 権限チェック
 	{
 		my $SEC = $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_SYSADMIN, '*')) == 0) {
 			return 1000;
 		}
 	}
 	require './module/ungoliants.pl';
 	$Cap = UNGOLIANT->new;
-	
+
 	$Cap->Load($Sys);
 	@userSet = $Form->GetAtArray('CAPS');
-	
+
 	# 選択キャップを全削除
 	foreach (@userSet) {
 		next if (! defined $Cap->Get('NAME', $_));
@@ -489,10 +489,10 @@ sub FuncCapDelete
 			$Cap->Delete($_);
 		}
 	}
-	
+
 	# 設定情報を保存
 	$Cap->Save($Sys);
-	
+
 	return 0;
 }
 

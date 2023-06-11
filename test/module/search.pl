@@ -36,7 +36,7 @@ sub new
 #
 #	検索設定
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$mode	0:全検索,1:BBS内検索,2:スレッド内検索
 #	@param	$type	0:全検索,1:名前検索,2:本文検索
 #					4:ID(日付)検索
@@ -60,8 +60,8 @@ sub Create
 	# 鯖内全検索
 	if ($mode == 0) {
 		require './module/baggins.pl';
-		require './module/nazguls.pl';
-		my $BBSs = NAZGUL->new;
+		require './module/bbs_manage.pl';
+		my $BBSs = BBS_MANAGE->new;
 
 		$BBSs->Load($Sys);
 		my @bbsSet = ();

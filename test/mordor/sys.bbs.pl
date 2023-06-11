@@ -36,7 +36,7 @@ sub new
 #
 #	表示メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -98,7 +98,7 @@ sub DoPrint
 #
 #	機能メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Form	SAMWISE
 #	@param	$pSys	管理システム
 #	@return	なし
@@ -191,8 +191,8 @@ sub PrintBBSList
 
 	$SYS->Set('_TITLE', 'BBS List');
 
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 	$Category = ANGMAR->new;
 	$BBS->Load($SYS);
 	$Category->Load($SYS);
@@ -285,8 +285,8 @@ sub PrintBBSCreate
 
 	$SYS->Set('_TITLE', 'BBS Create');
 
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 	$Category = ANGMAR->new;
 	$BBS->Load($SYS);
 	$Category->Load($SYS);
@@ -346,8 +346,8 @@ sub PrintBBSDelete
 
 	$SYS->Set('_TITLE', 'BBS Delete Confirm');
 
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 	$Category = ANGMAR->new;
 	$BBS->Load($SYS);
 	$Category->Load($SYS);
@@ -401,8 +401,8 @@ sub PrintBBScategoryChange
 
 	$SYS->Set('_TITLE', 'Category Change');
 
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 	$Category = ANGMAR->new;
 	$BBS->Load($SYS);
 	$Category->Load($SYS);
@@ -461,8 +461,8 @@ sub PrintCategoryList
 
 	$SYS->Set('_TITLE', 'Category List');
 
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 	$Category = ANGMAR->new;
 
 	$BBS->Load($SYS);
@@ -543,7 +543,7 @@ sub PrintCategoryDelete
 
 	$SYS->Set('_TITLE', 'Category Delete Confirm');
 
-	require './module/nazguls.pl';
+	require './module/bbs_manage.pl';
 	$Category = ANGMAR->new;
 	$Category->Load($SYS);
 
@@ -651,8 +651,8 @@ sub FunctionBBSCreate
 	# 設定継承情報のコピー
 	if ($bbsInherit ne '') {
 		my ($BBS, $inheritPath);
-		require './module/nazguls.pl';
-		$BBS = NAZGUL->new;
+		require './module/bbs_manage.pl';
+		$BBS = BBS_MANAGE->new;
 		$BBS->Load($Sys);
 
 		$inheritPath = $Sys->Get('BBSPATH') . '/' . $BBS->Get('DIR', $bbsInherit);
@@ -712,8 +712,8 @@ sub FunctionBBSCreate
 	push @$pLog, '■過去ログインデクス生成完了...';
 
 	# 掲示板情報に追加
-	require './module/nazguls.pl';
-	my $BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	my $BBS = BBS_MANAGE->new;
 	$BBS->Load($Sys);
 	$BBS->Add($bbsName, $bbsDir, $bbsExplanation, $bbsCategory);
 	$BBS->Save($Sys);
@@ -743,9 +743,9 @@ sub FunctionBBSUpdate
 	my ($Sys, $Form, $pLog) = @_;
 	my ($BBSAid, $BBS, @bbsSet, $id, $bbs, $name);
 
-	require './module/nazguls.pl';
+	require './module/bbs_manage.pl';
 	require './module/varda.pl';
-	$BBS = NAZGUL->new;
+	$BBS = BBS_MANAGE->new;
 	$BBSAid = VARDA->new;
 
 	$BBS->Load($Sys);
@@ -791,8 +791,8 @@ sub FunctionBBSInfoUpdate
 			return 1000;
 		}
 	}
-	require './module/nazguls.pl';
-	$BBS = NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS = BBS_MANAGE->new;
 
 	$BBS->Load($Sys);
 	$BBS->Update($Sys, '');
@@ -828,9 +828,9 @@ sub FunctionBBSDelete
 			return 1000;
 		}
 	}
-	require './module/nazguls.pl';
+	require './module/bbs_manage.pl';
 	require './module/file_utils.pl';
-	$BBS = NAZGUL->new;
+	$BBS = BBS_MANAGE->new;
 	$BBS->Load($Sys);
 
 	@bbsSet = $Form->GetAtArray('BBSS');
@@ -876,7 +876,7 @@ sub FunctionCategoryAdd
 			return 1000;
 		}
 	}
-	require './module/nazguls.pl';
+	require './module/bbs_manage.pl';
 	$Category = ANGMAR->new;
 
 	$Category->Load($Sys);
@@ -922,8 +922,8 @@ sub FunctionCategoryDelete
 			return 1000;
 		}
 	}
-	require './module/nazguls.pl';
-	$BBS		= NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS		= BBS_MANAGE->new;
 	$Category	= ANGMAR->new;
 
 	$BBS->Load($Sys);
@@ -973,8 +973,8 @@ sub FunctionCategoryChange
 			return 1000;
 		}
 	}
-	require './module/nazguls.pl';
-	$BBS		= NAZGUL->new;
+	require './module/bbs_manage.pl';
+	$BBS		= BBS_MANAGE->new;
 	$Category	= ANGMAR->new;
 
 	$BBS->Load($Sys);

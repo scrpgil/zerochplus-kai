@@ -83,12 +83,12 @@ sub Initialize
 	my ($oSYS, $oSET, $oCONV, $oDAT);
 
 	# 各使用モジュールの生成と初期化
-	require './module/melkor.pl';
+	require './module/sys_data.pl';
 	require './module/settings.pl';
 	require './module/gondor.pl';
 	require './module/data_utils.pl';
 
-	$oSYS	= new MELKOR;
+	$oSYS	= new SYS_DATA;
 	$oSET	= new SETTINGS;
 	$oCONV	= new DATA_UTILS;
 	$oDAT	= new DAT;

@@ -3,7 +3,7 @@
 #	システムデータ管理モジュール
 #
 #============================================================================================================
-package	MELKOR;
+package	SYS_DATA;
 
 use strict;
 #use warnings;
@@ -20,13 +20,13 @@ no warnings 'redefine';
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'SYS'	=> undef,
 		'KEY'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -41,7 +41,7 @@ sub new
 sub Init
 {
 	my $this = shift;
-	
+
 	# システム設定を読み込む
 	return $this->Load;
 }
@@ -57,27 +57,27 @@ sub Init
 sub Load
 {
 	my $this = shift;
-	
+
 	# システム情報ハッシュの初期化
 	my $pSys = $this->{'SYS'} = {};
 	$this->{'KEY'} = [];
 	InitSystemValue($this->{'SYS'}, $this->{'KEY'});
 	my $sysFile = $this->{'SYS'}->{'SYSFILE'};
-	
+
 	# 設定ファイルから読み込む
 	if (open(my $fh, '<', $sysFile)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			if ($_ =~ /^(.+?)<>(.*)$/) {
 				$pSys->{$1} = $2;
 			}
 		}
 	}
-	
+
 	# 時間制限のチェック
 	my @dlist = localtime time;
 	if (($dlist[2] >= $pSys->{'LINKST'} || $dlist[2] < $pSys->{'LINKED'}) &&
@@ -87,11 +87,11 @@ sub Load
 	else {
 		$pSys->{'LIMTIME'} = 0;
 	}
-	
+
 	if ($this->Get('CONFVER', '') ne $pSys->{'VERSION'}) {
 		$this->Save();
 	}
-	
+
 	return 0;
 }
 
@@ -106,22 +106,22 @@ sub Load
 sub Save
 {
 	my $this = shift;
-	
+
 	$this->NormalizeConf();
-	
+
 	my $path = $this->{'SYS'}->{'SYSFILE'};
-	
+
 	chmod($this->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach my $key (@{$this->{'KEY'}}) {
 			my $val = $this->{'SYS'}->{$key};
 			print $fh "$key<>$val\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -144,9 +144,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{'SYS'}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -163,7 +163,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	$this->{'SYS'}->{$key} = $data;
 }
 
@@ -180,7 +180,7 @@ sub Equal
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	return($this->{'SYS'}->{$key} eq $data);
 }
 
@@ -197,9 +197,9 @@ sub GetOption
 {
 	my $this = shift;
 	my ($flag) = @_;
-	
+
 	my @elem = split(/\,/, $this->{'SYS'}->{'OPTION'});
-	
+
 	return $elem[$flag - 1];
 }
 
@@ -219,7 +219,7 @@ sub SetOption
 {
 	my $this = shift;
 	my ($last, $start, $end, $one, $alone) = @_;
-	
+
 	$this->{'SYS'}->{'OPTION'} = "$last,$start,$end,$one,$alone";
 }
 
@@ -235,7 +235,7 @@ sub SetOption
 sub InitSystemValue
 {
 	my ($pSys, $pKey) = @_;
-	
+
 	my %sys = (
 		'SYSFILE'	=> './info/system.cgi',						# システム設定ファイル
 		'SERVER'	=> '',										# 設置サーバパス
@@ -267,7 +267,7 @@ sub InitSystemValue
 		'HEADTEXT'	=> '<small>■<b>掲示板一覧</b>■</small>',	# ヘッダ下部の表示文字列
 		'HEADURL'	=> '../',									# ヘッダ下部のURL
 		'FASTMODE'	=> 0,										# 高速モード
-		
+
 		# ここからぜろプラオリジナル
 		'SAMBATM'	=> 0,										# 短時間投稿規制秒数
 		'DEFSAMBA'	=> 10,										# Samba待機秒数デフォルト値
@@ -282,18 +282,18 @@ sub InitSystemValue
 		'BBSGET'	=> 0,										# bbs.cgiでGETメソッドを使用するかどうか
 		'CONFVER'	=> '',										# システム設定ファイルのバージョン
 		'UPCHECK'	=> 1,										# 更新チェック間隔(日)
-		
+
 		# DNSBL設定
 		'BBQ'		=> 1,										# BBQ(niku.2ch.net)
 		'BBX'		=> 0,										# BBX(bbx.2ch.net)
-		
+
 		'PERM_EXEC'		=> 0700,
 		'PERM_DATA'		=> 0600,
 		'PERM_CONTENT'	=> 0644,
 		'PERM_SYSDIR'	=> 0700,
 		'PERM_DIR'		=> 0711,
 	);
-	
+
 	if ('Permission') {
 		my $uid = (stat $ENV{'SCRIPT_FILENAME'})[4];
 		if ($uid == 0) { # root / not linux
@@ -310,14 +310,14 @@ sub InitSystemValue
 			$sys{'PM-KDIR'} = 0777;
 		}
 	}
-	
+
 	while (my ($key, $val) = each %sys) {
 		$pSys->{$key} = $val;
 	}
-	
+
 	# 情報保持キー
 	my @key = grep { 'VERSION' !~ /\b$_\b/ } sort keys %sys;
-	
+
 	splice @$pKey, 0, scalar(@$pKey);
 	push @$pKey, @key;
 }
@@ -334,14 +334,14 @@ sub NormalizeConf
 {
 	my $this = shift;
 	my ($path, $buf, $perm, $server, $cgipath);
-	
+
 	if ($this->Get('SERVER', '') eq '') {
 		my $path = $ENV{'SCRIPT_NAME'};
 		$path =~ s|/[^/]+\.cgi([\/\?].*)?$||;
 		$this->Set('SERVER', 'http://' . $ENV{'HTTP_HOST'});
 		$this->Set('CGIPATH', $path);
 	}
-	
+
 	if ('set CGI Path') {
 		my $server = $this->Get('SERVER', '');
 		my $cgipath = $this->Get('CGIPATH', '');
@@ -352,7 +352,7 @@ sub NormalizeConf
 		$this->Set('SERVER', $server);
 		$this->Set('CGIPATH', $cgipath);
 	}
-	
+
 	$this->Set('CONFVER', $this->Get('VERSION'));
 }
 

@@ -72,11 +72,11 @@ sub Initialize
 	my (@elem, @regs, $path);
 	my ($oSYS, $oCONV);
 
-	require './module/melkor.pl';
+	require './module/sys_data.pl';
 	require './module/data_utils.pl';
 	require './module/samwise.pl';
 
-	$oSYS	= new MELKOR;
+	$oSYS	= new SYS_DATA;
 	$oCONV	= new DATA_UTILS;
 
 	%$pSYS = (
@@ -178,8 +178,8 @@ sub PrintMadaCont
 	my ($Sys, $Page) = @_;
 	my ($BBS, $vUser, $HOST, $ADDR, $BBSpath, @BBSkey, %BBSs, $path, $check, $line, $color );
 
-	require './module/nazguls.pl';
-	$BBS	= new NAZGUL;
+	require './module/bbs_manage.pl';
+	$BBS	= new BBS_MANAGE;
 	$BBS->Load($Sys->{'SYS'});
 
 	require './module/access_user.pl';

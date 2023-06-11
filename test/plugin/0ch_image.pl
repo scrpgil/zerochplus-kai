@@ -70,7 +70,7 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
+#	@param	$sys	SYS_DATA
 #	@param	$form	SAMWISE
 #	@return	正常終了の場合は0
 #

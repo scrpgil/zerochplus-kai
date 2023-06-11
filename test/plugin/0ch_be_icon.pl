@@ -75,7 +75,7 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
+#	@param	$sys	SYS_DATA
 #	@param	$form	SAMWISE
 #	@return	正常終了の場合は0
 #
@@ -86,9 +86,9 @@ sub execute
 	use warnings;
 	my $this = shift;
 	my ($sys, $form) = @_;
-	
+
 	$sys->Get('_DAT_')->[3] =~ s|sssp://img.2ch.net/([^ <"]+)|<img src="http://img.2ch.net/$1" alt="beicon">|gi;
-	
+
 }
 
 #============================================================================================================

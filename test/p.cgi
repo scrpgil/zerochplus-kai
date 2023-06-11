@@ -35,14 +35,14 @@ sub PCGI
 	require './module/baggins.pl';
 	require './module/settings.pl';
 	require './module/data_utils.pl';
-	require './module/melkor.pl';
+	require './module/sys_data.pl';
 	require './module/samwise.pl';
 	require './module/thorin.pl';
 
 	$Threads	= new THREADS;
 	$Conv		= new DATA_UTILS;
 	$Set		= new SETTINGS;
-	$Sys		= new MELKOR;
+	$Sys		= new SYS_DATA;
 	$Form		= SAMWISE->new(0);
 	$Page		= new THORIN;
 
@@ -86,7 +86,7 @@ sub PCGI
 #	ヘッダ部分出力
 #	-------------------------------------------------------------------------------------
 #	@param	$Page	THORIN
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$num	表示数
 #	@param	$last	最終数
 #	@return	なし
@@ -127,7 +127,7 @@ sub PrintHead
 #	スレッドリストの表示
 #	-------------------------------------------------------------------------------------
 #	@param	$Page	THORIN
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$Conv	DATA_UTILS
 #	@param	$pList	リスト格納バッファ
 #	@param	$base	ベースパス
@@ -151,7 +151,7 @@ sub PrintThreadList
 #	フッタ部分出力 - PrintHead
 #	-------------------------------------------------------------------------------------
 #	@param	$Page	THORIN
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$num	表示数
 #	@param	$last	最終数
 #	@return	なし
