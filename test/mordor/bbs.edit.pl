@@ -218,8 +218,8 @@ sub PrintHeaderEdit
 	$SYS->Set('_TITLE', 'BBS Header Edit');
 
 	require './module/settings.pl';
-	require './module/legolas.pl';
-	$Head = LEGOLAS->new;
+	require './module/meta.pl';
+	$Head = META->new;
 	$Setting = SETTINGS->new;
 	$Head->Load($SYS, 'HEAD');
 	$Setting->Load($SYS);
@@ -288,8 +288,8 @@ sub PrintFooterEdit
 
 	$SYS->Set('_TITLE', 'BBS Footer Edit');
 
-	require './module/legolas.pl';
-	$Foot = LEGOLAS->new;
+	require './module/meta.pl';
+	$Foot = META->new;
 	$Foot->Load($SYS, 'FOOT');
 
 	# Œ ŒÀŽæ“¾
@@ -356,8 +356,8 @@ sub PrintMETAEdit
 
 	$SYS->Set('_TITLE', 'BBS META Edit');
 
-	require './module/legolas.pl';
-	$Meta = LEGOLAS->new;
+	require './module/meta.pl';
+	$Meta = META->new;
 	$Meta->Load($SYS, 'META');
 
 	$pMeta = $Meta->Get();
@@ -742,8 +742,8 @@ sub FunctionTextEdit
 		push @$pLog, 'meta.txt‚ðÝ’è‚µ‚Ü‚µ‚½B';
 	}
 
-	require './module/legolas.pl';
-	$Texts = LEGOLAS->new;
+	require './module/meta.pl';
+	$Texts = META->new;
 	$Texts->Load($Sys, $readKey);
 
 	$value = $Form->Get($formKey);

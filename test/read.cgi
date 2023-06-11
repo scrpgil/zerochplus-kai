@@ -172,9 +172,9 @@ sub PrintReadHead
 	my $Set = $CGI->{'SET'};
 	my $Dat = $CGI->{'DAT'};
 
-	require './module/legolas.pl';
+	require './module/meta.pl';
 	require './module/banner.pl';
-	my $Caption = LEGOLAS->new;
+	my $Caption = META->new;
 	my $Banner = BANNER->new;
 
 	$Caption->Load($Sys, 'META');

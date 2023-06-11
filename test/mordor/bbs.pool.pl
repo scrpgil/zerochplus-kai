@@ -694,8 +694,8 @@ sub CreateKAKOLog
 
 	$cgipath	= $Sys->Get('CGIPATH');
 
-	require './module/legolas.pl';
-	$Caption = LEGOLAS->new;
+	require './module/meta.pl';
+	$Caption = META->new;
 	$Caption->Load($Sys, 'META');
 
 	# ‰ß‹ƒƒO¶¬pooldatƒpƒX‚Ì¶¬

@@ -174,8 +174,8 @@ sub PrintReadHead
 	$Banner = new BANNER;
 	$Banner->Load($Sys->{'SYS'});
 
-	require './module/legolas.pl';
-	$Caption = new LEGOLAS;
+	require './module/meta.pl';
+	$Caption = new META;
 	$Caption->Load($Sys->{'SYS'}, 'META');
 
 	$code	= $Sys->{'CODE'};

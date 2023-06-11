@@ -244,8 +244,8 @@ sub PrintBBSThreadCreate
 	my $Cookie = $CGI->{'COOKIE'};
 	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
 
-	require './module/legolas.pl';
-	my $Caption = LEGOLAS->new;
+	require './module/meta.pl';
+	my $Caption = META->new;
 	$Caption->Load($Sys, 'META');
 
 	my $title = $Set->Get('BBS_TITLE');

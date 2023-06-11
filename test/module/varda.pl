@@ -93,9 +93,9 @@ sub CreateIndex
 		|| ($Threads->GetPosition($Sys->Get('KEY')) < $bbsSetting->Get('BBS_MAX_MENU_THREAD'))) {
 
 		require './module/thorin.pl';
-		require './module/legolas.pl';
+		require './module/meta.pl';
 		my $Index = THORIN->new;
-		my $Caption = LEGOLAS->new;
+		my $Caption = META->new;
 
 		PrintIndexHead($this, $Index, $Caption);
 		PrintIndexMenu($this, $Index);
@@ -196,8 +196,8 @@ sub CreateSubback
 	my $Set = $this->{'SET'};
 	my $Conv = $this->{'CONV'};
 
-	require './module/legolas.pl';
-	my $Caption = LEGOLAS->new;
+	require './module/meta.pl';
+	my $Caption = META->new;
 	$Caption->Load($Sys, 'META');
 
 	# HTMLƒwƒbƒ_‚Ìo—Í

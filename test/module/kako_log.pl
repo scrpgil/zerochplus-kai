@@ -420,8 +420,8 @@ sub OutputIndex
 
 	my $cgipath	= $Sys->Get('CGIPATH');
 
-	require './module/legolas.pl';
-	my $Caption = LEGOLAS->new;
+	require './module/meta.pl';
+	my $Caption = META->new;
 	$Caption->Load($Sys, 'META');
 
 	my $version = $Sys->Get('VERSION');
