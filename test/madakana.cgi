@@ -182,8 +182,8 @@ sub PrintMadaCont
 	$BBS	= new NAZGUL;
 	$BBS->Load($Sys->{'SYS'});
 
-	require './module/faramir.pl';
-	$vUser = FARAMIR->new;
+	require './module/access_user.pl';
+	$vUser = ACCESS_USER->new;
 
 	$HOST	= $Sys->{'FORM'}->Get('HOST');
 	$ADDR	= $ENV{'REMOTE_ADDR'};

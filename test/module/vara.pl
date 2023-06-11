@@ -308,8 +308,8 @@ sub ReadyBeforeWrite
 	{
 		# ‹K§ƒ†[ƒU
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_NGUSER, $bbs)) {
-			require './module/faramir.pl';
-			my $vUser = FARAMIR->new;
+			require './module/access_user.pl';
+			my $vUser = ACCESS_USER->new;
 			$vUser->Load($Sys);
 
 			my $koyuu2 = ($client & $ZP::C_MOBILE_IDGET & ~$ZP::C_P2 ? $koyuu : undef);
