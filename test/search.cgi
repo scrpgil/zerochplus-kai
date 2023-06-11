@@ -254,8 +254,8 @@ sub Search
 	my ($Search, $Mode, $Result, @elem, $n, $base, $word);
 	my (@types, $Type);
 
-	require './module/balrogs.pl';
-	$Search = new BALROGS;
+	require './module/search.pl';
+	$Search = new SEARCH;
 
 	$Mode = 0 if ($Form->Equal('MODE', 'ALL'));
 	$Mode = 1 if ($Form->Equal('MODE', 'BBS'));
