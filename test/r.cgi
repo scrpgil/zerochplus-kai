@@ -33,8 +33,8 @@ sub ReadCGI
 
 	require './module/constant.pl';
 
-	require './module/thorin.pl';
-	$Page = new THORIN;
+	require './module/io.pl';
+	$Page = new IO;
 
 	# 初期化・準備に成功したら内容表示
 	if (($err = Initialize(\%SYS, $Page)) == $ZP::E_SUCCESS) {
@@ -83,15 +83,15 @@ sub Initialize
 	my ($oSYS, $oSET, $oCONV, $oDAT);
 
 	# 各使用モジュールの生成と初期化
-	require './module/melkor.pl';
-	require './module/isildur.pl';
-	require './module/gondor.pl';
-	require './module/galadriel.pl';
+	require './module/sys_data.pl';
+	require './module/settings.pl';
+	require './module/dat.pl';
+	require './module/data_utils.pl';
 
-	$oSYS	= new MELKOR;
-	$oSET	= new ISILDUR;
-	$oCONV	= new GALADRIEL;
-	$oDAT	= new ARAGORN;
+	$oSYS	= new SYS_DATA;
+	$oSET	= new SETTINGS;
+	$oCONV	= new DATA_UTILS;
+	$oDAT	= new DAT;
 
 	%$pSYS = (
 		'SYS'	=> $oSYS,
@@ -170,12 +170,12 @@ sub PrintReadHead
 	my ($Sys, $Page) = @_;
 	my ($Caption, $Banner, $code, $title);
 
-	require './module/denethor.pl';
-	$Banner = new DENETHOR;
+	require './module/banner.pl';
+	$Banner = new BANNER;
 	$Banner->Load($Sys->{'SYS'});
 
-	require './module/legolas.pl';
-	$Caption = new LEGOLAS;
+	require './module/meta.pl';
+	$Caption = new META;
 	$Caption->Load($Sys->{'SYS'}, 'META');
 
 	$code	= $Sys->{'CODE'};

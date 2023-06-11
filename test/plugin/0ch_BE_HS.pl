@@ -78,8 +78,8 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
-#	@param	$Form	SAMWISE
+#	@param	$Sys	SYS_DATA
+#	@param	$Form	FORMS
 #	@return	正常終了の場合は0
 #
 #------------------------------------------------------------------------------------------------------------
@@ -89,29 +89,29 @@ sub execute
 	use warnings;
 	my $this = shift;
 	my ($Sys, $Form, $type) = @_;
-	
+
 	#--------------------------------------------------------------------------------------------------------
 	#	ユーザー設定項目
 	#	---------------------------------------------------------------------------------
 	#	詳しくはreadme.txtをご覧ください
 	#--------------------------------------------------------------------------------------------------------
-	
+
 	# sssp://(BEアイコン表示)を有効にする？(1:有効,0:無効)
 	my $be_icon = 0;
-	
-	
+
+
 	# 名前欄を取得
 	my $name = $Form->Get('FROM');
-	
+
 	# 悪さ対策でとりあえず空にする
 	$Form->Set('BEID', '');
 	$Form->Set('BEBASE', '0');
 	$Form->Set('BERANK', '0');
-	
+
 	if ( $name =~ /!BE.+!HS/ ) {
-		
+
 		my ( $beid, $key );
-		
+
 		if ( $name =~ /!BE(\d+)!HS.*?#(.+)$/ ) {
 			$beid = $1;
 			$key = $2;
@@ -120,7 +120,7 @@ sub execute
 			$beid = $1;
 			$key = $2;
 		}
-		
+
 		my ($Conv, $Set, $trip, $key2, $column, @ct_arg, $CGI);
 		$CGI = $Sys->Get('MainCGI');
 		if (defined $CGI) {
@@ -130,10 +130,10 @@ sub execute
 			$trip = $Conv->ConvertTrip(\$key, $column, $Sys->Get('TRIP12'));
 		}
 		else {
-			require './module/galadriel.pl';
-			$Conv = GALADRIEL->new;
-			require './module/isildur.pl';
-			$Set = ISILDUR->new;
+			require './module/data_utils.pl';
+			$Conv = DATA_UTILS->new;
+			require './module/settings.pl';
+			$Set = SETTINGS->new;
 			$Set->Load($Sys);
 			$column = $Set->Get('BBS_TRIPCOLUMN');
 			$key = "#$key";
@@ -141,7 +141,7 @@ sub execute
 			$key =~ m|◆([A-Za-z0-9\.]+)|;
 			$trip = $1;
 		}
-		
+
 		# とりあえず消す
 		$name =~ s/!BE.+!HS//;
 		if ($Form->IsExist('TRIPKEY') && $name =~ /#(.+)$/) {
@@ -150,15 +150,15 @@ sub execute
 			$key2 = $Conv->ConvertTrip(\$key2, $column, $Sys->Get('TRIP12'));
 			$Form->Set('TRIPKEY', $key2);
 		}
-		
+
 		$Form->Set('FROM', $name);
-		
+
 		# BEプロフのURLですね！
 		my $beprof = "http://be.2ch.net/test/p.php?i=$beid";
-		
+
 		# LWPの設定
 		my ( $code, $content ) = BeGet($beprof);
-		
+
 		# HTML解析
 		if ( $code ne 200 ) {
 			#$Form->Set('BEID', "BE:取得エラー($code)");
@@ -166,21 +166,21 @@ sub execute
 			PrintBBSError( $Sys, $Form, 891 );
 			return 0;
 		}
-		
+
 		# Shift_JISｪ…
 		require Encode;
 		Encode::from_to( $content, 'EUC-JP', 'Shift_JIS' );
-		
+
 		if ( $content =~ /<div id="sitename">\n<h1>(.+)<\/h1>/ ) {
-			
+
 			my $name = $1;
 			$name =~ s|^.*◆([A-Za-z0-9\./]{10,12}).*$|$1|;
-			
+
 			# 入力トリップとプロフのトリップの一致を調べる
 			if ( $trip eq $name ) {
-				
+
 				my $point = 0;
-				
+
 				# ポイント取得
 				if ( $content =~ m/<p><b>be.{8}<\/b>:([0-9]+)<\/p>/ ) {
 					$point = BeRank($Form, $1);
@@ -189,22 +189,22 @@ sub execute
 					# おかしかったらみんな０ポイント
 					$point = '2BP(0)';
 				}
-				
+
 				# 基礎BE番号取得+セット
 				$Form->Set('BEBASE', ID2BASE($beid) );
-				
+
 				# BEポイントセット
 				$Form->Set('BEID', "BE:$beid-$point");
-				
+
 				# アイコンとってくるよ！
 				if ( $be_icon && $Form->Get('MESSAGE') ne "" ) {
-					
+
 					if ( $content =~ m|<img .+ alt="icon:([^\"]+)" />\n\n|i ) {
 						$Form->Set('MESSAGE', "sssp://img.2ch.net/ico/$1<br>".$Form->Get('MESSAGE'));
 					}
-					
+
 				}
-				
+
 			}
 			else {
 				#$Form->Set('BEID', "BE:認証エラー($trip:$name)");
@@ -212,16 +212,16 @@ sub execute
 				PrintBBSError( $Sys, $Form, 892 );
 				return 0;
 			}
-			
+
 		}
 		else {
 			#$Form->Set('BEID', '取得エラー(-1)');
 			PrintBBSError( $Sys, $Form, 890 );
 			return 0;
 		}
-		
+
 	}
-	
+
 	return 0;
 }
 
@@ -236,24 +236,24 @@ sub execute
 #------------------------------------------------------------------------------------------------------------
 sub BeGet
 {
-	
+
 	my ( $url ) = @_;
-	
+
 	require('./module/httpservice.pl');
-	
+
 	my $proxy = HTTPSERVICE->new;
 	$proxy->setURI($url);
 	$proxy->setAgent('Mozilla/5.0 Plugin for 0ch+; 0ch_BE_HS.pl http://zerochplus.sourceforge.jp/');
 	$proxy->setTimeout(3);
-	
+
 	# とってくるよ
 	$proxy->request();
-	
+
 	my $cont = $proxy->getContent();
 	my $code = $proxy->getStatus();
-	
+
 	return ( $code, $cont );
-	
+
 
 }
 #------------------------------------------------------------------------------------------------------------
@@ -267,9 +267,9 @@ sub BeGet
 #------------------------------------------------------------------------------------------------------------
 sub BeRank
 {
-	
+
 	my ( $Form, $point ) = @_;
-	
+
 	if ( $point < 10000 ) {
 		$point = "2BP($point)";
 		$Form->Set('BERANK', 1);
@@ -294,9 +294,9 @@ sub BeRank
 		$point = "2BP(0)";
 		$Form->Set('BERANK', 1);
 	}
-	
+
 	return $point;
-	
+
 }
 
 #------------------------------------------------------------------------------------------------------------
@@ -309,19 +309,19 @@ sub BeRank
 #------------------------------------------------------------------------------------------------------------
 sub ID2BASE
 {
-	
+
 	my ($id) = @_;
 	my ($base, $a, $b, $c, $d);
-	
+
 	$base = 0;
-	
+
 	if (($b = $id % 10) && ($a = ($id % 100 - $b) / 10) &&
 		! (($c = ($id - $id % 100) / 100 + $a - $b - 5) % ($d = $a * $b * 3))) {
 		$base = $c / $d;
 	}
-	
+
 	return $base;
-	
+
 }
 
 #------------------------------------------------------------------------------------------------------------
@@ -334,26 +334,26 @@ sub ID2BASE
 #------------------------------------------------------------------------------------------------------------
 sub BASE2ID
 {
-	
+
 	my ($base) = @_;
 	my @id = ();
-	
+
 	for my $a (1 .. 9) {
 		for my $b (1 .. 9) {
 			push @id, ($base * $a * $b * 3 - $a + $b + 5) * 100 + $a * 10 + $b;
 		}
 	}
-	
+
 	return sort { $a <=> $b } @id;
-	
+
 }
 
 #------------------------------------------------------------------------------------------------------------
 #
 #	なんちゃってbbs.cgiエラーページ表示
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
-#	@param	$Form	SAMWISE
+#	@param	$Sys	SYS_DATA
+#	@param	$Form	FORMS
 #	@param	$err	エラー番号
 #	@return	なし
 #	exit	エラー番号
@@ -363,27 +363,27 @@ sub PrintBBSError
 {
 	my ($Sys,$Form,$err) = @_;
 	my $CGI;
-	
-	require('./module/radagast.pl');
-	require('./module/isildur.pl');
-	require('./module/thorin.pl');
-	
+
+	require('./module/cookie.pl');
+	require('./module/settings.pl');
+	require('./module/io.pl');
+
 	$CGI->{'SYS'}		= $Sys;
 	$CGI->{'FORM'}		= $Form;
-	$CGI->{'COOKIE'}	= RADAGAST->new;
+	$CGI->{'COOKIE'}	= COOKIE->new;
 	$CGI->{'COOKIE'}->Init();
-	$CGI->{'SET'}		= ISILDUR->new;
+	$CGI->{'SET'}		= SETTINGS->new;
 	$CGI->{'SET'}->Load($Sys);
-	my $Page = THORIN->new;
-	
-	require('./module/orald.pl');
-	$ERROR = ORALD->new;
+	my $Page = IO->new;
+
+	require('./module/error.pl');
+	$ERROR = ERROR->new;
 	$ERROR->Load($Sys);
-	
+
 	$ERROR->Print($CGI,$Page,$err,$Sys->Get('AGENT'));
-	
+
 	$Page->Flush('',0,0);
-	
+
 	exit($err);
 }
 

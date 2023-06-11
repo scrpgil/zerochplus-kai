@@ -1,9 +1,9 @@
 #============================================================================================================
 #
-#	検索モジュール(BALROGS)
+#	検索モジュール(SEARCH)
 #
 #============================================================================================================
-package	BALROGS;
+package	SEARCH;
 
 use strict;
 #use warnings;
@@ -20,7 +20,7 @@ use Encode qw(encode decode);
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'SYS'		=> undef,
 		'TYPE'		=> undef,
@@ -28,7 +28,7 @@ sub new
 		'RESULTSET'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -36,7 +36,7 @@ sub new
 #
 #	検索設定
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$mode	0:全検索,1:BBS内検索,2:スレッド内検索
 #	@param	$type	0:全検索,1:名前検索,2:本文検索
 #					4:ID(日付)検索
@@ -49,38 +49,38 @@ sub Create
 {
 	my $this = shift;
 	my ($Sys, $mode, $type, $bbs, $thread) = @_;
-	
+
 	$this->{'SYS'} = $Sys;
 	$this->{'TYPE'} = $type;
-	
+
 	$this->{'SEARCHSET'} = [];
 	$this->{'RESULTSET'} = [];
 	my $pSearchSet = $this->{'SEARCHSET'};
-	
+
 	# 鯖内全検索
 	if ($mode == 0) {
-		require './module/baggins.pl';
-		require './module/nazguls.pl';
-		my $BBSs = NAZGUL->new;
-		
+		require './module/threads.pl';
+		require './module/bbs_manage.pl';
+		my $BBSs = BBS_MANAGE->new;
+
 		$BBSs->Load($Sys);
 		my @bbsSet = ();
 		$BBSs->GetKeySet('ALL', '', \@bbsSet);
-		
+
 		my $BBSpath = $Sys->Get('BBSPATH');
-		
+
 		foreach my $bbsID (@bbsSet) {
 			my $dir = $BBSs->Get('DIR', $bbsID);
-			
+
 			# 板ディレクトリに.0ch_hiddenというファイルがあれば読み飛ばす
 			next if (-e "$BBSpath/$dir/.0ch_hidden");
-			
+
 			$Sys->Set('BBS', $dir);
-			my $Threads = BILBO->new;
+			my $Threads = THREADS->new;
 			$Threads->Load($Sys);
 			my @threadSet = ();
 			$Threads->GetKeySet('ALL', '', \@threadSet);
-			
+
 			foreach my $threadID (@threadSet) {
 				my $set = "$dir<>$threadID";
 				push @$pSearchSet, $set;
@@ -89,14 +89,14 @@ sub Create
 	}
 	# 掲示板内全検索
 	elsif ($mode == 1) {
-		require './module/baggins.pl';
-		my $Threads = BILBO->new;
-		
+		require './module/threads.pl';
+		my $Threads = THREADS->new;
+
 		$Sys->Set('BBS', $bbs);
 		$Threads->Load($Sys);
 		my @threadSet = ();
 		$Threads->GetKeySet('ALL', '', \@threadSet);
-		
+
 		foreach my $threadID (@threadSet) {
 			my $set = "$bbs<>$threadID";
 			push @$pSearchSet, $set;
@@ -111,11 +111,11 @@ sub Create
 	else {
 		return;
 	}
-	
+
 	# datモジュール読み込み
-	if (! defined $this->{'ARAGORN'}) {
-		require './module/gondor.pl';
-		$this->{'ARAGORN'} = ARAGORN->new;
+	if (! defined $this->{'DAT'}) {
+		require './module/dat.pl';
+		$this->{'DAT'} = DAT->new;
 	}
 }
 
@@ -132,10 +132,10 @@ sub Run
 {
 	my $this = shift;
 	my ($word, $f) = @_;
-	
+
 	my $pSearchSet = $this->{'SEARCHSET'};
 	$this->{'RESULTSET'} = [] if ($f);
-	
+
 	foreach (@$pSearchSet) {
 		my ($bbs, $key) = split(/<>/, $_);
 		$this->{'SYS'}->Set('BBS', $bbs);
@@ -156,7 +156,7 @@ sub Run
 sub GetResultSet
 {
 	my $this = shift;
-	
+
 	return $this->{'RESULTSET'};
 }
 
@@ -172,25 +172,25 @@ sub Search
 {
 	my $this = shift;
 	my ($word) = @_;
-	
+
 	my $bbs = $this->{'SYS'}->Get('BBS');
 	my $key = $this->{'SYS'}->Get('KEY');
 	my $Path = $this->{'SYS'}->Get('BBSPATH') . "/$bbs/dat/$key.dat";
-	my $ARAGORN = $this->{'ARAGORN'};
-	
+	my $DAT = $this->{'DAT'};
+
 	my $word = decode('cp932', $word);
-	
-	if ($ARAGORN->Load($this->{'SYS'}, $Path, 1)) {
+
+	if ($DAT->Load($this->{'SYS'}, $Path, 1)) {
 		my $pResultSet = $this->{'RESULTSET'};
 		my $type = $this->{'TYPE'} || 0x7;
-		
+
 		# すべてのレス数でループ
-		for (my $i = 0 ; $i < $ARAGORN->Size() ; $i++) {
+		for (my $i = 0 ; $i < $DAT->Size() ; $i++) {
 			my $bFind = 0;
-			my $pDat = $ARAGORN->Get($i);
+			my $pDat = $DAT->Get($i);
 			my $data = decode('cp932', $$pDat);
 			my @elem = split(/<>/, $data, -1);
-			
+
 			# 名前検索
 			if ($type & 0x1) {
 				if ($elem[0] =~ s/(\Q$word\E)(?![^<>]*>)/<span class="res">$1<\/span>/g) {
@@ -217,7 +217,7 @@ sub Search
 			}
 		}
 	}
-	$ARAGORN->Close();
+	$DAT->Close();
 }
 
 #============================================================================================================

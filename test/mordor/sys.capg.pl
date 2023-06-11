@@ -23,12 +23,12 @@ sub new
 {
 	my $this = shift;
 	my ($obj, @LOG);
-	
+
 	$obj = {
 		'LOG' => \@LOG
 	};
 	bless $obj, $this;
-	
+
 	return $obj;
 }
 
@@ -36,8 +36,8 @@ sub new
 #
 #	表示メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
-#	@param	$Form	SAMWISE
+#	@param	$Sys	SYS_DATA
+#	@param	$Form	FORMS
 #	@param	$pSys	管理システム
 #	@return	なし
 #
@@ -47,17 +47,17 @@ sub DoPrint
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
-	
+
 	require './mordor/sauron.pl';
 	$BASE = SAURON->new;
-	
+
 	# 管理マスタオブジェクトの生成
 	$Page		= $BASE->Create($Sys, $Form);
 	$subMode	= $Form->Get('MODE_SUB');
-	
+
 	# メニューの設定
 	SetMenuList($BASE, $pSys);
-	
+
 	if ($subMode eq 'LIST') {													# グループ一覧画面
 		PrintGroupList($Page, $Sys, $Form);
 	}
@@ -78,7 +78,7 @@ sub DoPrint
 		$Sys->Set('_TITLE', 'Process Failed');
 		$BASE->PrintError($this->{'LOG'});
 	}
-	
+
 	$BASE->Print($Sys->Get('_TITLE'), 1);
 }
 
@@ -86,8 +86,8 @@ sub DoPrint
 #
 #	機能メソッド
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
-#	@param	$Form	SAMWISE
+#	@param	$Sys	SYS_DATA
+#	@param	$Form	FORMS
 #	@param	$pSys	管理システム
 #	@return	なし
 #
@@ -97,10 +97,10 @@ sub DoFunction
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $err);
-	
+
 	$subMode	= $Form->Get('MODE_SUB');
 	$err		= 0;
-	
+
 	if ($subMode eq 'CREATE') {														# グループ作成
 		$err = FunctionGroupSetting($Sys, $Form, 0, $this->{'LOG'});
 	}
@@ -110,7 +110,7 @@ sub DoFunction
 	elsif ($subMode eq 'DELETE') {													# グループ削除
 		$err = FunctionGroupDelete($Sys, $Form, $this->{'LOG'});
 	}
-	
+
 	# 処理結果表示
 	if ($err) {
 		$pSys->{'LOGGER'}->Put($Form->Get('UserName'), "SYSCAP_GROUP($subMode)", "ERROR:$err");
@@ -135,9 +135,9 @@ sub DoFunction
 sub SetMenuList
 {
 	my ($Base, $pSys) = @_;
-	
+
 	$Base->SetMenu('グループ一覧', "'sys.capg','DISP','LIST'");
-	
+
 	# 管理グループ設定権限のみ
 	if ($pSys->{'SECINFO'}->IsAuthority($pSys->{'USER'}, $ZP::AUTH_SYSADMIN, '*')) {
 		$Base->SetMenu('グループ登録', "'sys.capg','DISP','CREATE'");
@@ -158,16 +158,16 @@ sub PrintGroupList
 {
 	my ($Page, $Sys, $Form) = @_;
 	my ($Group, @groupSet, @user, $name, $expl, $color, $id, $common, $isAuth, $n);
-	
+
 	$Sys->Set('_TITLE', 'Common CAP Group List');
-	
-	require './module/ungoliants.pl';
+
+	require './module/caption.pl';
 	$Group = SHELOB->new;
-	
+
 	# グループ情報の読み込み
 	$Group->Load($Sys, 1);
 	$Group->GetKeySet(\@groupSet, 1);
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2 width=100%>");
 	$Page->Print("<tr><td colspan=5><hr></td></tr>\n");
 	$Page->Print("<tr><td style=\"width:30\">　</td>");
@@ -175,10 +175,10 @@ sub PrintGroupList
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:200\">Subscription</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:30\">Cap Color</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:30\">Caps</td></tr>\n");
-	
+
 	# 権限取得
 	$isAuth = $Sys->Get('ADMIN')->{'SECINFO'}->IsAuthority($Sys->Get('ADMIN')->{'USER'}, $ZP::AUTH_CAPGROUP, $Sys->Get('BBS'));
-	
+
 	# グループ一覧を出力
 	foreach $id (@groupSet) {
 		$name = $Group->Get('NAME', $id);
@@ -186,10 +186,10 @@ sub PrintGroupList
 		$color = $Group->Get('COLOR', $id);
 		@user = split(/\,/, (defined ($_ = $Group->Get('CAPS', $id)) ? $_ : ''));
 		$n = @user;
-		
+
 		$common = "\"javascript:SetOption('SELECT_CAPGROUP', '$id');";
 		$common .= "DoSubmit('sys.capg', 'DISP', 'EDIT')\"";
-		
+
 		# 権限によって表示を抑制
 		$Page->Print("<tr><td><input type=checkbox name=CAP_GROUPS value=$id></td>");
 		if ($isAuth) {
@@ -200,10 +200,10 @@ sub PrintGroupList
 		}
 	}
 	$common = "onclick=\"DoSubmit('sys.capg', 'DISP'";
-	
+
 	$Page->HTMLInput('hidden', 'SELECT_CAPGROUP', '');
 	$Page->Print("<tr><td colspan=5><hr></td></tr>\n");
-	
+
 	# 権限によって表示を抑制
 	if ($isAuth) {
 		$Page->Print("<tr><td colspan=5 align=left>");
@@ -229,19 +229,19 @@ sub PrintGroupSetting
 	my ($Page, $Sys, $Form, $mode) = @_;
 	my ($Group, $User, @userSet, @authNum, $i, $num, $id);
 	my ($name, $expl, $color, @auth, @user, $common);
-	
+
 	$Sys->Set('_TITLE', 'Common CAP Group Edit')	if ($mode == 1);
 	$Sys->Set('_TITLE', 'Common CAP Group Create')	if ($mode == 0);
-	
-	require './module/ungoliants.pl';
-	$User = UNGOLIANT->new;
+
+	require './module/caption.pl';
+	$User = CAPTION->new;
 	$Group = SHELOB->new;
-	
+
 	# ユーザ情報の読み込み
 	$User->Load($Sys);
 	$Group->Load($Sys, 1);
 	$User->GetKeySet('ALL', '', \@userSet);
-	
+
 	# 編集モードならユーザ情報を取得する
 	if ($mode) {
 		$name = $Group->Get('NAME', $Form->Get('SELECT_CAPGROUP'));
@@ -249,7 +249,7 @@ sub PrintGroupSetting
 		$color = $Group->Get('COLOR', $Form->Get('SELECT_CAPGROUP'));
 		@auth = split(/\,/, (defined ($_ = $Group->Get('AUTH', $Form->Get('SELECT_CAPGROUP'))) ? $_ : ''));
 		@user = split(/\,/, (defined ($_ = $Group->Get('CAPS', $Form->Get('SELECT_CAPGROUP'))) ? $_ : ''));
-		
+
 		# 権限番号マッピング配列を作成
 		for ($i = 0 ; $i < $ZP::CAP_MAXNUM ; $i++) {
 			$authNum[$i] = '';
@@ -267,7 +267,7 @@ sub PrintGroupSetting
 			$authNum[$i] = '';
 		}
 	}
-	
+
 	$Page->Print("<center><br><table border=0 cellspacing=2 width=90%>");
 	$Page->Print("<tr><td colspan=2>各情報を入力して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>");
@@ -282,7 +282,7 @@ sub PrintGroupSetting
 	$Page->Print("</table><br></td></tr>\n");
 	$Page->Print("<tr><td class=\"DetailTitle\" width=40%>権限情報</td>");
 	$Page->Print("<td class=\"DetailTitle\">所属キャップ</td></tr><tr><td valign=top>");
-	
+
 	# 権限一覧表示
 	$Page->Print("<input type=checkbox name=C_SUBJECT $authNum[0] value=on>タイトル文字数規制解除<br>");
 	$Page->Print("<input type=checkbox name=C_NAME $authNum[1] value=on>名前文字数規制解除<br>");
@@ -309,7 +309,7 @@ sub PrintGroupSetting
 	$Page->Print("<input type=checkbox name=C_NGUSER $authNum[20] value=on>ユーザー規制解除<br>");
 	$Page->Print("<input type=checkbox name=C_NGWORD $authNum[21] value=on>NGワード規制解除<br>");
 	$Page->Print("</td>\n<td valign=top>");
-	
+
 	# 所属ユーザ一覧表示
 	foreach $id (@userSet) {
 		my $groupid = $Group->GetBelong($id);
@@ -327,11 +327,11 @@ sub PrintGroupSetting
 			$Page->Print("<input type=checkbox name=BELONGUSER_CAP value=$id $check>$userName($fullName)<br>");
 		}
 	}
-	
+
 	# submit設定
 	$common = "'" . $Form->Get('MODE_SUB') . "'";
 	$common = "onclick=\"DoSubmit('sys.capg', 'FUNC', $common)\"";
-	
+
 	$Page->HTMLInput('hidden', 'SELECT_CAPGROUP', $Form->Get('SELECT_CAPGROUP'));
 	$Page->Print("</td></tr>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>");
@@ -354,33 +354,33 @@ sub PrintGroupDelete
 {
 	my ($Page, $SYS, $Form) = @_;
 	my ($Group, $BBS, @groupSet, $name, $expl, $rang, $id, $common);
-	
+
 	$SYS->Set('_TITLE', 'Common CAP Group Delete Confirm');
-	
-	require './module/ungoliants.pl';
+
+	require './module/caption.pl';
 	$Group = SHELOB->new;
 	$Group->Load($SYS, 1);
-	
+
 	# ユーザ情報を取得
 	@groupSet = $Form->GetAtArray('CAP_GROUPS');
-	
+
 	$Page->Print("<br><center><table border=0 cellspacing=2 width=100%>");
 	$Page->Print("<tr><td colspan=2>以下のキャップグループを削除します。</td></tr>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>");
-	
+
 	$Page->Print("<tr>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">Group Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:200\">Subscription</td>");
-	
+
 	# ユーザリストを出力
 	foreach $id (@groupSet) {
 		$name = $Group->Get('NAME', $id);
 		$expl = $Group->Get('EXPL', $id);
-		
+
 		$Page->Print("<tr><td>$name</td><td>$expl</td></tr>\n");
 		$Page->HTMLInput('hidden', 'CAP_GROUPS', $id);
 	}
-	
+
 	$Page->Print("<tr><td colspan=2><hr></td></tr>");
 	$Page->Print("<tr><td bgcolor=yellow colspan=3><b><font color=red>");
 	$Page->Print("※注：削除したグループを元に戻すことはできません。</b><br>");
@@ -410,12 +410,12 @@ sub FunctionGroupSetting
 	my ($Sys, $Form, $mode, $pLog) = @_;
 	my ($Group, $User, @userSet, @authNum, @belongUser);
 	my ($name, $expl, $color, $auth, $user, $i);
-	
+
 	# 権限チェック
 	{
 		my $SEC = $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_CAPGROUP, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
@@ -427,20 +427,20 @@ sub FunctionGroupSetting
 			return 1001;
 		}
 	}
-	require './module/ungoliants.pl';
-	$User = UNGOLIANT->new;
+	require './module/caption.pl';
+	$User = CAPTION->new;
 	$Group = SHELOB->new;
-	
+
 	# ユーザ情報の読み込み
 	$User->Load($Sys);
 	$Group->Load($Sys, 1);
-	
+
 	# 基本情報の設定
 	$name = $Form->Get('GROUPNAME_CAP');
 	$expl = $Form->Get('GROUPSUBS_CAP');
 	$color = $Form->Get('GROUPCOLOR_CAP');
 	$color =~ s/[^\w\d\#]//ig;
-	
+
 	# 権限情報の生成
 	my %field2auth = (
 		'C_SUBJECT'			=> $ZP::CAP_FORM_LONGSUBJECT,
@@ -475,11 +475,11 @@ sub FunctionGroupSetting
 		}
 	}
 	$auth = join(',', @auths);
-	
+
 	# 所属ユーザ情報の生成
 	@belongUser = $Form->GetAtArray('BELONGUSER_CAP');
 	$user = join(',', @belongUser);
-	
+
 	# 設定情報の登録
 	if ($mode){
 		my $groupID = $Form->Get('SELECT_CAPGROUP');
@@ -493,10 +493,10 @@ sub FunctionGroupSetting
 	else {
 		$Group->Add($name, $expl, $color, $auth, $user, 1);
 	}
-	
+
 	# 設定を保存
 	$Group->Save($Sys, 1);
-	
+
 	# 処理ログ
 	{
 		my $id;
@@ -510,7 +510,7 @@ sub FunctionGroupSetting
 			push @$pLog, '　　> ' . $User->Get('NAME', $id);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -528,34 +528,34 @@ sub FunctionGroupDelete
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($Group, @groupSet, $id);
-	
+
 	# 権限チェック
 	{
 		my $SEC = $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_CAPGROUP, $Sys->Get('BBS'))) == 0) {
 			return 1000;
 		}
 	}
-	require './module/ungoliants.pl';
+	require './module/caption.pl';
 	$Group = SHELOB->new;
-	
+
 	# ユーザ情報の読み込み
 	$Group->Load($Sys, 1);
-	
+
 	push @$pLog, '■以下のグループを削除しました。';
 	@groupSet = $Form->GetAtArray('CAP_GROUPS');
-	
+
 	foreach $id (@groupSet) {
 		next if (! defined $Group->Get('NAME', $id));
 		push @$pLog, $Group->Get('NAME', $id, '') . '(' . $Group->Get('EXPL', $id, '') . ')';
 		$Group->Delete($id);
 	}
-	
+
 	# 設定の保存
 	$Group->Save($Sys, 1);
-	
+
 	return 0;
 }
 

@@ -3,7 +3,7 @@
 #	ユーザ通知管理モジュール
 #
 #============================================================================================================
-package	GANDALF;
+package	USER_NOTIFY;
 
 use strict;
 #use warnings;
@@ -19,7 +19,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'TO'		=> undef,
 		'FROM'		=> undef,
@@ -29,7 +29,7 @@ sub new
 		'LIMIT'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -37,7 +37,7 @@ sub new
 #
 #	通知情報読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ハッシュ初期化
 	$this->{'TO'} = {};
 	$this->{'FROM'} = {};
@@ -53,24 +53,24 @@ sub Load
 	$this->{'TEXT'} = {};
 	$this->{'DATE'} = {};
 	$this->{'LIMIT'} = {};
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/notice.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 7) {
 				warn "invalid line in $path";
 				#next;
 			}
-			
+
 			my $id = $elem[0];
 			$this->{'TO'}->{$id} = $elem[1];
 			$this->{'FROM'}->{$id} = $elem[2];
@@ -86,7 +86,7 @@ sub Load
 #
 #	通知情報保存
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -94,21 +94,21 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	foreach my $id (keys %{$this->{'TO'}}) {
 		if ($this->IsLimitOut($id)) {
 			$this->Delete($id);
 		}
 	}
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/notice.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'TO'}}) {
 			my $data = join('<>',
 				$_,
@@ -119,10 +119,10 @@ sub Save
 				$this->{'DATE'}->{$_},
 				$this->{'LIMIT'}->{$_}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -143,9 +143,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, keys(%{$this->{'TO'}});
 	}
@@ -156,7 +156,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -174,9 +174,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -196,17 +196,17 @@ sub Add
 {
 	my $this = shift;
 	my ($to, $from, $subj, $text, $limit) = @_;
-	
+
 	my $id = time;
 	$id++ while (exists $this->{'TO'}->{$id});
-	
+
 	$this->{'TO'}->{$id}		= $to;
 	$this->{'FROM'}->{$id}		= $from;
 	$this->{'SUBJECT'}->{$id}	= $subj;
 	$this->{'TEXT'}->{$id}		= $text;
 	$this->{'DATE'}->{$id}		= time;
 	$this->{'LIMIT'}->{$id}		= $limit;
-	
+
 	return $id;
 }
 
@@ -224,7 +224,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -242,7 +242,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'TO'}->{$id};
 	delete $this->{'FROM'}->{$id};
 	delete $this->{'SUBJECT'}->{$id};
@@ -264,12 +264,12 @@ sub IsInclude
 {
 	my $this = shift;
 	my ($id, $user) = @_;
-	
+
 	# 全体通知
 	if ($this->{'TO'}->{$id} eq '*') {
 		return 1;
 	}
-	
+
 	my @users = split(/\, ?/, $this->{'TO'}->{$id});
 	foreach (@users) {
 		if ($_ eq $user) {
@@ -291,7 +291,7 @@ sub IsLimitOut
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	# 全体通知の場合のみ
 	if ($this->{'TO'}->{$id} eq '*') {
 		my $now = time;
@@ -315,12 +315,12 @@ sub RemoveToUser
 {
 	my $this = shift;
 	my ($id, $user) = @_;
-	
+
 	# 全体通知は個別削除不可
 	if ($this->{'TO'}->{$id} eq '*') {
 		return;
 	}
-	
+
 	my @users = split(/\, ?/, $this->{'TO'}->{$id});
 	my @news = ();
 	foreach (@users) {
@@ -328,7 +328,7 @@ sub RemoveToUser
 			push(@news, $_);
 		}
 	}
-	
+
 	# すべての通知先ユーザが削除されたら、その通知は破棄する
 	if (scalar(@news) == 0) {
 		$this->Delete($id);

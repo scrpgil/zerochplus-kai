@@ -7,7 +7,7 @@
 #	ライセンスについて
 #	ライセンスは、ぜろちゃんねる(test070124)と同じです。
 #	以下は、ぜろちゃんねる(test070124)配布アーカイブ/readme/readme.txtからの引用です。
-#	
+#
 #	　本スクリプトは自由に改造・再配布してもらってかまいません。また、本スクリ
 #	プトによって出力されるクレジット表示(バージョン表示)などの表示も消して使用
 #	してもらっても構いません。
@@ -89,8 +89,8 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
-#	@param	$form	SAMWISE
+#	@param	$sys	SYS_DATA
+#	@param	$form	FORMS
 #	@param	$mode	拡張機能タイプ
 #	@return	正常終了の場合は0
 #
@@ -99,22 +99,22 @@ sub execute
 {
 	my $this = shift;
 	my ($sys,$form,$mode) = @_;
-	
+
 	# HTMLだけでやる版 (これは参照元URLが入りません)
 	# $sys->Get('_DAT_')->[2] =~ s#BE:(\d+)-([^(]+\(\d+\)( 株優プチ\([0-9a-zA-Z]+\))?|\#*?)#<a href="http://be.2ch.net/test/p.php?i=$1" target=new>?$2</a>#;
 	# 旧Be板用
 	# $sys->Get('_DAT_')->[2] =~ s#<BE:(\d+):(\d)>#<a href="http://be.2ch.net/test/p.php?i=$1" target=new>LV.$2</a>#;
-	
+
 	# ２ちゃんねると同じ版 (要外部JavaScript)
 	# $sys->Get('_DAT_')->[2] =~ s#BE:(\d+)-([^(]+\(\d+\)( 株優プチ\([0-9a-zA-Z]+\))?|\#*?)#<a href="javascript:be($1);">?$2</a>#;
 	# 旧Be板用
 	# $sys->Get('_DAT_')->[2] =~ s#<BE:(\d+):(\d)>#<a href="javascript:be($1);">LV.$2</a>#;
-	
+
 	# JavaScriptでやるけど外部スクリプト使わない版
 	$sys->Get('_DAT_')->[2] =~ s#BE:(\d+)-([^(]+\(\d+\)( 株優プチ\([0-9a-zA-Z]+\))?|\#*?)#<a href="javascript:w=window.open('http://be.2ch.net/test/p.php?i=$1&amp;u=d:'+document.URL);w.focus();">?$2</a>#;
 	# 旧Be板用
 	# $sys->Get('_DAT_')->[2] =~ s#<BE:(\d+):(\d)>#<a href="javascript:w=window.open('http://be.2ch.net/test/p.php?i=$1&u=d:'+document.URL);w.focus();">LV.$2</a>#;
-	
+
 	return 0;
 }
 

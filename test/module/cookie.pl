@@ -3,7 +3,7 @@
 #	cookie管理モジュール
 #
 #============================================================================================================
-package RADAGAST;
+package COOKIE;
 
 use strict;
 #use warnings;
@@ -20,12 +20,12 @@ use Encode;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'COOKIE'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -40,9 +40,9 @@ sub new
 sub Init
 {
 	my $this = shift;
-	
+
 	$this->{'COOKIE'} = {};
-	
+
 	if ($ENV{'HTTP_COOKIE'}) {
 		my @pairs = split(/;\s*/, $ENV{'HTTP_COOKIE'});
 		foreach (@pairs) {
@@ -68,7 +68,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $val, $enc) = @_;
-	
+
 	Encode::from_to($val, 'sjis', $enc) if (defined $enc);
 	$this->{'COOKIE'}->{$key} = $val;
 }
@@ -86,10 +86,10 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default, $enc) = @_;
-	
+
 	my $val = $this->{'COOKIE'}->{$key};
 	Encode::from_to($val, $enc, 'sjis') if (defined $val && defined $enc);
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -105,7 +105,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	delete $this->{'COOKIE'}->{$key};
 }
 
@@ -121,7 +121,7 @@ sub IsExist
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	return exists($this->{'COOKIE'}->{$key});
 }
 
@@ -139,17 +139,17 @@ sub Out
 {
 	my $this = shift;
 	my ($Page, $path, $limit) = @_;
-	
+
 	# 日付情報の設定
 	my @gmt = gmtime(time + $limit * 60);
 	my @week = qw(Sun Mon Tue Wed Thu Fri Sat);
 	my @month = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
-	
+
 	# 有効期限文字列生成
 	my $date = sprintf('%s, %02d-%s-%04d %02d:%02d:%02d GMT',
 					$week[$gmt[6]], $gmt[3], $month[$gmt[4]], $gmt[5] + 1900,
 					$gmt[2], $gmt[1], $gmt[0]);
-	
+
 	# 設定されているcookieを全て出力する
 	foreach my $key (keys %{$this->{'COOKIE'}}) {
 		my $value = $this->{'COOKIE'}->{$key};
@@ -170,7 +170,7 @@ sub Print
 {
 	my $this = shift;
 	my ($Page) = @_;
-	
+
 	$Page->Print(<<JavaScript);
 <script language="JavaScript" type="text/javascript">
 <!--

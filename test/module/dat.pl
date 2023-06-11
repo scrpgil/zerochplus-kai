@@ -3,7 +3,7 @@
 #	datファイル管理モジュール
 #
 #============================================================================================================
-package	ARAGORN;
+package	DAT;
 
 use strict;
 #use warnings;
@@ -19,7 +19,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'LINE'		=> undef,
 		'PATH'		=> undef,
@@ -31,7 +31,7 @@ sub new
 		'MODE'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -46,7 +46,7 @@ sub new
 sub DESTROY
 {
 	my $this = shift;
-	
+
 	# ファイルオープン状態の場合はクローズする
 	if ($this->{'STAT'}) {
 		my $fh = $this->{'HANDLE'};
@@ -62,7 +62,7 @@ sub DESTROY
 #
 #	読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys		MELKOR
+#	@param	$Sys		SYS_DATA
 #	@param	$szPath		読み込みパス
 #	@param	$readOnly	モード
 #	@return	成功したら読み込んだレス数
@@ -72,7 +72,7 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys, $szPath, $readOnly) = @_;
-	
+
 	# 状態が初期状態なら読み込み開始
 	if ($this->{'STAT'} == 0) {
 		$this->{'RES'} = 0;
@@ -81,27 +81,27 @@ sub Load
 		$this->{'PATH'} = $szPath;
 		$this->{'PERM'} = GetPermission($szPath);
 		$this->{'MODE'} = $readOnly;
-		
+
 		chmod($Sys->Get('PM-DAT'), $szPath);
 		if (open(my $fh, ($readOnly ? '<' : '+<'), $szPath)) {
 			flock($fh, 2);
 			binmode($fh);
 			my @lines = <$fh>;
-			
+
 			push @{$this->{'LINE'}}, @lines;
-			
+
 			# 書き込みモードの場合
 			seek($fh, 0, 0) if (! $readOnly);
-			
+
 			# ハンドルを保存し状態を読み込み状態にする
 			$this->{'HANDLE'} = $fh;
 			$this->{'STAT'} = 1;
 			$this->{'RES'} = scalar(@{$this->{'LINE'}});
 		}
-		
+
 		return $this->{'RES'};
 	}
-	
+
 	return 0;
 }
 
@@ -109,7 +109,7 @@ sub Load
 #
 #	再読み込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys		MELKOR
+#	@param	$Sys		SYS_DATA
 #	@param	$readOnly	モード
 #	@return	成功したら読み込んだレス数
 #
@@ -118,7 +118,7 @@ sub ReLoad
 {
 	my $this = shift;
 	my ($Sys, $readOnly) = @_;
-	
+
 	if ($this->{'STAT'}) {
 		$this->Close();
 		return $this->Load($Sys, $this->{'PATH'}, $readOnly);
@@ -130,7 +130,7 @@ sub ReLoad
 #
 #	書き込み
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ファイルオープン状態なら書き込みを実行する
 	my $fh = $this->{'HANDLE'};
 	if ($this->{'STAT'} && $fh) {
@@ -147,7 +147,7 @@ sub Save
 			print $fh @{$this->{'LINE'}};
 			truncate($fh, tell($fh));
 			close($fh);
-			
+
 			chmod($this->{'PERM'}, $this->{'PATH'});
 			$this->{'STAT'} = 0;
 			$this->{'HANDLE'} = undef;
@@ -169,13 +169,13 @@ sub Save
 sub Close
 {
 	my $this = shift;
-	
+
 	# ファイルオープン状態の場合はクローズする
 	if ($this->{'STAT'}) {
 		my $fh = $this->{'HANDLE'};
 		#truncate($handle, tell($handle));
 		close($fh);
-		
+
 		chmod($this->{'PERM'}, $this->{'PATH'});
 		$this->{'STAT'} = 0;
 		$this->{'HANDLE'} = undef;
@@ -195,7 +195,7 @@ sub Set
 {
 	my $this = shift;
 	my ($line, $data) = @_;
-	
+
 	$this->{'LINE'}->[$line] = $data;
 }
 
@@ -211,7 +211,7 @@ sub Get
 {
 	my $this = shift;
 	my ($line) = @_;
-	
+
 	if ($line >= 0 && $line < $this->{'RES'}) {
 		return \($this->{'LINE'}->[$line]);
 	}
@@ -230,7 +230,7 @@ sub Add
 {
 	my $this = shift;
 	my ($data) = @_;
-	
+
 	# 最大データ数内なら追加する
 	if ($this->{'MAX'} > $this->{'RES'}) {
 		push @{$this->{'LINE'}}, $data;
@@ -250,7 +250,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($num) = @_;
-	
+
 	splice @{$this->{'LINE'}}, $num, 1;
 	$this->{'RES'}--;
 }
@@ -266,7 +266,7 @@ sub Delete
 sub Size
 {
 	my $this = shift;
-	
+
 	return $this->{'RES'};
 }
 
@@ -281,10 +281,10 @@ sub Size
 sub GetSubject
 {
 	my $this = shift;
-	
+
 	my @elem = split(/<>/, $this->{'LINE'}->[0], -1);
 	$elem[4] =~ s/[\r\n]+\z//;
-	
+
 	return $elem[4];
 }
 
@@ -292,7 +292,7 @@ sub GetSubject
 #
 #	スレッド停止 * 0.8.xから非推奨
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	成功:1 失敗:0
 #
 #------------------------------------------------------------------------------------------------------------
@@ -300,10 +300,10 @@ sub Stop
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ↓スレスト文言
 	my $stopData = "停止しました。。。<>停止<>停止<>真・スレッドストッパー。。。（￣ー￣）ﾆﾔﾘｯ<>停止したよ。\n";
-	
+
 	# レス最大数超えてる場合はスレスト不可
 	if ($this->Size() <= $Sys->Get('RESMAX')) {
 		# 停止状態じゃない場合のみ実行
@@ -311,13 +311,13 @@ sub Stop
 			# 停止データを追加して強制的にセーブする
 			$this->Add($stopData);
 			$this->Save($Sys);
-			
+
 			# パーミッションを停止用に設定する
 			chmod($Sys->Get('PM-STOP'), $this->{'PATH'});
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -325,7 +325,7 @@ sub Stop
 #
 #	スレッド開始 * 0.8.xから非推奨
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	成功:1 失敗:0
 #
 #------------------------------------------------------------------------------------------------------------
@@ -333,19 +333,19 @@ sub Start
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# 停止状態の場合のみ実行
 	if ($this->IsStopped($Sys)) {
 		# 最終行を削除して保存
 		my $line = $this->{'RES'} - 1;
 		$this->Delete($line);
 		$this->Save($Sys);
-		
+
 		# パーミッションを通常用に設定する
 		chmod($Sys->Get('PM-DAT'), $this->{'PATH'});
 		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -353,7 +353,7 @@ sub Start
 #
 #	dat直接追記
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@param	$path	追記ファイルパス
 #	@param	$data	追記データ
 #	@return	追記できたら0を返す
@@ -362,7 +362,7 @@ sub Start
 sub DirectAppend
 {
 	my ($Sys, $path, $data) = @_;
-	
+
 	if (GetPermission($path) != $Sys->Get('PM-STOP')) {
 		if (open(my $fh, '>>', $path)) {
 			flock($fh, 2);
@@ -376,7 +376,7 @@ sub DirectAppend
 	else {
 		return 2;
 	}
-	
+
 	return 1;
 }
 
@@ -391,7 +391,7 @@ sub DirectAppend
 sub GetNumFromFile
 {
 	my ($path) = @_;
-	
+
 	my $cnt = 0;
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
@@ -412,7 +412,7 @@ sub GetNumFromFile
 sub GetPermission
 {
 	my ($path) = @_;
-	
+
 	return (-e $path ? (stat $path)[2] & 0777 : 0);
 }
 
@@ -427,18 +427,18 @@ sub GetPermission
 sub IsMoved
 {
 	my ($path) = @_;
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my $line = <$fh>;
 		close($fh);
-		
+
 		my @elem = split(/<>/, $line, -1);
 		if ($elem[2] ne '移転') {
 			return 0;
 		}
 	}
-	
+
 	return 1;
 }
 
@@ -446,7 +446,7 @@ sub IsMoved
 #
 #	停止検査 * 0.8.xから非推奨
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	boolean
 #
 #------------------------------------------------------------------------------------------------------------
@@ -454,7 +454,7 @@ sub IsStopped
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	return $this->{'PERM'} == $Sys->Get('PM-STOP');
 }
 

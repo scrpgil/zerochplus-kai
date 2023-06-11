@@ -1,9 +1,9 @@
 #============================================================================================================
 #
-#	アクセスユーザ管理モジュール
+#	NGワード管理モジュール
 #
 #============================================================================================================
-package	FARAMIR;
+package	NG_WORD;
 
 use strict;
 #use warnings;
@@ -19,47 +19,54 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
-		'TYPE'		=> undef,
 		'METHOD'	=> undef,
-		'USER'		=> undef,
-		'SYS'		=> undef,
+		'SUBSTITUTE'=> undef,
+		'NGWORD'	=> undef,
+		'REPLACE'	=> undef,
 	};
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
 #------------------------------------------------------------------------------------------------------------
 #
-#	ユーザデータ読み込み - Load
+#	NGワード読み込み - Load
 #	-------------------------------------------
-#	引　数：$Sys : MELKOR
-#	戻り値：正常読み込み:0,エラー:1
+#	引　数：$SSYS_DATAELKOR
+#	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
 sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
-	$this->{'SYS'} = $Sys;
-	$this->{'USER'} = [];
-	
-	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . "/info/access.cgi";
-	
+
+	$this->{'NGWORD'} = [];
+	$this->{'REPLACE'} = [];
+	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/info/ngwords.cgi';
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @datas = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @datas;
-		
-		my @head = split(/<>/, shift(@datas), -1);
-		$this->{'TYPE'} = $head[0];
-		$this->{'METHOD'} = $head[1];
-		
-		push @{$this->{'USER'}}, @datas;
+
+		my @head = split(/<>/, shift @datas);
+		$this->{'METHOD'} = $head[0];
+		$this->{'SUBSTITUTE'} = $head[1];
+
+		foreach (@datas) {
+			my ($word, $repl) = split(/<>/, $_, -1);
+			next if (!defined $word || $word eq '');
+			push @{$this->{'NGWORD'}}, $word;
+			if (defined $repl) {
+				$this->{'REPLACE'}->[$#{$this->{'NGWORD'}}] = $repl;
+			}
+		}
 		return 0;
 	}
 	return 1;
@@ -67,91 +74,87 @@ sub Load
 
 #------------------------------------------------------------------------------------------------------------
 #
-#	ユーザデータ書き込み - Save
+#	NGワード書き込み - Save
 #	-------------------------------------------
-#	引　数：$Sys : MELKOR
-#	戻り値：正常書き込み:0,エラー:-1
+#	引　数：$SSYS_DATAELKOR
+#	戻り値：0
 #
 #------------------------------------------------------------------------------------------------------------
 sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
-	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . "/info/access.cgi";
-	
+
+	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . "/info/ngwords.cgi";
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
-		print $fh "$this->{'TYPE'}<>$this->{'METHOD'}\n";
-		foreach (@{$this->{'USER'}}) {
-			print $fh "$_\n";
+
+		print $fh "$this->{'METHOD'}<>$this->{'SUBSTITUTE'}\n";
+		foreach my $i (0 .. $#{$this->{'NGWORD'}}) {
+			print $fh $this->{'NGWORD'}->[$i];
+			print $fh '<>'.$this->{'REPLACE'}->[$i] if (defined $this->{'REPLACE'}->[$i]);
+			print $fh "\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
 	chmod($Sys->Get('PM-ADM'), $path);
-	
+
 	return 0;
 }
 
 #------------------------------------------------------------------------------------------------------------
 #
-#	ユーザ追加 - Set
+#	NGワード追加 - Set
 #	-------------------------------------------
-#	引　数：$name : 追加ユーザ
+#	引　数：$key : NGワード
 #	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
 sub Add
 {
 	my $this = shift;
-	my ($name) = @_;
-	
-	push @{$this->{'USER'}}, $name;
+	my ($word, $repl) = @_;
+
+	return if (!defined $word || $word eq '');
+	$word =~ s/</&lt;/g;
+	$word =~ s/>/&gt;/g;
+	push @{$this->{'NGWORD'}}, $word;
+	if (defined $repl) {
+		$repl =~ s/</&lt;/g;
+		$repl =~ s/>/&gt;/g;
+		$this->{'REPLACE'}->[$#{$this->{'NGWORD'}}] = $repl;
+	}
+	return 1;
 }
 
 #------------------------------------------------------------------------------------------------------------
 #
-#	ユーザデータ取得 - Get
+#	NGワードデータ取得 - Get
 #	-------------------------------------------
 #	引　数：$key : 取得キー
 #			$default : デフォルト
-#	戻り値：ユーザデータ
+#	戻り値：データ
 #
 #------------------------------------------------------------------------------------------------------------
 sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
 #------------------------------------------------------------------------------------------------------------
 #
-#	ユーザクリア - Clear
-#	-------------------------------------------
-#	引　数：なし
-#	戻り値：なし
-#
-#------------------------------------------------------------------------------------------------------------
-sub Clear
-{
-	my $this = shift;
-	
-	$this->{'USER'} = [];
-}
-
-#------------------------------------------------------------------------------------------------------------
-#
-#	ユーザデータ設定 - SetData
+#	NGワードデータ設定 - SetData
 #	-------------------------------------------
 #	引　数：$key  : 設定キー
 #			$data : 設定データ
@@ -162,97 +165,100 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	$this->{$key} = $data;
 }
 
 #------------------------------------------------------------------------------------------------------------
 #
-#	ユーザ調査 - Check
+#	NGワードクリア - Clear
 #	-------------------------------------------
-#	引　数：$host : 調査ホスト
-#			$addr : 調査IPアドレス
-#			$koyuu : 端末固有識別子
-#	戻り値：登録ユーザ:1,未登録ユーザ:0
+#	引　数：なし
+#	戻り値：なし
+#
+#------------------------------------------------------------------------------------------------------------
+sub Clear
+{
+	my $this = shift;
+
+	$this->{'NGWORD'} = [];
+	$this->{'REPLACE'} = [];
+}
+
+#------------------------------------------------------------------------------------------------------------
+#
+#	NGワード調査 - Check
+#	-------------------------------------------
+#	引　数：$FformsMWISE
+#			$pList : チェックリスト(リファレンス)
+#	戻り値：検知番号
 #
 #------------------------------------------------------------------------------------------------------------
 sub Check
 {
 	my $this = shift;
-	my ($host, $addr, $koyuu) = @_;
-	
-	my $Sys = $this->{'SYS'};
-	my $addrb = unpack('B32', pack('C*', split(/\./, $addr)));
-	my $flag = 0;
-	my $adex = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}';
-	
-	foreach my $line (@{$this->{'USER'}}) {
-		next if ($line =~ /^[#;]|^$/);
-		
-		# IPアドレス/CIDR
-		if ($line =~ m|^($adex)(?:/([0-9]+))?$|) {
-			my $leng = $2 || 32;
-			my $a = unpack("B$leng", pack('C*', split(/\./, $1)));
-			if (substr($addrb, 0, $leng) eq $a) {
-				$flag = 1;
-				$Sys->Set('HITS', $line);
-				last;
+	my ($Form, $pList) = @_;
+
+	foreach my $word (@{$this->{'NGWORD'}}) {
+		next if ($word eq '');
+		foreach my $key (@$pList) {
+			my $work = $Form->Get($key);
+			if ($work =~ /\Q$word\E/) {
+				if ($this->{'METHOD'} eq 'host') {
+					return 2;
+				}
+				elsif ($this->{'METHOD'} eq 'disable') {
+					return 3;
+				}
+				else {
+					return 1;
+				}
 			}
-		}
-		# IPアドレス範囲指定
-		elsif ($line =~ m|^($adex)-($adex)$|) {
-			my $a = unpack('B32', pack('C*', split(/\./, $1)));
-			my $b = unpack('B32', pack('C*', split(/\./, $2)));
-			($b, $a) = ($a, $b) if ($a gt $b);
-			if ($addrb ge $a && $addrb le $b) {
-				$flag = 1;
-				$Sys->Set('HITS', $line);
-				last;
-			}
-		}
-		# 端末固有識別子
-		elsif (defined $koyuu && $koyuu =~ /^\Q$line\E$/) {
-			$flag = 1;
-			$Sys->Set('HITS', $line);
-			last;
-		}
-		# ホスト名(正規表現)
-		elsif ($host =~ /$line/) {
-			$flag = 1;
-			$Sys->Set('HITS', $line);
-			last;
-		}
-	}
-	
-	# 規制ユーザ
-	if ($flag && $this->{'TYPE'} eq 'disable') {
-		if ($this->{'METHOD'} eq 'disable') {
-			# 処理：書き込み不可
-			return 4;
-		}
-		elsif ($this->{'METHOD'} eq 'host') {
-			# 処理：ホスト表示
-			return 2;
-		}
-		else {
-			return 4;
-		}
-	}
-	# 限定ユーザ以外
-	elsif (! $flag && $this->{'TYPE'} eq 'enable') {
-		if ($this->{'METHOD'} eq 'disable') {
-			# 処理：書き込み不可
-			return 4;
-		}
-		elsif ($this->{'METHOD'} eq 'host') {
-			# 処理：ホスト表示
-			return 2;
-		}
-		else {
-			return 4;
 		}
 	}
 	return 0;
+}
+
+#------------------------------------------------------------------------------------------------------------
+#
+#	NGワード処理 - Method
+#	-------------------------------------------
+#	引　数：$FformsMWISE
+#			$pList : チェックリスト(リファレンス)
+#	戻り値：なし
+#
+#------------------------------------------------------------------------------------------------------------
+sub Method
+{
+	my $this = shift;
+	my ($Form, $pList) = @_;
+
+	# 処理種別が代替か削除の場合のみ処理
+	return unless ($this->{'METHOD'} eq 'delete' || $this->{'METHOD'} eq 'substitute');
+
+	# 代替用文字列を設定
+	my $substitute = '';
+	if ($this->{'METHOD'} eq 'delete') {
+		#$substitute = '<b><font color=red>削除</font></b>';
+		$substitute = '';
+	}
+	else {
+		$substitute = $this->{'SUBSTITUTE'};
+		$substitute = '' if (!defined $substitute);
+	}
+
+	foreach my $i (0 .. $#{$this->{'NGWORD'}}) {
+		my $word = $this->{'NGWORD'}->[$i];
+		next if ($word eq '');
+		foreach my $key (@$pList) {
+			my $work = $Form->Get($key);
+			my $subst = $substitute;
+			$subst = $this->{'REPLACE'}->[$i] if (defined $this->{'REPLACE'}->[$i]);
+			if ($work =~ s/\Q$word\E/$subst/g) {
+				$Form->Set($key, $work);
+			}
+		}
+	}
 }
 
 #============================================================================================================

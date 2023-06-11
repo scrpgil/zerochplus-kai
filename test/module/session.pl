@@ -24,19 +24,19 @@ use strict;
 #------------------------------------------------------------------------------------------------------------
 sub getSession
 {
-	
+
 	my $session = new Session;
 	my $id = createSessionID();
 	my $filePath = "./info/session/$id";
 	my $check = 1;
-	
+
 	# セッション情報ファイルが存在する場合はそれを読み込む
 	if (open(my $fh, '<', $filePath)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			# 1行目(セッション開始時間)を取得
 			if ($check) {
@@ -58,8 +58,8 @@ sub getSession
 	}
 	else {
 		if (!-e './info/session' || !-d './info/session') {
-			require './module/earendil.pl';
-			EARENDIL::CreateDirectory('./info/session', 0770);
+			require './module/file_utils.pl';
+			FILE_UTILS::CreateDirectory('./info/session', 0770);
 		}
 		open(my $fh, '>', $filePath);
 		close($fh);
@@ -78,24 +78,24 @@ sub getSession
 #------------------------------------------------------------------------------------------------------------
 sub setSession
 {
-	
+
 	my ($session) = @_;
-	
+
 	my $id = createSessionID($ENV{'REMOTE_ADDR'});
 	my $filePath = "./info/session/$id";
-	
+
 	if (open(my $fh, '+<', $filePath)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		print $fh $session->getId() . "\n";
 		foreach my $key (keys %{$session->{'ATTRIBUTE'}}) {
 			my $value = $session->getAttribute($key);
 			$value =~ s/=/&equal;/g;
 			print $fh "$key=$value\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -111,10 +111,10 @@ sub setSession
 #------------------------------------------------------------------------------------------------------------
 sub removeSession
 {
-	
+
 	my $id = createSessionID($ENV{'REMOTE_ADDR'});
 	my $filePath = "./info/session/$id";
-	
+
 	unlink $filePath;
 }
 
@@ -128,11 +128,11 @@ sub removeSession
 #------------------------------------------------------------------------------------------------------------
 sub createSessionID
 {
-	
+
 	my $key = $ENV{'REMOTE_ADDR'};
 	$key =~ s/\.//g;
 	$key = substr($ENV{'REMOTE_ADDR'}, -8);
-	
+
 	return substr(crypt($key, substr(crypt($key, 'ZC'), -2)), -26);
 }
 
@@ -157,13 +157,13 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'ID'		=> undef,
 		'ATTRIBUTE'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -178,7 +178,7 @@ sub new
 sub DESTROY
 {
 	my $this = shift;
-	
+
 	if (defined $this->{'ID'}) {
 		SessionManager::setSession($this);
 	}
@@ -197,7 +197,7 @@ sub setAttribute
 {
 	my $this = shift;
 	my ($key, $value) = @_;
-	
+
 	$this->{'ATTRIBUTE'}->{$key} = $value;
 }
 
@@ -213,7 +213,7 @@ sub getAttribute
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	return $this->{'ATTRIBUTE'}->{$key};
 }
 
@@ -229,7 +229,7 @@ sub removeAttribute
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	delete $this->{'ATTRIBUTE'}->{$key};
 }
 

@@ -23,7 +23,7 @@ our $cidr = ();
 #
 #------------------------------------------------------------------------------------------------------------
 {
-	
+
 	# NTT docomo : iモード [ docomo.ne.jp ]
 	$cidr->{'docomo'} = [
 		# http://www.nttdocomo.co.jp/service/developer/make/content/ip/
@@ -31,14 +31,14 @@ our $cidr = ();
 		'210.153.84.0/24',		'210.136.161.0/24',		'210.153.86.0/24',		'124.146.174.0/24',
 		'124.146.175.0/24',		'202.229.176.0/24',		'202.229.177.0/24',		'202.229.178.0/24',
 	];
-	
+
 	# NTT docomo : iモードフルブラウザ
 	$cidr->{'docomo_pc'} = [
 		# http://www.nttdocomo.co.jp/service/developer/make/content/ip/
 		# 2011/05更新 2013/10/12確認
 		'210.153.87.0/24',
 	];
-	
+
 	# NTT docomo : spモード(スマートフォン)
 	$cidr->{'docomo_smart'} = [
 		# http://www.nttdocomo.co.jp/service/developer/smart_phone/technical_info/etc/
@@ -66,25 +66,25 @@ our $cidr = ();
 		# 2013年11月 追加予定 ※前行より変更
 		'183.74.192.0/20',
 	];
-	
+
 	# SoftBank : 3G [ softbank.ne.jp ]
-	$cidr->{'vodafone'} = 
+	$cidr->{'vodafone'} =
 	$cidr->{'softbank'} = [
 		# http://creation.mb.softbank.jp/web/web_ip.html
 		# 2012/07/25更新 2013/10/12確認
 		'123.108.237.112/28',	'123.108.239.224/28',	'202.253.96.144/28',	'202.253.99.144/28',
 		'210.228.189.188/30',
 	];
-	
+
 	# Softbank : 3G PCサイトブラウザ
-	$cidr->{'vodafone_pc'} = 
+	$cidr->{'vodafone_pc'} =
 	$cidr->{'softbank_pc'} = [
 		# http://creation.mb.softbank.jp/web/web_ip.html
 		# 2012/07/25更新 2013/10/12確認
 		'123.108.237.128/28',	'123.108.239.240/28',	'202.253.96.160/28',	'202.253.99.160/28',
 		'210.228.189.196/30',
 	];
-	
+
 	# Softbank : スマートフォン ※3G PCサイトブラウザを含む
 	$cidr->{'softbank_smart'} = [
 		# https://www.support.softbankmobile.co.jp/partner/home_tech1/
@@ -97,7 +97,7 @@ our $cidr = ();
 		# 2013/05/31更新 2013/10/12確認
 		'126.243.0.0/16',
 	];
-	
+
 	# Softbank : iPhone/iPad 3G
 	$cidr->{'softbank_iphone'} = [
 		# 非公式情報 (基本放置でいきましょう 2012.06 じ)
@@ -111,7 +111,7 @@ our $cidr = ();
 		# http://durianjp.com/mt/2011/01/iphone-ip.html
 		#'126.160.0.0/11',		'126.192.0.0/10',
 	];
-	
+
 	# KDDI au : EZweb [ ezweb.ne.jp ]
 	$cidr->{'ezweb'} = [
 		# http://www.au.kddi.com/ezfactory/tec/spec/ezsava_ip.html
@@ -122,11 +122,11 @@ our $cidr = ();
 		'111.86.143.224/27',	'111.86.147.0/27',		'111.86.142.128/27',	'111.86.143.32/27',
 		'111.86.142.192/27',	'111.86.142.224/27',	'111.86.143.0/27',		'111.86.147.128/27',
 		'111.86.147.32/27',		'111.86.147.64/27',		'111.86.147.96/27',		'111.86.147.160/27',
-		'111.86.147.192/27',	'111.86.147.224/27',	
+		'111.86.147.192/27',	'111.86.147.224/27',
 		# 2011年秋冬モデル以降の一部機種のEZサーバ
 		'111.107.116.64/26',	'106.162.214.160/29',	'111.107.116.192/28',
 	];
-	
+
 	# KDDI au : EZweb PCサイトビューア
 	$cidr->{'ezweb_pc'} = [
 		# http://www.au.kddi.com/ezfactory/tec/spec/ezsava_ip.html
@@ -136,7 +136,7 @@ our $cidr = ();
 		'111.86.140.44/30',		'111.86.140.48/30',		'111.86.140.52/30',		'111.86.140.56/30',
 		'111.86.140.60/30',		'111.87.241.144/28',
 	];
-	
+
 	# KDDI au : IS NET/LTE NET(スマートフォン)
 	$cidr->{'ezweb_smart'} = [
 		# http://www.au.kddi.com/developer/android/kaihatsu/network/
@@ -150,14 +150,14 @@ our $cidr = ();
 		#  182.249.246.31～182.249.246.33
 		#  182.249.246.97～182.249.246.126
 	];
-	
+
 	# イー・モバイル [ emobile.ad.jp ]
 	$cidr->{'emobile'} = [
 		# http://developer.emnet.ne.jp/ipaddress.html
 		# 2008/02/26更新 2013/10/12確認
 		'117.55.1.224/27'
 	];
-	
+
 	# WILLCOM [ prin.ne.jp ]
 	$cidr->{'willcom'} = [
 		# http://www.willcom-inc.com/ja/service/contents_service/create/center_info/
@@ -199,7 +199,7 @@ our $cidr = ();
 		'221.119.5.0/24',		'221.119.6.0/24',		'221.119.7.0/24',		'221.119.8.0/24',
 		'221.119.9.0/24',
 	];
-	
+
 	# ibisブラウザ
 	$cidr->{'ibis'} = [
 		# http://ibis.ne.jp/support/browserIP.jsp
@@ -210,7 +210,7 @@ our $cidr = ();
 		'54.248.181.37/32',		'54.248.184.172/32',	'54.248.187.26/32',		'54.248.226.234/32',
 		'54.248.229.21/32',		'54.248.233.80/32',		'175.41.198.11/32',		'176.34.14.9/32',
 	];
-	
+
 	# jigブラウザ
 	$cidr->{'jig'} = [
 		# http://br.jig.jp/pc/ip_br.html
@@ -226,12 +226,12 @@ our $cidr = ();
 		'219.94.183.102/31',	'219.94.183.104/29',	'219.94.183.112/29',	'219.94.183.120/31',
 		'219.94.184.70/31',		'219.94.184.72/29',
 	];
-	
+
 	$cidr->{'iphone'} = [(
 		@{$cidr->{'softbank_iphone'}},
 	)];
 	# uqwimax.jp
-	
+
 	# p2
 	$cidr->{'p2'} = [
 		# cw43.razil.jp

@@ -3,7 +3,7 @@
 #	汎用データ変換・取得モジュール
 #
 #============================================================================================================
-package	GALADRIEL;
+package	DATA_UTILS;
 
 use strict;
 #use warnings;
@@ -20,10 +20,10 @@ no warnings qw(once);
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -39,9 +39,9 @@ sub GetArgument
 {
 	my $this = shift;
 	my ($pENV) = @_;
-	
+
 	my @retArg = ();
-	
+
 	# PATH_INFOあり
 	if (defined $pENV->{'PATH_INFO'} && $pENV->{'PATH_INFO'} ne '') {
 		my @Awork = split(/\//, $pENV->{'PATH_INFO'}, -1);
@@ -73,7 +73,7 @@ sub GetArgument
 			$retArg[6] = 1;
 		}
 	}
-	
+
 	return @retArg;
 }
 
@@ -81,8 +81,8 @@ sub GetArgument
 #
 #	表示レス数正規化 - RegularDispNum
 #	-------------------------------------------
-#	引　数：$Sys   : MELKOR
-#			$Dat   : ARAGORNオブジェクト
+#	引　数：$Sys   : SYS_DATA
+#			$Dat   : DATオブジェクト
 #			$last  : lastフラグ
 #			$start : 開始行
 #			$end   : 終了行
@@ -93,15 +93,15 @@ sub RegularDispNum
 {
 	my $this = shift;
 	my ($Sys, $Dat, $last, $start, $end) = @_;
-	
+
 	# 大きさ判定 swap
 	if ($start > $end && $end != -1) {
 		($start, $end) = ($end, $start);
 	}
-	
+
 	my $resmax = $Dat->Size();
 	my ($st, $ed);
-	
+
 	# 最新n件表示
 	if ($last == 1) {
 		$st = $resmax - $start + 1;
@@ -124,7 +124,7 @@ sub RegularDispNum
 		$st = 1;
 		$ed = $resmax;
 	}
-	
+
 	# 時間による制限有り
 	if ($Sys->Get('LIMTIME')) {
 		# 表示レス数が100超えた
@@ -139,7 +139,7 @@ sub RegularDispNum
 #
 #	URL変換 - ConvertURL
 #	--------------------------------------------
-#	引　数：$Sys : MELKORモジュール
+#	引　数：$Sys : SYS_DATAモジュール
 #			$Set : SETTING
 #			$mode : エージェント
 #			$text : 変換テキスト(リファレンス)
@@ -150,15 +150,15 @@ sub ConvertURL
 {
 	my $this = shift;
 	my ($Sys, $Set, $mode, $text) = @_;
-	
+
 	# 時間による制限有り
 	return $text if ($Sys->Get('LIMTIME'));
-	
+
 	my $server = $Sys->Get('SERVER');
 	my $cushion = $Set->Get('BBS_REFERER_CUSHION');
 	my $reg1 = q{(https?|ftp)://(([-\w.!~*'();/?:\@=+\$,%#]|&(?![lg]t;))+)};	# URL検索１
 	my $reg2 = q{<(https?|ftp)::(([-\w.!~*'();/?:\@=+\$,%#]|&(?![lg]t;))+)>};	# URL検索２
-	
+
 	# 携帯から
 	if ($mode eq 'O') {
 		$$text =~ s/$reg1/<$1::$2>/g;
@@ -210,7 +210,7 @@ sub ConvertURL
 #
 #	引用変換 - ConvertQuotation
 #	--------------------------------------------
-#	引　数：$Sys : MELKORオブジェクト
+#	引　数：$Sys : SYS_DATAオブジェクト
 #			$text : 変換テキスト
 #			$mode : エージェント
 #	戻り値：変換後のメッセージ
@@ -220,19 +220,19 @@ sub ConvertQuotation
 {
 	my $this = shift;
 	my ($Sys, $text, $mode) = @_;
-	
+
 	# 時間による制限有り
 	return $text if ($Sys->Get('LIMTIME'));
-	
+
 	my $pathCGI = $Sys->Get('SERVER') . $Sys->Get('CGIPATH');
-	
+
 	if ($Sys->Get('PATHKIND')) {
 		# URLベースを生成
 		my $buf = '<a href="';
 		$buf .= $pathCGI . ($mode ? '/r.cgi' : '/read.cgi');
 		$buf .= '?bbs=' . $Sys->Get('BBS') . '&key=' . $Sys->Get('KEY');
 		$buf .= '&nofirst=true';
-		
+
 		$$text =~ s{&gt;&gt;([1-9][0-9]*)-([1-9][0-9]*)}
 					{$buf&st=$1&to=$2" target="_blank">>>$1-$2</a>}g;
 		$$text =~ s{&gt;&gt;([1-9][0-9]*)-(?!0)}
@@ -247,7 +247,7 @@ sub ConvertQuotation
 		my $buf = '<a href="';
 		$buf .= $pathCGI . ($mode eq 'O' ? '/r.cgi/' : '/read.cgi/');
 		$buf .= $Sys->Get('BBS') . '/' . $Sys->Get('KEY');
-		
+
 		$$text =~ s{&gt;&gt;([1-9][0-9]*)-([1-9][0-9]*)}
 					{$buf/$1-$2n" target="_blank">>>$1-$2</a>}g;
 		$$text =~ s{&gt;&gt;([1-9][0-9]*)-(?!0)}
@@ -258,7 +258,7 @@ sub ConvertQuotation
 					{$buf/$1" target="_blank">>>$1</a>}g;
 	}
 	$$text	=~ s{>>(?=[1-9])}{&gt;&gt;}g;
-	
+
 	return $text;
 }
 
@@ -266,7 +266,7 @@ sub ConvertQuotation
 #
 #	特殊引用変換 - ConvertSpecialQuotation
 #	--------------------------------------------
-#	引　数：$Sys : MELKORオブジェクト
+#	引　数：$Sys : SYS_DATAオブジェクト
 #			$text : 変換テキスト
 #			$mode : エージェント
 #	戻り値：変換後のメッセージ
@@ -276,7 +276,7 @@ sub ConvertSpecialQuotation
 {
 	my $this = shift;
 	my ($Sys, $text, $mode) = @_;
-	
+
 	if ($mode ne 'O') {
 		my @lines = split(/<br>/, $text, -1);
 		map {
@@ -301,18 +301,18 @@ sub DeleteText
 {
 	my $this = shift;
 	my ($text, $len) = @_;
-	
+
 	my @lines = split(/ ?<br> ?/, $$text, -1);
 	my $ret = '';
 	my $tlen = 0;
-	
+
 	foreach (@lines) {
 		$tlen += length $_;
 		last if ($tlen > $len);
 		$ret .= "$_<br>";
 		$tlen += 4;
 	}
-	
+
 	return substr($ret, 0, -4);
 }
 
@@ -328,10 +328,10 @@ sub GetTextLine
 {
 	my $this = shift;
 	my ($text) = @_;
-	
+
 	$_ = $$text;
 	my $l = s/(\r\n|[\r\n])/a/g || s/(<br>)/a/gi;
-	
+
 	return ($l + 1);
 }
 
@@ -349,16 +349,16 @@ sub GetTextInfo
 {
 	my $this = shift;
 	my ($text) = @_;
-	
+
 	my @lines = split(/ ?<br> ?/, $$text, -1);
-	
+
 	my $mx = 0;
 	foreach (@lines) {
 		if ($mx < length($_)) {
 			$mx = length($_);
 		}
 	}
-	
+
 	return (scalar(@lines), $mx);
 }
 
@@ -374,9 +374,9 @@ sub GetAgentMode
 {
 	my $this = shift;
 	my ($client) = @_;
-	
+
 	my $agent = '0';
-	
+
 	if ($client & $ZP::C_MOBILEBROWSER) {
 		$agent = 'O';
 	}
@@ -395,7 +395,7 @@ sub GetAgentMode
 	else {
 		$agent = '0';
 	}
-	
+
 	return $agent;
 }
 
@@ -410,16 +410,16 @@ sub GetAgentMode
 sub GetClient
 {
 	my $this = shift;
-	
+
 	my $ua = $ENV{'HTTP_USER_AGENT'} || '';
 	my $host = $ENV{'REMOTE_HOST'};
 	my $addr = $ENV{'REMOTE_ADDR'};
 	my $client = 0;
-	
+
 	require './module/cidr_list.pl';
-	
+
 	my $cidr = $ZP_CIDR::cidr;
-	
+
 	if (CIDRHIT($cidr->{'docomo'}, $addr)) {
 		$client = $ZP::C_DOCOMO_M;
 	}
@@ -478,7 +478,7 @@ sub GetClient
 	else {
 		$client = $ZP::C_PC;
 	}
-	
+
 	return $client;
 }
 
@@ -494,24 +494,24 @@ sub GetClient
 
 sub CIDRHIT
 {
-	
+
 	my ($orz, $ho) = @_;
-	
+
 	foreach (@$orz) {
 		# 完全一致 = /32 ってことで^^;
 		$_ .= '/32' if ($_ !~ m|/|);
-		
+
 		# 以下CIDR形式
 		my ($target, $length) = split('/', $_);
-		
+
 		my $ipaddr = unpack("B$length", pack('C*', split(/\./, $ho)));
 		$target = unpack("B$length", pack('C*', split(/\./, $target)));
-		
+
 		if ($target eq $ipaddr) {
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -519,7 +519,7 @@ sub CIDRHIT
 #
 #	携帯機種情報取得
 #	-------------------------------------------------------------------------------------
-#	@param	$client	
+#	@param	$client
 #	@return	個体識別番号
 #
 #------------------------------------------------------------------------------------------------------------
@@ -527,9 +527,9 @@ sub GetProductInfo
 {
 	my $this = shift;
 	my ($client) = @_;
-	
+
 	my $product;
-	
+
 	# docomo
 	if ( $client & $ZP::C_DOCOMO ) {
 		# $ENV{'HTTP_X_DCMGUID'} - 端末製造番号, 個体識別情報, ユーザID, iモードID
@@ -550,7 +550,7 @@ sub GetProductInfo
 	}
 	# e-mobile(音声端末)
 	elsif ( $client & $ZP::C_EMOBILE ) {
-		# $ENV{'X-EM-UID'} - 
+		# $ENV{'X-EM-UID'} -
 		$product = $ENV{'X-EM-UID'};
 		$product =~ s/x-em-uid: (.+)/$1/i;
 	}
@@ -572,7 +572,7 @@ sub GetProductInfo
 	else {
 		$product = $ENV{'REMOTE_HOST'};
 	}
-	
+
 	return $product;
 }
 
@@ -587,10 +587,10 @@ sub GetProductInfo
 sub GetRemoteHost
 {
 	my $this = shift;
-	
+
 	my $host = $ENV{'REMOTE_ADDR'};
 	$host = gethostbyaddr(pack('C4', split(/\./, $host)), 2) || $host;
-	
+
 	return $host;
 }
 
@@ -610,7 +610,7 @@ sub MakeID
 {
 	my $this = shift;
 	my ($server, $client, $koyuu, $bbs, $column) = @_;
-	
+
 	# 種の生成
 	my $uid;
 	if ($client & ($ZP::C_P2 | $ZP::C_MOBILE)) {
@@ -629,26 +629,26 @@ sub MakeID
 		# 上位3つの1桁目取得
 		$uid = substr($nums[3], -2) . substr($nums[2], -2) . substr($nums[1], -1);
 	}
-	
+
 	my @times = localtime time;
-	
+
 	# サーバー名･板名を結合する
 	$uid .= substr(crypt($server, $times[4]), 2, 1) . substr(crypt($bbs, $times[4]), 2, 2);
-	
+
 	# 桁を設定
 	$column *= -1;
-	
+
 	# IDの生成
 	my $ret = substr(crypt(crypt($uid, $times[5]), $times[3] + 31), $column);
 	$ret =~ s/\./+/g;
-	
+
 	return $ret;
 }
 sub MakeIDnew
 {
 	my $this = shift;
 	my ($Sys, $column) = @_;
-	
+
 	require Digest::SHA::PurePerl;
 	my $ctx = Digest::SHA::PurePerl->new;
 	$ctx->add('0ch+ ID Generation');
@@ -657,10 +657,10 @@ sub MakeIDnew
 	$ctx->add(':', $Sys->Get('KOYUU'));
 	$ctx->add(':', join('-', (localtime)[3,4,5]));
 	#$ctx->add(':', $Sys->Get('KEY'));
-	
+
 	my $id = $ctx->b64digest;
 	$id = substr($id, 0, $column);
-	
+
 	return $id;
 }
 
@@ -678,26 +678,26 @@ sub ConvertTrip
 {
 	my $this = shift;
 	my ($key, $column, $shatrip) = @_;
-	
+
 	# cryptのときの桁取得
 	$column *= -1;
-	
+
 	my $trip = '';
 	$$key = '' if (!defined $$key);
-	
+
 	if (length($$key) >= 12) {
 		# 先頭1文字の取得
 		my $mark = substr($$key, 0, 1);
-		
+
 		if ($mark eq '#' || $mark eq '$') {
 			# 生キー
 			if ($$key =~ m|^#([0-9a-zA-Z]{16})([./0-9A-Za-z]{0,2})$|) {
 				my $key2 = pack('H*', $1);
 				my $salt = substr($2 . '..', 0, 2);
-				
+
 				# 0x80問題再現
 				$key2 =~ s/\x80[\x00-\xff]*$//;
-				
+
 				$trip = substr(crypt($key2, $salt), $column);
 			}
 			# 将来の拡張用
@@ -713,7 +713,7 @@ sub ConvertTrip
 			$trip =~ tr/+/./;
 		}
 	}
-	
+
 	# 従来のトリップ生成方式
 	if ($trip eq '') {
 		my $salt = substr($$key, 1, 2);
@@ -721,13 +721,13 @@ sub ConvertTrip
 		$salt .= 'H.';
 		$salt =~ s/[^\.-z]/\./go;
 		$salt =~ tr/:;<=>?@[\\]^_`/ABCDEFGabcdef/;
-		
+
 		# 0x80問題再現
 		$$key =~ s/\x80[\x00-\xff]*$//;
-		
+
 		$trip = substr(crypt($$key, $salt), $column);
 	}
-	
+
 	return $trip;
 }
 
@@ -742,9 +742,9 @@ sub ConvertTrip
 sub ConvertOption
 {
 	my ($opt) = @_;
-	
+
 	$opt = '' if (!defined $opt);
-	
+
 	# 初期値
 	my @ret = (
 		-1,	# ラストフラグ
@@ -753,7 +753,7 @@ sub ConvertOption
 		-1,	# >>1非表示フラグ
 		-1	# 単独表示フラグ
 	);
-	
+
 	# 最新n件(1無し)
 	if ($opt =~ /l(\d+)n/) {
 		$ret[0] = 1;
@@ -819,7 +819,7 @@ sub ConvertOption
 		$ret[3] = 1;
 		$ret[4] = 1;
 	}
-	
+
 	return @ret;
 }
 
@@ -827,7 +827,7 @@ sub ConvertOption
 #
 #	パス生成 - CreatePath
 #	-------------------------------------------
-#	引　数：$Sys  : MELKOR
+#	引　数：$Sys  : SYS_DATA
 #			$mode : 0:read 1:r
 #			$bbs  : BBSキー
 #			$key  : スレッドキー
@@ -839,16 +839,16 @@ sub CreatePath
 {
 	my $this = shift;
 	my ($Sys, $mode, $bbs, $key, $opt) = @_;
-	
+
 	my $path = $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . ($mode eq 0 ? '/read.cgi' : '/r.cgi');
-	
+
 	# QUERY_STRINGパス生成
 	if ($Sys->Get('PATHKIND')) {
 		my @opts = ConvertOption($opt);
-		
+
 		# ベース作成
 		$path .= "?bbs=$bbs&key=$key";
-		
+
 		# 最新n件表示
 		if ($opts[0]) {
 			$path .= "&last=$opts[1]";
@@ -858,7 +858,7 @@ sub CreatePath
 			$path .= "&st=$opts[1]";
 			$path .= "&to=$opts[2]";
 		}
-		
+
 		# >>1表示の付加
 		$path .= '&nofirst=' . ($opts[3] == 1 ? 'true' : 'false');
 	}
@@ -866,7 +866,7 @@ sub CreatePath
 	else {
 		$path .= "/$bbs/$key/$opt";
 	}
-	
+
 	return $path;
 }
 
@@ -883,23 +883,23 @@ sub GetDate
 {
 	my $this = shift;
 	my ($Set, $msect) = @_;
-	
+
 	$ENV{'TZ'} = 'JST-9';
 	my @info = localtime time;
 	$info[5] += 1900;
 	$info[4] += 1;
-	
+
 	# 曜日の取得
 	my $week = ('日', '月', '火', '水', '木', '金', '土')[$info[6]];
 	if (defined $Set && ! $Set->Equal('BBS_YMD_WEEKS', '')) {
 		$week = (split(/\//, $Set->Get('BBS_YMD_WEEKS')))[$info[6]];
 	}
-	
+
 	my $str = '';
 	$str .= sprintf('%04d/%02d/%02d', $info[5], $info[4], $info[3]);
 	$str .= "($week)" if ($week ne '');
 	$str .= sprintf(' %02d:%02d:%02d', $info[2], $info[1], $info[0]);
-	
+
 	# msecの取得
 	if ($msect) {
 		eval {
@@ -908,9 +908,9 @@ sub GetDate
 			$str .= sprintf(".%02d", ($times * 100) % 100);
 		};
 	}
-	
+
 	return $str;
-	
+
 }
 
 #------------------------------------------------------------------------------------------------------------
@@ -926,15 +926,15 @@ sub GetDateFromSerial
 {
 	my $this = shift;
 	my ($serial, $mode) = @_;
-	
+
 	$ENV{'TZ'} = 'JST-9';
 	my @info = localtime $serial;
 	$info[5] += 1900;
 	$info[4] += 1;
-	
+
 	my $str = sprintf('%04d/%02d/%02d', $info[5], $info[4], $info[3]);
 	$str .= sprintf(' %02d:%02d', $info[2], $info[1]) if (!$mode);
-	
+
 	return $str;
 }
 
@@ -942,9 +942,9 @@ sub GetDateFromSerial
 #
 #	ID部分文字列生成
 #	-------------------------------------------------------------------------------------
-#	@param	$Set	ISILDUR
-#	@param	$Form	SAMWISE
-#	@param	$Sec	
+#	@param	$Set	SETTINGS
+#	@param	$Form	FORMS
+#	@param	$Sec
 #	@param	$id		ID
 #	@param	$koyuu	端末固有番号
 #	@param	$type	端末識別子
@@ -955,16 +955,16 @@ sub GetIDPart
 {
 	my $this = shift;
 	my ($Set, $Form, $Sec, $id, $capID, $koyuu, $type) = @_;
-	
+
 	my $noid = $Sec->IsAuthority($capID, $ZP::CAP_DISP_NOID, $Form->Get('bbs'));
 	my $noslip = $Sec->IsAuthority($capID, $ZP::CAP_DISP_NOSLIP, $Form->Get('bbs'));
 	my $customid = $Sec->IsAuthority($capID, $ZP::CAP_DISP_CUSTOMID, $Form->Get('bbs'));
-	
+
 	# ID表示無し
 	if ($Set->Equal('BBS_NO_ID', 'checked')) {
 		return '';
 	}
-	
+
 	# ホスト表示
 	elsif ($Set->Equal('BBS_DISP_IP', 'checked')) {
 		my $str = '???';
@@ -982,7 +982,7 @@ sub GetIDPart
 		}
 		return "HOST:$str";
 	}
-	
+
 	# IP表示 Ver.Siberia
 	elsif ($Set->Equal('BBS_DISP_IP', 'siberia')){
 		my $str = '???';
@@ -998,7 +998,7 @@ sub GetIDPart
 		}
 		return "発信元:$str";
 	}
-	
+
 	# IP表示 Ver.Sakhalin
 	elsif ($Set->Equal('BBS_DISP_IP', 'sakhalin')) {
 		my $str = '???';
@@ -1016,7 +1016,7 @@ sub GetIDPart
 		}
 		return "発信元:$str";
 	}
-	
+
 	# 各キャップ専用ID
 	elsif ($customid && $Sec->Get($capID, 'CUSTOMID', 1) ne '') {
 		my $str = $Sec->Get($capID, 'CUSTOMID', 1);
@@ -1025,7 +1025,7 @@ sub GetIDPart
 		}
 		return "ID:$str";
 	}
-	
+
 	# ID表示
 	else {
 		my $str = '???';
@@ -1057,9 +1057,9 @@ sub ConvertCharacter0
 {
 	my $this = shift;
 	my ($data) = @_;
-	
+
 	$$data = '' if (!defined $$data);
-	
+
 	$$data =~ s/^($ZP::RE_SJIS*?)＃/$1#/g;
 }
 
@@ -1068,7 +1068,7 @@ sub ConvertCharacter0
 #	特殊文字変換 - ConvertCharacter1
 #	--------------------------------------
 #	引　数：$data : 変換元データ(参照)
-#			$mode : 
+#			$mode :
 #	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -1076,18 +1076,18 @@ sub ConvertCharacter1
 {
 	my $this = shift;
 	my ($data, $mode) = @_;
-	
+
 	$$data = '' if (!defined $$data);
-	
+
 	# all
 	$$data =~ s/</&lt;/g;
 	$$data =~ s/>/&gt;/g;
-	
+
 	# mail
 	if ($mode == 1) {
 		$$data =~ s/"/&quot;/g;#"
 	}
-	
+
 	# text
 	if ($mode == 2) {
 		$$data =~ s/\n/<br>/g;
@@ -1103,7 +1103,7 @@ sub ConvertCharacter1
 #	禁則文字変換 - ConvertCharacter2
 #	--------------------------------------
 #	引　数：$data : 変換元データ(参照)
-#			$mode : 
+#			$mode :
 #	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -1111,16 +1111,16 @@ sub ConvertCharacter2
 {
 	my $this = shift;
 	my ($data, $mode) = @_;
-	
+
 	$$data = '' if (!defined $$data);
-	
+
 	# name mail
 	if ($mode == 0 || $mode == 1) {
 		$$data =~ s/★/☆/g;
 		$$data =~ s/◆/◇/g;
 		$$data =~ s/削除/”削除”/g;
 	}
-	
+
 	# name
 	if ($mode == 0) {
 		$$data =~ s/管理/”管理”/g;
@@ -1134,7 +1134,7 @@ sub ConvertCharacter2
 #	特殊文字変換 - ConvertFusianasan
 #	--------------------------------------
 #	引　数：$data : 変換元データ(参照)
-#			$host : 
+#			$host :
 #	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -1142,9 +1142,9 @@ sub ConvertFusianasan
 {
 	my $this = shift;
 	my ($data, $host) = @_;
-	
+
 	$$data = '' if (!defined $$data);
-	
+
 	$$data =~ s/山崎渉/fusianasan/g;
 	$$data =~ s|^($ZP::RE_SJIS*?)fusianasan|$1</b>$host<b>|g;
 	$$data =~ s|^($ZP::RE_SJIS*?)fusianasan|$1 </b>$host<b>|g;
@@ -1163,10 +1163,10 @@ sub IsAnker
 {
 	my $this = shift;
 	my ($text, $num) = @_;
-	
+
 	$_ = $$text;
 	my $cnt = s/&gt;&gt;([1-9])//g;
-	
+
 	return ($cnt > $num ? 1 : 0);
 }
 
@@ -1174,7 +1174,7 @@ sub IsAnker
 #
 #	リファラ判断 - IsReferer
 #	--------------------------------------
-#	引　数：$Sys : MELKOR
+#	引　数：$Sys : SYS_DATA
 #	戻り値：許可なら0,NGなら1
 #
 #------------------------------------------------------------------------------------------------------------
@@ -1182,7 +1182,7 @@ sub IsReferer
 {
 	my $this = shift;
 	my ($Sys, $pENV) = @_;
-	
+
 	my $svr = $Sys->Get('SERVER');
 	if ($pENV->{'HTTP_REFERER'} =~ /\Q$svr\E/) {		# 自鯖からならOK
 		return 0;
@@ -1197,8 +1197,8 @@ sub IsReferer
 #
 #	プロクシチェック - IsProxy
 #	--------------------------------------
-#	引　数：$Sys   : MELKOR
-#			$Form  : 
+#	引　数：$Sys   : SYS_DATA
+#			$Form  :
 #			$from  : 名前欄
 #			$mode  : エージェント
 #	戻り値：プロクシなら対象ポート番号
@@ -1208,14 +1208,14 @@ sub IsProxy
 {
 	my $this = shift;
 	my ($Sys, $Form, $from, $mode) = @_;
-	
+
 	# 携帯, iPhone(3G回線) はプロキシ規制を回避する
 	return 0 if ($mode eq 'O' || $mode eq 'i');
-	
+
 	my @dnsbls = ();
 	push(@dnsbls, 'niku.2ch.net') if($Sys->Get('BBQ'));
 	push(@dnsbls, 'bbx.2ch.net') if($Sys->Get('BBX'));
-	
+
 	# DNSBL問い合わせ
 	my $addr = join('.', reverse( split(/\./, $ENV{'REMOTE_ADDR'})));
 	foreach my $dnsbl (@dnsbls) {
@@ -1224,7 +1224,7 @@ sub IsProxy
 			return ($mode eq 'P' ? 0 : 1);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -1239,17 +1239,17 @@ sub IsProxy
 sub CheckDNSBL
 {
 	my ($host) = @_;
-	
+
 	my $ret = eval {
 		require Net::DNS;
 		my $res = Net::DNS::Resolver->new;
 		$res->tcp_timeout(1);
 		$res->udp_timeout(1);
 		$res->retry(1);
-		
+
 		if ((my $query = $res->query($host))) {
 			my @ans = $query->answer;
-			
+
 			foreach (@ans) {
 				return $_->address;
 			}
@@ -1258,20 +1258,20 @@ sub CheckDNSBL
 			return '127.0.0.0';
 		}
 	};
-	
+
 	return $ret if (defined $ret);
-	
+
 	if ($@) {
 		require Net::DNS::Lite;
 		my $res = Net::DNS::Lite->new(
 			server => [ qw(8.8.4.4 8.8.8.8) ], # google public dns
 			timeout => [2, 3],
 		);
-		
+
 		my @ans = $res->resolve($host, 'a');
 		return $_->[4] foreach (@ans);
 	}
-	
+
 	return '127.0.0.1';
 }
 
@@ -1286,15 +1286,15 @@ sub CheckDNSBL
 #------------------------------------------------------------------------------------------------------------
 sub MakePath
 {
-	my $this = (ref($_[0]) eq 'GALADRIEL' ? shift : undef);
+	my $this = (ref($_[0]) eq 'DATA_UTILS' ? shift : undef);
 	my ($path1, $path2) = @_;
-	
+
 	$path1 = '.' if (! defined $path1 || $path1 eq '');
 	$path2 = '.' if (! defined $path2 || $path2 eq '');
-	
+
 	my @dir1 = ($path1 =~ m[^/|[^/]+]g);
 	my @dir2 = ($path2 =~ m[^/|[^/]+]g);
-	
+
 	my $absflg = 0;
 	if ($dir2[0] eq '/') {
 		$absflg = 1;
@@ -1303,9 +1303,9 @@ sub MakePath
 	else {
 		push @dir1, @dir2;
 	}
-	
+
 	my @dir3 = ();
-	
+
 	my $depth = 0;
 	for my $i (0 .. $#dir1) {
 		if ($i == 0 && $dir1[$i] eq '/') {
@@ -1335,7 +1335,7 @@ sub MakePath
 			$depth++;
 		}
 	}
-	
+
 	my $path3;
 	if ($#dir3 == -1) {
 		$path3 = ($absflg ? '/' : '.');
@@ -1343,7 +1343,7 @@ sub MakePath
 	else {
 		$path3 = ($absflg ? '/' : '') . join('/', @dir3);
 	}
-	
+
 	return $path3;
 }
 

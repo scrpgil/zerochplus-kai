@@ -3,7 +3,7 @@
 #	SETTINGƒf[ƒ^ŠÇ—ƒ‚ƒWƒ…[ƒ‹
 #
 #============================================================================================================
-package	ISILDUR;
+package	SETTINGS;
 
 use strict;
 #use warnings;
@@ -19,13 +19,13 @@ use strict;
 sub new
 {
 	my $this = shift;
-	
+
 	my $obj = {
 		'SYS'		=> undef,
 		'SETTING'	=> undef,
 	};
 	bless $obj, $this;
-	
+
 	return $obj;
 }
 
@@ -33,7 +33,7 @@ sub new
 #
 #	ŒfŽ¦”ÂÝ’è“Ç‚Ýž‚Ý
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	ƒGƒ‰[”Ô†
 #
 #------------------------------------------------------------------------------------------------------------
@@ -41,26 +41,26 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SYS'} = $Sys;
-	
+
 	my $set = $this->{'SETTING'} = {};
 	InitSettingData($set);
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/SETTING.TXT';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			if ($_ =~ /^(.+?)=(.*)$/) {
 				$set->{$1} = $2;
 			}
 		}
-		
+
 		return 1;
 	}
 	return 0;
@@ -70,7 +70,7 @@ sub Load
 #
 #	ŒfŽ¦”ÂÝ’è‘‚«ž‚Ý
 #	-------------------------------------------------------------------------------------
-#	@param	$Sys	MELKOR
+#	@param	$Sys	SYS_DATA
 #	@return	‚È‚µ
 #
 #------------------------------------------------------------------------------------------------------------
@@ -78,9 +78,9 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/SETTING.TXT';
-	
+
 	# ‚Q‚¿‚á‚ñ‚Ë‚é‚ÌSETTING.TXT‡˜
 	my @ch2setting = qw(
 		BBS_TITLE				BBS_TITLE_PICTURE		BBS_TITLE_COLOR			BBS_TITLE_LINK
@@ -95,17 +95,17 @@ sub Save
 		BBS_PROXY_CHECK			BBS_OVERSEA_THREAD		BBS_OVERSEA_PROXY		BBS_RAWIP_CHECK
 		BBS_SLIP				BBS_DISP_IP				BBS_FORCE_ID			BBS_BE_ID
 		BBS_BE_TYPE2			BBS_NO_ID				BBS_JP_CHECK			BBS_VIP931
-		BBS_4WORLD				BBS_YMD_WEEKS			BBS_NINJA				
+		BBS_4WORLD				BBS_YMD_WEEKS			BBS_NINJA
 	);
-	
+
 	my %orz = %{$this->{'SETTING'}};
-	
+
 	chmod($Sys->Get('PM-TXT'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		binmode($fh);
 		seek($fh, 0, 0);
-		
+
 		# ‡”Ô‚Éo—Í
 		foreach my $key (@ch2setting) {
 			my $val = $this->Get($key, '');
@@ -117,7 +117,7 @@ sub Save
 			print $fh "$key=$val\n";
 			delete $orz{$key};
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -139,27 +139,27 @@ sub LoadFrom
 {
 	my $this = shift;
 	my ($path) = @_;
-	
+
 	my $set = $this->{'SETTING'} = {};
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			if ($_ =~ /^(.+?)=(.*)$/) {
 				$set->{$1} = $2;
 			}
 		}
-		
+
 		return 1;
 	}
 	else {
 		warn "can't load setting: $path";
 	}
-	
+
 	return 0;
 }
 
@@ -175,18 +175,18 @@ sub SaveAs
 {
 	my $this = shift;
 	my ($path) = @_;
-	
+
 	chmod($this->{'SYS'}->Get('PM-TXT'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach my $key (keys %{$this->{'SETTING'}}) {
 			my $val = $this->{'SETTING'}->{$key};
 			print $fh "$key=$val\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -208,7 +208,7 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($keySet) = @_;
-	
+
 	push @$keySet, keys %{$this->{'SETTING'}};
 }
 
@@ -225,7 +225,7 @@ sub Equal
 {
 	my $this = shift;
 	my ($key, $val) = @_;
-	
+
 	return(defined $this->{'SETTING'}->{$key} && $this->{'SETTING'}->{$key} eq $val);
 }
 
@@ -242,9 +242,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{'SETTING'}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -261,7 +261,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $val) = @_;
-	
+
 	$this->{'SETTING'}->{$key} = $val;
 }
 
@@ -276,7 +276,7 @@ sub Set
 sub InitSettingData
 {
 	my ($pSET) = @_;
-	
+
 	my %set = (
 		# ‚Q‚¿‚á‚ñ‚Ë‚éŒÝŠ·Ý’è€–Ú
 		'BBS_TITLE'				=> 'ŒfŽ¦”Â—‚º‚ë‚¿‚á‚ñ‚Ë‚éƒvƒ‰ƒX',
@@ -328,7 +328,7 @@ sub InitSettingData
 		'BBS_JP_CHECK'			=> '',
 		'BBS_YMD_WEEKS'			=> '“ú/ŒŽ/‰Î/…/–Ø/‹à/“y',
 		'BBS_NINJA'				=> '',
-		
+
 		# ˆÈ‰º0chƒIƒŠƒWƒiƒ‹Ý’è€–Ú
 		'BBS_DATMAX'			=> 512,
 		'BBS_SUBJECT_MAX'		=> '',
@@ -349,7 +349,7 @@ sub InitSettingData
 		'BBS_TATESUGI_COUNT2'	=> '1',
 		'BBS_INDEX_LINE_NUMBER'		=> 12,
 	);
-	
+
 	while (my ($key, $val) = each(%set)) {
 		$pSET->{$key} = $val;
 	}

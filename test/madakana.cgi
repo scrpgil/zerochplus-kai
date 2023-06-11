@@ -32,8 +32,8 @@ sub MADAKANA
 
 	my ( %SYS, $Page, $err );
 
-	require './module/thorin.pl';
-	$Page = new THORIN;
+	require './module/io.pl';
+	$Page = new IO;
 
 	# 初期化に成功したら内容を表示
 	if (($err = Initialize(\%SYS, $Page)) == 0) {
@@ -72,12 +72,12 @@ sub Initialize
 	my (@elem, @regs, $path);
 	my ($oSYS, $oCONV);
 
-	require './module/melkor.pl';
-	require './module/galadriel.pl';
-	require './module/samwise.pl';
+	require './module/sys_data.pl';
+	require './module/data_utils.pl';
+	require './module/forms.pl';
 
-	$oSYS	= new MELKOR;
-	$oCONV	= new GALADRIEL;
+	$oSYS	= new SYS_DATA;
+	$oCONV	= new DATA_UTILS;
 
 	%$pSYS = (
 		'SYS'	=> $oSYS,
@@ -86,7 +86,7 @@ sub Initialize
 		'CODE'	=> 'Shift_JIS',
 	);
 
-	$pSYS->{'FORM'} = SAMWISE->new($oSYS->Get('BBSGET')),
+	$pSYS->{'FORM'} = FORMS->new($oSYS->Get('BBSGET')),
 
 	# システム初期化
 	$oSYS->Init();
@@ -116,10 +116,10 @@ sub PrintMadaHead
 	my ($Sys, $Page) = @_;
 	my ($Caption, $Banner, $code, $HOST, $ADDR);
 
-	require './module/legolas.pl';
-	require './module/denethor.pl';
-	$Caption = new LEGOLAS;
-	$Banner = new DENETHOR;
+	require './module/meta.pl';
+	require './module/banner.pl';
+	$Caption = new META;
+	$Banner = new BANNER;
 
 	$Caption->Load($Sys->{'SYS'}, 'META');
 	$Banner->Load($Sys->{'SYS'});
@@ -178,12 +178,12 @@ sub PrintMadaCont
 	my ($Sys, $Page) = @_;
 	my ($BBS, $vUser, $HOST, $ADDR, $BBSpath, @BBSkey, %BBSs, $path, $check, $line, $color );
 
-	require './module/nazguls.pl';
-	$BBS	= new NAZGUL;
+	require './module/bbs_manage.pl';
+	$BBS	= new BBS_MANAGE;
 	$BBS->Load($Sys->{'SYS'});
 
-	require './module/faramir.pl';
-	$vUser = FARAMIR->new;
+	require './module/access_user.pl';
+	$vUser = ACCESS_USER->new;
 
 	$HOST	= $Sys->{'FORM'}->Get('HOST');
 	$ADDR	= $ENV{'REMOTE_ADDR'};

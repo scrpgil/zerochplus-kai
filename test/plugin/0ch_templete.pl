@@ -16,10 +16,10 @@ sub new
 	my $this = shift;
 	my ($Config) = @_;
 	my ($obj);
-	
+
 	$obj = {};
 	bless $obj, $this;
-	
+
 	if (defined $Config) {
 		$obj->{'PLUGINCONF'} = $Config;
 		$obj->{'is0ch+'} = 1;
@@ -28,7 +28,7 @@ sub new
 		$obj->{'CONFIG'} = $this->getConfig();
 		$obj->{'is0ch+'} = 0;
 	}
-	
+
 	return $obj;
 }
 
@@ -82,7 +82,7 @@ sub getConfig
 {
 	my	$this = shift;
 	my	%config;
-	
+
 	%config = (
 		'testnum'	=> {
 			'default'		=> 123,
@@ -93,15 +93,15 @@ sub getConfig
 #			'valuetype'		=> 2,
 #		},
 	);
-	
+
 	return \%config;
 }
 
 #------------------------------------------------------------------------------------------------------------
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
-#	@param	$form	SAMWISE
+#	@param	$sys	SYS_DATA
+#	@param	$form	FORMS
 #	@param	$type	実行タイプ
 #	@return	正常終了の場合は0
 #------------------------------------------------------------------------------------------------------------
@@ -109,15 +109,15 @@ sub execute
 {
 	my	$this = shift;
 	my	($sys, $form, $type) = @_;
-	
+
 	if ($type & (1 | 2)) {
-		
+
 	#	my $num = $this->GetConf('testnum');
-		
+
 	#	$this->SetConf('testnum', $num + 1);
-		
+
 	}
-	
+
 	return 0;
 }
 
@@ -132,7 +132,7 @@ sub GetConf
 	my	$this = shift;
 	my	($key) = @_;
 	my	($val);
-	
+
 	if ($this->{'is0ch+'}) {
 		$val = $this->{'PLUGINCONF'}->GetConfig($key);
 	}
@@ -144,7 +144,7 @@ sub GetConf
 			$val = undef;
 		}
 	}
-	
+
 	return $val;
 }
 
@@ -159,7 +159,7 @@ sub SetConf
 {
 	my	$this = shift;
 	my	($key, $val) = @_;
-	
+
 	if ($this->{'is0ch+'}) {
 		$this->{'PLUGINCONF'}->SetConfig($key, $val);
 	}

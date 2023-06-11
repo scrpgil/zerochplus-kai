@@ -37,7 +37,7 @@ sub getConfig
 {
 	my	$this = shift;
 	my	%config;
-	
+
 	%config = (
 		'name_ascii_point'	=> {
 			'default'		=> 2,
@@ -85,15 +85,15 @@ sub getConfig
 			'description'	=> '[しきい値]スパムと判定する点数',
 		},
 	);
-	
+
 	return \%config;
 }
 
 #------------------------------------------------------------------------------------------------------------
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
-#	@param	$form	SAMWISE
+#	@param	$sys	SYS_DATA
+#	@param	$form	FORMS
 #	@param	$type	実行タイプ
 #	@return	正常終了の場合は0
 #------------------------------------------------------------------------------------------------------------
@@ -101,9 +101,9 @@ sub execute
 {
 	my	$this = shift;
 	my	($sys, $form, $type) = @_;
-	
+
 	if ($type & (1 | 2)) {
-		
+
 		my $nohost_point = $this->GetConf('nohost_point');
 		my $tldomain_setting = $this->GetConf('tldomain_setting');
 		my $name_ascii_point = $this->GetConf('name_ascii_point');
@@ -113,7 +113,7 @@ sub execute
 		my $text_ahref_point = $this->GetConf('text_ahref_point');
 		my $text_url_point = $this->GetConf('text_url_point');
 		my $threshold_point = $this->GetConf('threshold_point');
-		
+
 		require Encode;
 		my $name = $form->Get('FROM');
 		my $mail = $form->Get('mail');
@@ -121,9 +121,9 @@ sub execute
 		$name = Encode::decode('sjis', $name);
 		$mail = Encode::decode('sjis', $mail);
 		$text = Encode::decode('sjis', $text);
-		
+
 		my $point = 0;
-		
+
 		if ($ENV{'REMOTE_HOST'} eq $ENV{'REMOTE_ADDR'}) {
 			$point += $nohost_point;
 		}
@@ -139,7 +139,7 @@ sub execute
 		if ($text =~ m|http://|) {
 			$point += $text_url_point;
 		}
-		
+
 		if ('ASCII text') {
 			$text =~ s/<br>//gi;
 			$text =~ s/[\x00-\x1f\x7f\s]//g;
@@ -149,12 +149,12 @@ sub execute
 				$point += $text_ascii_point;
 			}
 		}
-		
+
 		if ('TLD of links' && $text_url_point == 0) {
 			my %tld2pt = ('*' => 0);
 			my $r_num = '^-?[0-9]+$';
 			my $r_tld = '^[a-z](?:[a-z0-9\-](?:[a-z0-9])?)?$|^\*$';
-			
+
 			# 設定文を解釈し点数マップを作成
 			foreach (split(/[^0-9a-zA-Z\-=,\*]/, $tldomain_setting)) {
 				my @buf = split(/[=,]/, $_);
@@ -169,23 +169,23 @@ sub execute
 					}
 				}
 			}
-			
+
 			# 本文リンクからTLDを抽出し重複排除
 			my @tldlist = keys %{ {map { pop(@{[split(/\./, $_)]}), 1 }
 							($text =~ m|http://([a-z0-9\-\.]+)|gi)} };
-			
+
 			# TLDの種類ごとに加点
 			foreach $tld (@tldlist) {
 				$tld = '*' if (!defined $tld2pt{$tld});
 				$point += $tld2pt{$tld};
 			}
 		}
-		
+
 		if ($point >= $threshold_point) {
 			PrintBBSError($sys, $form, 205);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -197,10 +197,10 @@ sub new
 	my $this = shift;
 	my ($Config) = @_;
 	my ($obj);
-	
+
 	$obj = {};
 	bless $obj, $this;
-	
+
 	if (defined $Config) {
 		$obj->{'PLUGINCONF'} = $Config;
 		$obj->{'is0ch+'} = 1;
@@ -209,7 +209,7 @@ sub new
 		$obj->{'CONFIG'} = $this->getConfig();
 		$obj->{'is0ch+'} = 0;
 	}
-	
+
 	return $obj;
 }
 
@@ -221,7 +221,7 @@ sub GetConf
 	my	$this = shift;
 	my	($key) = @_;
 	my	($val);
-	
+
 	if ($this->{'is0ch+'}) {
 		$val = $this->{'PLUGINCONF'}->GetConfig($key);
 	}
@@ -233,7 +233,7 @@ sub GetConf
 			$val = undef;
 		}
 	}
-	
+
 	return $val;
 }
 
@@ -244,7 +244,7 @@ sub SetConf
 {
 	my	$this = shift;
 	my	($key, $val) = @_;
-	
+
 	if ($this->{'is0ch+'}) {
 		$this->{'PLUGINCONF'}->SetConfig($key, $val);
 	}
@@ -265,27 +265,27 @@ sub PrintBBSError
 {
 	my ($sys, $form, $err) = @_;
 	my $SYS;
-	
-	require './module/radagast.pl';
-	require './module/isildur.pl';
-	require './module/thorin.pl';
-	
+
+	require './module/cookie.pl';
+	require './module/settings.pl';
+	require './module/io.pl';
+
 	$SYS->{'SYS'} = $sys;
 	$SYS->{'FORM'} = $form;
-	$SYS->{'COOKIE'} = RADAGAST->new;
+	$SYS->{'COOKIE'} = COOKIE->new;
 	$SYS->{'COOKIE'}->Init;
-	$SYS->{'SET'} = ISILDUR->new;
+	$SYS->{'SET'} = SETTINGS->new;
 	$SYS->{'SET'}->Load($sys);
-	my $Page = THORIN->new;
-	
-	require('./module/orald.pl');
-	$ERROR = ORALD->new;
+	my $Page = IO->new;
+
+	require('./module/error.pl');
+	$ERROR = ERROR->new;
 	$ERROR->Load($sys);
-	
+
 	$ERROR->Print($SYS, $Page, $err, $sys->Get('AGENT'));
-	
+
 	$Page->Flush('', 0, 0);
-	
+
 	exit($err);
 }
 

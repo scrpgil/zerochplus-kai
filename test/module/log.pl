@@ -9,7 +9,7 @@
 #	3～:未使用
 #
 #============================================================================================================
-package	IMRAHIL;
+package	LOG;
 use strict;
 #use warnings;
 
@@ -27,7 +27,7 @@ sub new
 {
 	my $class = shift;
 	my ($file, $limit, $mode) = @_;
-	
+
 	my $obj = {
 		'PATH'		=> $file,
 		'LIMIT'		=> $limit,
@@ -38,7 +38,7 @@ sub new
 		'SIZE'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -53,7 +53,7 @@ sub new
 sub DESTROY
 {
 	my $this = shift;
-	
+
 	$this->Close;
 }
 
@@ -71,7 +71,7 @@ sub Open
 {
 	my $this = shift;
 	my ($file, $limit, $mode) = @_;
-	
+
 	if (defined $file && defined $limit && defined $mode) {
 		$this->{'PATH'} = $file;
 		$this->{'LIMIT'} = $limit;
@@ -82,18 +82,18 @@ sub Open
 		$limit = int $this->{'LIMIT'};
 		$mode = int $this->{'MODE'};
 	}
-	
+
 	$this->Close;
-	
+
 	my $ret = -1;
-	
+
 	if (!$this->{'STAT'}) {
 		$file .= '.cgi';
 		if (open(my $fh, (-f $file ? '+<' : '>'), $file)) {
 			flock($fh, 2);
 			seek($fh, 0, 2);
 			binmode($fh);
-			
+
 			$this->{'HANDLE'} = $fh;
 			$this->{'STAT'} = 1;
 			$ret = ($mode & 2 ? $this->Read() : 0);
@@ -102,7 +102,7 @@ sub Open
 			warn "can't open log: $file";
 		}
 	}
-	
+
 	return $ret;
 }
 
@@ -117,7 +117,7 @@ sub Open
 sub Close
 {
 	my $this = shift;
-	
+
 	if ($this->{'STAT'}) {
 		close($this->{'HANDLE'});
 		$this->{'HANDLE'} = undef;
@@ -136,19 +136,19 @@ sub Close
 sub Read
 {
 	my $this = shift;
-	
+
 	if ($this->{'STAT'}) {
 		my $fh = $this->{'HANDLE'};
 		seek($fh, 0, 0);
-		
+
 		my @lines = <$fh>;
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		$this->{'LOGS'} = \@lines;
 		$this->{'SIZE'} = scalar(@lines);
 		return 0;
 	}
-	
+
 	return -1;
 }
 
@@ -163,17 +163,17 @@ sub Read
 sub Write
 {
 	my $this = shift;
-	
+
 	# ファイルオープン状態なら書き込みを実行する
 	if ($this->{'STAT'}) {
 		if (!($this->{'MODE'} & 1)) {
 			my $fh = $this->{'HANDLE'};
 			seek($fh, 0, 0);
-			
+
 			for (my $i = 0 ; $i < $this->{'SIZE'} ; $i++) {
 				print $fh "$this->{'LOGS'}->[$i]\n";
 			}
-			
+
 			truncate($fh, tell($fh));
 		}
 		$this->Close();
@@ -192,7 +192,7 @@ sub Get
 {
 	my $this = shift;
 	my ($line) = @_;
-	
+
 	if ($line >= 0 && $line < $this->{'SIZE'}) {
 		return $this->{'LOGS'}->[$line];
 	}
@@ -211,13 +211,13 @@ sub Put
 {
 	my $this = shift;
 	my (@datas) = @_;
-	
+
 	my $tm = time;
 	my $logData = join('<>', $tm, @datas);
-	
+
 	push @{$this->{'LOGS'}}, $logData;
 	$this->{'SIZE'}++;
-	
+
 	if ($this->{'SIZE'} + 10 > $this->{'LIMIT'}) {
 		my $logName = "$this->{'PATH'}_old.cgi";
 		if (open(my $fh, '>>', $logName)) {
@@ -260,7 +260,7 @@ sub Size
 sub MoveToOld
 {
 	my $this = shift;
-	
+
 	my $logName = "$this->{'PATH'}_old.cgi";
 	if (open(my $fh, '>>', $logName)) {
 		flock($fh, 2);
@@ -283,7 +283,7 @@ sub MoveToOld
 sub Clear
 {
 	my $this = shift;
-	
+
 	$this->{'LOGS'} = [];
 	$this->{'SIZE'} = 0;
 }
@@ -302,7 +302,7 @@ sub search
 {
 	my $this = shift;
 	my ($index, $word, $pResult) = @_;
-	
+
 	my $num = 0;
 	for(my $i = 0 ; $i < $this->{'SIZE'} ; $i++) {
 		my @elem = split(/<>/, $this->{'LOGS'}->[$i], -1);

@@ -28,8 +28,8 @@ sub BBSCGI
 {
 	require './module/constant.pl';
 
-	require './module/thorin.pl';
-	my $Page = THORIN->new;
+	require './module/io.pl';
+	my $Page = IO->new;
 
 	my $CGI = {};
 	my $err = $ZP::E_SUCCESS;
@@ -43,16 +43,16 @@ sub BBSCGI
 		my $Conv = $CGI->{'CONV'};
 		my $Threads = $CGI->{'THREADS'};
 
-		require './module/vara.pl';
-		my $WriteAid = VARA->new;
+		require './module/nns_write.pl';
+		my $WriteAid = BBS_WRITE->new;
 		$WriteAid->Init($Sys, $Form, $Set, $Threads, $Conv);
 
 		$err = $WriteAid->Write();
 		# 書き込みに成功したら掲示板構成要素を更新する
 		if ($err == $ZP::E_SUCCESS) {
 			if (!$Sys->Equal('FASTMODE', 1)) {
-				require './module/varda.pl';
-				my $BBSAid = VARDA->new;
+				require './module/bbs_support.pl';
+				my $BBSAid = BBS_SUPPORT->new;
 
 				$BBSAid->Init($Sys, $Set);
 				$BBSAid->CreateIndex();
@@ -107,23 +107,23 @@ sub Initialize
 	my ($CGI, $Page) = @_;
 
 	# 使用モジュールの初期化
-	require './module/melkor.pl';
-	require './module/isildur.pl';
-	require './module/radagast.pl';
-	require './module/galadriel.pl';
-	require './module/samwise.pl';
-	require './module/baggins.pl';
+	require './module/sys_data.pl';
+	require './module/settings.pl';
+	require './module/cookie.pl';
+	require './module/data_utils.pl';
+	require './module/forms.pl';
+	require './module/threads.pl';
 
-	my $Sys = MELKOR->new;
-	my $Conv = GALADRIEL->new;
-	my $Set = ISILDUR->new;
-	my $Cookie = RADAGAST->new;
-	my $Threads = BILBO->new;
+	my $Sys = SYS_DATA->new;
+	my $Conv = DATA_UTILS->new;
+	my $Set = SETTINGS->new;
+	my $Cookie = COOKIE->new;
+	my $Threads = THREADS->new;
 
 	# システム情報設定
 	return $ZP::E_SYSTEM_ERROR if ($Sys->Init());
 
-	my $Form = SAMWISE->new($Sys->Get('BBSGET'));
+	my $Form = FORMS->new($Sys->Get('BBSGET'));
 
 	%$CGI = (
 		'SYS'		=> $Sys,
@@ -244,8 +244,8 @@ sub PrintBBSThreadCreate
 	my $Cookie = $CGI->{'COOKIE'};
 	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
 
-	require './module/legolas.pl';
-	my $Caption = LEGOLAS->new;
+	require './module/meta.pl';
+	my $Caption = META->new;
 	$Caption->Load($Sys, 'META');
 
 	my $title = $Set->Get('BBS_TITLE');
@@ -345,7 +345,7 @@ HTML
 #	bbs.cgiスレッド作成ページ(携帯)表示
 #	-------------------------------------------------------------------------------------
 #	@param	$CGI
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -356,8 +356,8 @@ sub PrintBBSMobileThreadCreate
 	my $Sys = $CGI->{'SYS'};
 	my $Set = $CGI->{'SET'};
 
-	require './module/denethor.pl';
-	my $Banner = DENETHOR->new;
+	require './module/banner.pl';
+	my $Banner = BANNER->new;
 	$Banner->Load($Sys);
 
 	my $title = $Set->Get('BBS_TITLE');
@@ -387,7 +387,7 @@ sub PrintBBSMobileThreadCreate
 #	bbs.cgiクッキー確認ページ表示
 #	-------------------------------------------------------------------------------------
 #	@param	$CGI
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -566,8 +566,8 @@ HTML
 	}
 	# 告知欄表示(表示させたくない場合はコメントアウトか条件を0に)
 	if (0) {
-		require './module/denethor.pl';
-		my $Banner = DENETHOR->new;
+		require './module/banner.pl';
+		my $Banner = BANNER->new;
 		$Banner->Load($Sys);
 		$Banner->Print($Page, 100, 0, $Sys->Get('AGENT'));
 	}
@@ -588,8 +588,8 @@ sub PrintBBSError
 {
 	my ($CGI, $Page, $err) = @_;
 
-	require './module/orald.pl';
-	my $Error = ORALD->new;
+	require './module/error.pl';
+	my $Error = ERROR->new;
 	$Error->Load($CGI->{'SYS'});
 
 	$Error->Print($CGI, $Page, $err, $CGI->{'SYS'}->Get('AGENT'));

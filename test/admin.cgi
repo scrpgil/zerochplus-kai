@@ -33,8 +33,8 @@ sub AdminCGI
 	SystemSetting($CGI);
 
 	# 0chシステム情報を取得
-	require "./module/melkor.pl";
-	my $Sys = MELKOR->new;
+	require "./module/sys_data.pl";
+	my $Sys = SYS_DATA->new;
 	$Sys->Init();
 	$Sys->Set('BBS', '');
 	$CGI->{'LOGGER'}->Open('.'.$Sys->Get('INFO').'/AdminLog', 100, 2 | 4);
@@ -45,8 +45,8 @@ sub AdminCGI
 	$Sys->Set('MainCGI', $CGI);
 
 	# フォーム情報を取得
-	require "./module/samwise.pl";
-	my $Form = SAMWISE->new(0);
+	require "./module/forms.pl";
+	my $Form = FORMS->new(0);
 	$Form->DecodeForm(0);
 	$Form->Set('FALSE', 0);
 
@@ -114,12 +114,12 @@ sub SystemSetting
 		'NEWRELEASE'=> undef,		# バージョンチェック
 	);
 
-	require './module/elves.pl';
-	require './module/imrahil.pl';
+	require './module/sys_security.pl';
+	require './module/log.pl';
 	require './module/newrelease.pl';
 
 	$CGI->{'SECINFO'} = ARWEN->new;
-	$CGI->{'LOGGER'} = IMRAHIL->new;
+	$CGI->{'LOGGER'} = LOG->new;
 	$CGI->{'NEWRELEASE'} = ZP_NEWRELEASE->new;
 }
 

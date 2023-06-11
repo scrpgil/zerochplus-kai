@@ -70,8 +70,8 @@ sub getType
 #
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
-#	@param	$sys	MELKOR
-#	@param	$form	SAMWISE
+#	@param	$sys	SYS_DATA
+#	@param	$form	FORMS
 #	@return	正常終了の場合は0
 #
 #------------------------------------------------------------------------------------------------------------
@@ -79,11 +79,11 @@ sub execute
 {
 	my	$this = shift;
 	my	($sys,$form) = @_;
-	
+
 	my $content = $form->Get('MESSAGE');
 	STRESS(\$content);
 	$form->Set('MESSAGE',$content);
-	
+
 	return 0;
 }
 
@@ -98,9 +98,9 @@ sub execute
 sub STRESS
 {
 	my	($text) = @_;
-	
+
 	$$text = '<br>' . $$text . '<br>';
-	
+
 	# ＞引用変換
 	while($$text =~ /<br>＞(.*?)<br>/){
 		$$text =~ s/<br>＞(.*?)<br>/<br><font color=gray>＞$1<\/font><br>/;
@@ -113,7 +113,7 @@ sub STRESS
 	while($$text =~ /<br>#(.*?)<br>/){
 		$$text =~ s/<br>#(.*?)<br>/<br><font color=green>#$1<\/font><br>/;
 	}
-	
+
 	# 最初につけた<br>を取り外す
 	$$text = substr($$text,4,length($$text) - 8);
 }

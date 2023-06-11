@@ -22,13 +22,13 @@ use Encode;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NEWRELEASE'	=> undef,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -36,7 +36,7 @@ sub new
 #
 #	初期化 - Init
 #	-------------------------------------------------------------------------------------
-#	引　数：$Sys : MELKOR
+#	引　数：$SSYS_DATAELKOR
 #	戻り値：0
 #
 #------------------------------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ sub Init
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'NEWRELEASE'} = {
 		'CheckURL'	=> 'http://zerochplus.sourceforge.jp/Release.txt',
 		'Interval'	=> 60 * 60 * 24, # 24時間
@@ -53,7 +53,7 @@ sub Init
 		'CachePM'	=> $Sys->Get('PM-ADM'),
 		'Update'	=> 0,
 	};
-	
+
 }
 
 
@@ -68,12 +68,12 @@ sub Init
 sub Check
 {
 	my $this = shift;
-	
+
 	my $hash = $this->{'NEWRELEASE'};
-	
+
 	my $url = $hash->{'CheckURL'};
 	my $interval = $hash->{'Interval'};
-	
+
 	my $rawver = $hash->{'RawVer'};
 	my @ver;
 	# 0ch+ BBS n.m.r YYYYMMDD 形式であることをちょっと期待している
@@ -89,17 +89,17 @@ sub Check
 	if ( $rawver =~ /(\d{8})/ ) {
 		$date = $1;
 	}
-	
+
 	my $path = $hash->{'CachePATH'};
-	
-	
+
+
 	# キャッシュの有効期限が過ぎてたらデータをとってくる
 	if ( !-f $path || ( stat $path )[9] < time - $interval ) {
 		# 同時接続防止みたいな
 		utime ( undef, undef, $path );
-		
+
 		require('./module/httpservice.pl');
-		
+
 		my $proxy = HTTPSERVICE->new;
 		# URLを指定
 		$proxy->setURI($url);
@@ -107,10 +107,10 @@ sub Check
 		$proxy->setAgent($rawver);
 		# タイムアウトを設定
 		$proxy->setTimeout(3);
-		
+
 		# とってくるよ
 		$proxy->request();
-		
+
 		# とれた
 		if ( $proxy->getStatus() eq 200 ) {
 			if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
@@ -124,21 +124,21 @@ sub Check
 			chmod($hash->{'CachePM'}, $path);
 		}
 	}
-	
-	
+
+
 	# 比較部
 	my @release = ();
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		while ( <$fh> ) {
 			# $l =~ s/\x0d?\x0a?$//;
-			# samwiseと同等のサニタイジングを行います
+			# formsと同等のサニタイジングを行います
 			$_ =~ s/[\x0d\x0a\0]//g;
 			$_ =~ s/"/&quot;/g;
 			$_ =~ s/</&lt;/g;
 			$_ =~ s/>/&gt;/g;
-			
+
 			Encode::from_to( $_, 'utf8', 'sjis' );
 			push @release, $_;
 		}
@@ -146,12 +146,12 @@ sub Check
 	}
 	# 爆弾(BOM)処理
 	$release[0] =~ s/^\xef\xbb\xbf//;
-	
+
 	# n.m.r形式であることを期待している
 	my @newver = split /\./, $release[0];
 	# YYYY.MM.DD形式であることを期待している
 	my $newdate = join '', (split /\./, $release[2], 3);
-	
+
 	my $i = 0;
 	my $newrelease = 0;
 	# バージョン比較
@@ -173,17 +173,17 @@ sub Check
 			$newrelease = 1;
 		}
 	}
-	
-	
+
+
 	$this->{'NEWRELEASE'}->{'Update'}	= $newrelease;
 	$this->{'NEWRELEASE'}->{'Ver'}		= shift @release;
 	$this->{'NEWRELEASE'}->{'URL'}		= 'http://sourceforge.jp/projects/zerochplus/releases/' . shift @release;
 	$this->{'NEWRELEASE'}->{'Date'}		= shift @release;
-	
+
 	shift @release; # 4行目(空行)を消す
 	# 残りはリリースノートとかそういうのが残る
 	$this->{'NEWRELEASE'}->{'Detail'}	= \@release;
-	
+
 	return 0;
 
 }
@@ -201,9 +201,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{'NEWRELEASE'}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -220,7 +220,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	$this->{'NEWRELEASE'}->{$key} = $data;
 }
 
