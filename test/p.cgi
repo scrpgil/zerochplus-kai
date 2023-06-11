@@ -32,7 +32,7 @@ sub PCGI
 	my (%pPath, @tList);
 	my ($base, $max, $err);
 
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	require './module/settings.pl';
 	require './module/data_utils.pl';
 	require './module/sys_data.pl';

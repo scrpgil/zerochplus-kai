@@ -64,7 +64,7 @@ sub Init
 		$this->{'SET'}->Load($Sys);
 	}
 	if (!defined $Threads) {
-		require './module/baggins.pl';
+		require './module/threads.pl';
 		$this->{'THREADS'} = THREADS->new;
 		$this->{'THREADS'}->Load($Sys);
 	}
@@ -113,7 +113,7 @@ sub Write
 
 
 	# データの書き込み
-	require './module/gondor.pl';
+	require './module/dat.pl';
 	my $Sys = $this->{'SYS'};
 	my $Set = $this->{'SET'};
 	my $Form = $this->{'FORM'};
@@ -431,7 +431,7 @@ sub IsRegulation
 
 	# レス書き込みモード時のみ
 	if ($Sys->Equal('MODE', 2)) {
-		require './module/gondor.pl';
+		require './module/dat.pl';
 
 		# 移転スレッド
 		return $ZP::E_LIMIT_MOVEDTHREAD if (DAT::IsMoved($datPath));

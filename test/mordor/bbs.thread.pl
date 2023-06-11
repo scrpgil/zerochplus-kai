@@ -220,8 +220,8 @@ sub PrintThreadList
 
 	$SYS->Set('_TITLE', 'Thread List');
 
-	require './module/baggins.pl';
-	require './module/gondor.pl';
+	require './module/threads.pl';
+	require './module/dat.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($SYS);
@@ -355,7 +355,7 @@ sub PrintThreadStop
 	$SYS->Set('_TITLE', ($mode ? 'Thread Stop' : 'Thread Restart'));
 	$text = ($mode ? '’âŽ~' : 'ÄŠJ');
 
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($SYS);
@@ -414,7 +414,7 @@ sub PrintThreadAttr
 	$name = $alist{$attr} if (defined $alist{$name});
 	my $text = "[$name]‘®«" .($mode?'•t‰Á':'‰ðœ');
 
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	my $Threads = THREADS->new;
 	$Threads->Load($Sys);
 
@@ -464,7 +464,7 @@ sub PrintThreadPooling
 
 	$SYS->Set('_TITLE', 'Thread Pooling');
 
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($SYS);
@@ -515,7 +515,7 @@ sub PrintThreadDelete
 
 	$SYS->Set('_TITLE', 'Thread Remove');
 
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($SYS);
@@ -620,8 +620,8 @@ sub FunctionThreadStop
 			return 1000;
 		}
 	}
-	require './module/gondor.pl';
-	require './module/baggins.pl'; # use from 0.8.x
+	require './module/dat.pl';
+	require './module/threads.pl'; # use from 0.8.x
 
 	$Thread		= DAT->new;
 	my $Threads	= THREADS->new; # use from 0.8.x
@@ -692,7 +692,7 @@ sub FunctionThreadAttr
 			return 1000;
 		}
 	}
-	require './module/baggins.pl';
+	require './module/threads.pl';
 
 	my $Threads	= THREADS->new;
 	$Threads->Load($Sys);
@@ -735,7 +735,7 @@ sub FunctionThreadPooling
 			return 1000;
 		}
 	}
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	require './module/file_utils.pl';
 	$Threads = THREADS->new;
 	$Pools = FRODO->new;
@@ -786,7 +786,7 @@ sub FunctionThreadDelete
 			return 1000;
 		}
 	}
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($Sys);
@@ -833,7 +833,7 @@ sub FunctionUpdateSubject
 			return 1000;
 		}
 	}
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($Sys);
@@ -869,7 +869,7 @@ sub FunctionUpdateSubjectAll
 			return 1000;
 		}
 	}
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	$Threads = THREADS->new;
 
 	$Threads->Load($Sys);
@@ -905,8 +905,8 @@ sub FunctionThreadAutoPooling
 			return 1000;
 		}
 	}
-	require './module/gondor.pl';
-	require './module/baggins.pl';
+	require './module/dat.pl';
+	require './module/threads.pl';
 	require './module/file_utils.pl';
 	$Threads = THREADS->new;
 	$Pools = FRODO->new;

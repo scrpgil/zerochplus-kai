@@ -85,7 +85,7 @@ sub Initialize
 	# 各使用モジュールの生成と初期化
 	require './module/sys_data.pl';
 	require './module/settings.pl';
-	require './module/gondor.pl';
+	require './module/dat.pl';
 	require './module/data_utils.pl';
 
 	$oSYS	= new SYS_DATA;

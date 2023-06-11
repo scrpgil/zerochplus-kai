@@ -59,7 +59,7 @@ sub Create
 
 	# ŽI“à‘SŒŸõ
 	if ($mode == 0) {
-		require './module/baggins.pl';
+		require './module/threads.pl';
 		require './module/bbs_manage.pl';
 		my $BBSs = BBS_MANAGE->new;
 
@@ -89,7 +89,7 @@ sub Create
 	}
 	# ŒfŽ¦”Â“à‘SŒŸõ
 	elsif ($mode == 1) {
-		require './module/baggins.pl';
+		require './module/threads.pl';
 		my $Threads = THREADS->new;
 
 		$Sys->Set('BBS', $bbs);
@@ -114,7 +114,7 @@ sub Create
 
 	# datƒ‚ƒWƒ…[ƒ‹“Ç‚Ýž‚Ý
 	if (! defined $this->{'DAT'}) {
-		require './module/gondor.pl';
+		require './module/dat.pl';
 		$this->{'DAT'} = DAT->new;
 	}
 }

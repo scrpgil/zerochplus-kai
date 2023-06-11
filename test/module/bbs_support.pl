@@ -47,7 +47,7 @@ sub Init
 	my $this = shift;
 	my ($Sys, $Setting) = @_;
 
-	require './module/baggins.pl';
+	require './module/threads.pl';
 	require './module/data_utils.pl';
 	require './module/banner.pl';
 
@@ -453,7 +453,7 @@ sub PrintIndexPreview
 		}
 	}
 
-	require './module/gondor.pl';
+	require './module/dat.pl';
 	my $Dat = DAT->new;
 
 	my @threadSet = ();

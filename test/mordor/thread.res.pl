@@ -65,7 +65,7 @@ sub DoPrint
 
 	# dat‚Ì“Ç‚Ýž‚Ý
 	if (! defined $pSys->{'AD_DAT'}) {
-		require './module/gondor.pl';
+		require './module/dat.pl';
 		$DAT = DAT->new;
 
 		$Sys->Set('KEY', $Form->Get('TARGET_THREAD'));
@@ -134,7 +134,7 @@ sub DoFunction
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $err, $BBS, $DAT);
 
-	require './module/gondor.pl';
+	require './module/dat.pl';
 	require './module/bbs_manage.pl';
 	$BBS = BBS_MANAGE->new;
 	$DAT = DAT->new;
