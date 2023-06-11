@@ -166,9 +166,9 @@ sub PrintNoticeList
 
 	$Sys->Set('_TITLE', 'User Notice List');
 
-	require './module/gandalf.pl';
+	require './module/user_notify.pl';
 	require './module/data_utils.pl';
-	$Notices = GANDALF->new;
+	$Notices = USER_NOTIFY->new;
 
 	# 通知情報の読み込み
 	$Notices->Load($Sys);
@@ -471,8 +471,8 @@ sub FunctionNoticeCreate
 			return 1001;
 		}
 	}
-	require './module/gandalf.pl';
-	$Notice = GANDALF->new;
+	require './module/user_notify.pl';
+	$Notice = USER_NOTIFY->new;
 	$Notice->Load($Sys);
 
 	$date = time;
@@ -526,8 +526,8 @@ sub FunctionNoticeDelete
 			return 1000;
 		}
 	}
-	require './module/gandalf.pl';
-	$Notice = GANDALF->new;
+	require './module/user_notify.pl';
+	$Notice = USER_NOTIFY->new;
 	$Notice->Load($Sys);
 
 	@noticeSet = $Form->GetAtArray('NOTICES');
@@ -599,8 +599,8 @@ sub CheckVersionUpdate
 		my $reldate = $nr->Get('Date');
 
 		# ユーザ通知 準備
-		require './module/gandalf.pl';
-		my $Notice = GANDALF->new;
+		require './module/user_notify.pl';
+		my $Notice = USER_NOTIFY->new;
 		$Notice->Load($Sys);
 		my $nid = 'verupnotif';
 
