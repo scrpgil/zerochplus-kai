@@ -31,8 +31,8 @@ sub REMAKECGI
 
 	require './module/constant.pl';
 
-	require './module/thorin.pl';
-	$Page = new THORIN;
+	require './module/io.pl';
+	$Page = new IO;
 
 	# 初期化に成功したら更新処理を開始
 	if (($err = Initialize(\%SYS, $Page)) == 0) {

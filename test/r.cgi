@@ -33,8 +33,8 @@ sub ReadCGI
 
 	require './module/constant.pl';
 
-	require './module/thorin.pl';
-	$Page = new THORIN;
+	require './module/io.pl';
+	$Page = new IO;
 
 	# ‰Šú‰»E€”õ‚É¬Œ÷‚µ‚½‚ç“à—e•\¦
 	if (($err = Initialize(\%SYS, $Page)) == $ZP::E_SUCCESS) {

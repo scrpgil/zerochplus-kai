@@ -32,8 +32,8 @@ sub MADAKANA
 
 	my ( %SYS, $Page, $err );
 
-	require './module/thorin.pl';
-	$Page = new THORIN;
+	require './module/io.pl';
+	$Page = new IO;
 
 	# ‰Šú‰»‚É¬Œ÷‚µ‚½‚ç“à—e‚ğ•\¦
 	if (($err = Initialize(\%SYS, $Page)) == 0) {

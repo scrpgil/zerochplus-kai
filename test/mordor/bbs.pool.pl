@@ -609,7 +609,7 @@ sub FunctionCreateLogs
 	my @poolSet = $Form->GetAtArray('THREADS');
 
 	require './module/gondor.pl';
-	require './module/thorin.pl';
+	require './module/io.pl';
 	require './module/settings.pl';
 	require './module/data_utils.pl';
 	require './module/banner.pl';
@@ -618,7 +618,7 @@ sub FunctionCreateLogs
 	my $Set = SETTINGS->new;
 	my $Banner = BANNER->new;
 	my $Conv = DATA_UTILS->new;
-	my $Page = THORIN->new;
+	my $Page = IO->new;
 	my $Logs = KAKO_LOG->new;
 
 	$Set->Load($Sys);

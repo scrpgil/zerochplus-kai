@@ -366,7 +366,7 @@ sub PrintBBSError
 
 	require('./module/cookie.pl');
 	require('./module/settings.pl');
-	require('./module/thorin.pl');
+	require('./module/io.pl');
 
 	$CGI->{'SYS'}		= $Sys;
 	$CGI->{'FORM'}		= $Form;
@@ -374,7 +374,7 @@ sub PrintBBSError
 	$CGI->{'COOKIE'}->Init();
 	$CGI->{'SET'}		= SETTINGS->new;
 	$CGI->{'SET'}->Load($Sys);
-	my $Page = THORIN->new;
+	my $Page = IO->new;
 
 	require('./module/error.pl');
 	$ERROR = ERROR->new;

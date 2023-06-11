@@ -182,7 +182,7 @@ sub PrintBannerForPCEdit
 	}
 
 	# プレビューデータの作成
-	my $BannerPage = THORIN->new;
+	my $BannerPage = IO->new;
 	$Banner->Print($BannerPage, 100, 0, 0);
 	$BannerPage->{'BUFF'} = CreatePreviewData($BannerPage->{'BUFF'});
 	$Page->Merge($BannerPage);
@@ -240,7 +240,7 @@ sub PrintBannerForMobileEdit
 	}
 
 	# プレビューデータの作成
-	my $BannerPage = THORIN->new;
+	my $BannerPage = IO->new;
 	$Banner->Print($BannerPage, 100, 0, 1);
 	$BannerPage->{'BUFF'} = CreatePreviewData($BannerPage->{'BUFF'});
 	$Page->Merge($BannerPage);
@@ -294,7 +294,7 @@ sub PrintBannerForSubEdit
 	}
 
 	# プレビューデータの作成
-	my $BannerPage = THORIN->new;
+	my $BannerPage = IO->new;
 	$Banner->PrintSub($BannerPage);
 	$BannerPage->{'BUFF'} = CreatePreviewData($BannerPage->{'BUFF'});
 	$Page->Merge($BannerPage);

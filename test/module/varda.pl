@@ -92,9 +92,9 @@ sub CreateIndex
 	if ($Sys->Equal('MODE', 'CREATE')
 		|| ($Threads->GetPosition($Sys->Get('KEY')) < $bbsSetting->Get('BBS_MAX_MENU_THREAD'))) {
 
-		require './module/thorin.pl';
+		require './module/io.pl';
 		require './module/meta.pl';
-		my $Index = THORIN->new;
+		my $Index = IO->new;
 		my $Caption = META->new;
 
 		PrintIndexHead($this, $Index, $Caption);
@@ -122,8 +122,8 @@ sub CreateIIndex
 {
 	my $this = shift;
 
-	require './module/thorin.pl';
-	my $Page = THORIN->new;
+	require './module/io.pl';
+	my $Page = IO->new;
 
 	# ‘O€”õ
 	my $Sys = $this->{'SYS'};
@@ -188,8 +188,8 @@ sub CreateSubback
 {
 	my $this = shift;
 
-	require './module/thorin.pl';
-	my $Page = THORIN->new;
+	require './module/io.pl';
+	my $Page = IO->new;
 
 	my $Sys = $this->{'SYS'};
 	my $Threads = $this->{'THREADS'};

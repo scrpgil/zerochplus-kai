@@ -134,7 +134,7 @@ sub PrintBBSError
 
 	require('./module/cookie.pl');
 	require('./module/settings.pl');
-	require('./module/thorin.pl');
+	require('./module/io.pl');
 
 	$SYS->{'SYS'}		= $sys;
 	$SYS->{'FORM'}		= $form;
@@ -142,7 +142,7 @@ sub PrintBBSError
 	$SYS->{'COOKIE'}->Init();
 	$SYS->{'SET'}		= new SETTINGS;
 	$SYS->{'SET'}->Load($sys);
-	my $Page = new THORIN;
+	my $Page = new IO;
 
 	require('./module/error.pl');
 	$ERROR = new ERROR;

@@ -700,10 +700,10 @@ sub FunctionBBSCreate
 	push @$pLog, '■掲示板構\成要素生成完了...';
 
 	# 過去ログインデクス生成
-	require './module/thorin.pl';
+	require './module/io.pl';
 	require './module/kako_log.pl';
 	my $PastLog = KAKO_LOG->new;
-	my $Page = THORIN->new;
+	my $Page = IO->new;
 	$PastLog->Load($Sys);
 	$PastLog->UpdateInfo($Sys);
 	$PastLog->UpdateIndex($Sys, $Page);

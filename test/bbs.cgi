@@ -28,8 +28,8 @@ sub BBSCGI
 {
 	require './module/constant.pl';
 
-	require './module/thorin.pl';
-	my $Page = THORIN->new;
+	require './module/io.pl';
+	my $Page = IO->new;
 
 	my $CGI = {};
 	my $err = $ZP::E_SUCCESS;
@@ -345,7 +345,7 @@ HTML
 #	bbs.cgiスレッド作成ページ(携帯)表示
 #	-------------------------------------------------------------------------------------
 #	@param	$CGI
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ sub PrintBBSMobileThreadCreate
 #	bbs.cgiクッキー確認ページ表示
 #	-------------------------------------------------------------------------------------
 #	@param	$CGI
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------

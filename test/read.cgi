@@ -28,8 +28,8 @@ sub ReadCGI
 {
 	require './module/constant.pl';
 
-	require './module/thorin.pl';
-	my $Page = THORIN->new;
+	require './module/io.pl';
+	my $Page = IO->new;
 
 	my $CGI = {};
 	my $err = Initialize($CGI, $Page);

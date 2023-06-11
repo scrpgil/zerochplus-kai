@@ -37,14 +37,14 @@ sub PCGI
 	require './module/data_utils.pl';
 	require './module/sys_data.pl';
 	require './module/forms.pl';
-	require './module/thorin.pl';
+	require './module/io.pl';
 
 	$Threads	= new THREADS;
 	$Conv		= new DATA_UTILS;
 	$Set		= new SETTINGS;
 	$Sys		= new SYS_DATA;
 	$Form		= FORMS->new(0);
-	$Page		= new THORIN;
+	$Page		= new IO;
 
 	$max = 0;
 	$err = 1;
@@ -85,7 +85,7 @@ sub PCGI
 #
 #	ヘッダ部分出力
 #	-------------------------------------------------------------------------------------
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@param	$Sys	SYS_DATA
 #	@param	$num	表示数
 #	@param	$last	最終数
@@ -126,7 +126,7 @@ sub PrintHead
 #
 #	スレッドリストの表示
 #	-------------------------------------------------------------------------------------
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@param	$Sys	SYS_DATA
 #	@param	$Conv	DATA_UTILS
 #	@param	$pList	リスト格納バッファ
@@ -150,7 +150,7 @@ sub PrintThreadList
 #
 #	フッタ部分出力 - PrintHead
 #	-------------------------------------------------------------------------------------
-#	@param	$Page	THORIN
+#	@param	$Page	IO
 #	@param	$Sys	SYS_DATA
 #	@param	$num	表示数
 #	@param	$last	最終数

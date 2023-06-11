@@ -299,10 +299,10 @@ sub FunctionUpdateIndex
 			return 1000;
 		}
 	}
-	require './module/thorin.pl';
+	require './module/io.pl';
 	require './module/kako_log.pl';
 	$Logs = KAKO_LOG->new;
-	$Page = THORIN->new;
+	$Page = IO->new;
 
 	$Logs->Load($Sys);
 	$Logs->UpdateIndex($Sys, $Page);
