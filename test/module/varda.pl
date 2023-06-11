@@ -49,13 +49,13 @@ sub Init
 
 	require './module/baggins.pl';
 	require './module/galadriel.pl';
-	require './module/denethor.pl';
+	require './module/banner.pl';
 
 	# 使用モジュールを設定
 	$this->{'SYS'} = $Sys;
-	$this->{'THREADS'} = BILBO->new;
+	$this->{'THREADS'} = THREADS->new;
 	$this->{'CONV'} = GALADRIEL->new;
-	$this->{'BANNER'} = DENETHOR->new;
+	$this->{'BANNER'} = BANNER->new;
 	$this->{'CODE'} = 'sjis';
 
 	if (!defined $Setting) {
@@ -431,8 +431,8 @@ sub PrintIndexPreview
 	my ($Page) = @_;
 
 	# 拡張機能ロード
-	require './module/athelas.pl';
-	my $Plugin = ATHELAS->new;
+	require './module/plugins.pl';
+	my $Plugin = PLUGINS->new;
 	$Plugin->Load($this->{'SYS'});
 
 	# 有効な拡張機能一覧を取得

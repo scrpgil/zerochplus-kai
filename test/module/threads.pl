@@ -5,7 +5,7 @@
 #	このモジュールはスレッド情報を管理します。
 #	以下の2つのパッケージによって構成されます
 #
-#	BILBO	: 現行スレッド情報管理
+#	THREADS	: 現行スレッド情報管理
 #	FRODO	: プールスレッド情報管理
 #
 #============================================================================================================
@@ -15,7 +15,7 @@
 #	スレッド情報管理パッケージ
 #
 #============================================================================================================
-package	BILBO;
+package	THREADS;
 
 use strict;
 #use warnings;
@@ -31,7 +31,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'SUBJECT'	=> undef,
 		'RES'		=> undef,
@@ -41,7 +41,7 @@ sub new
 		'ATTR'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -56,7 +56,7 @@ sub new
 sub DESTROY
 {
 	my $this = shift;
-	
+
 	my $handle = $this->{'HANDLE'};
 	if ($handle) {
 		close($handle);
@@ -76,10 +76,10 @@ sub Open
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/subject.txt';
 	my $fh = undef;
-	
+
 	if ($this->{'HANDLE'}) {
 		$fh = $this->{'HANDLE'};
 		seek($fh, 0, 0);
@@ -96,7 +96,7 @@ sub Open
 			warn "can't load subject: $path";
 		}
 	}
-	
+
 	return $fh;
 }
 
@@ -111,7 +111,7 @@ sub Open
 sub Close
 {
 	my $this = shift;
-	
+
 	my $handle = $this->{'HANDLE'};
 	if ($handle) {
 		close($handle);
@@ -131,19 +131,19 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SUBJECT'} = {};
 	$this->{'RES'} = {};
 	$this->{'SORT'} = [];
-	
+
 	my $fh = $this->Open($Sys) or return;
 	my @lines = <$fh>;
 	map { s/[\r\n]+\z// } @lines;
-	
+
 	my $num = 0;
 	foreach (@lines) {
 		next if ($_ eq '');
-		
+
 		if ($_ =~ /^(.+?)\.dat<>(.*?) ?\(([0-9]+)\)$/) {
 			$this->{'SUBJECT'}->{$1} = $2;
 			$this->{'RES'}->{$1} = $3;
@@ -156,7 +156,7 @@ sub Load
 		}
 	}
 	$this->{'NUM'} = $num;
-	
+
 	$this->LoadAttr($Sys);
 }
 
@@ -172,23 +172,23 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $fh = $this->Open($Sys) or return;
 	my $subject = $this->{'SUBJECT'};
-	
+
 	$this->CustomizeOrder();
-	
+
 	foreach (@{$this->{'SORT'}}) {
 		next if (!defined $subject->{$_});
 		print $fh "$_.dat<>$subject->{$_} ($this->{'RES'}->{$_})\n";
 	}
-	
+
 	truncate($fh, tell($fh));
-	
+
 	$this->Close();
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/subject.txt';
 	chmod($Sys->Get('PM-TXT'), $path);
-	
+
 	$this->SaveAttr($Sys);
 }
 
@@ -207,20 +207,20 @@ sub OnDemand
 {
 	my $this = shift;
 	my ($Sys, $id, $val, $updown) = @_;
-	
+
 	my $subject = {};
 	$this->{'SUBJECT'} = $subject;
 	$this->{'RES'} = {};
 	$this->{'SORT'} = [];
-	
+
 	my $fh = $this->Open($Sys) or return;
 	my @lines = <$fh>;
 	map { s/[\r\n]+\z// } @lines;
-	
+
 	my $num = 0;
 	foreach (@lines) {
 		next if ($_ eq '');
-		
+
 		if ($_ =~ /^(.+?)\.dat<>(.*?) ?\(([0-9]+)\)$/) {
 			$subject->{$1} = $2;
 			$this->{'RES'}->{$1} = $3;
@@ -233,12 +233,12 @@ sub OnDemand
 		}
 	}
 	$this->{'NUM'} = $num;
-	
+
 	# レス数更新
 	if (exists $this->{'RES'}->{$id}) {
 		$this->{'RES'}->{$id} = $val;
 	}
-	
+
 	# スレッド移動
 	if ($updown eq 'top') {
 		$this->AGE($id);
@@ -247,19 +247,19 @@ sub OnDemand
 	} elsif ($updown =~ /^([\+\-][0-9]+)$/) {
 		$this->UpDown($id, int($1));
 	}
-	
+
 	$this->CustomizeOrder();
-	
+
 	# subject書き込み
 	seek($fh, 0, 0);
-	
+
 	foreach (@{$this->{'SORT'}}) {
 		next if (!defined $subject->{$_});
 		print $fh "$_.dat<>$subject->{$_} ($this->{'RES'}->{$_})\n";
 	}
-	
+
 	truncate($fh, tell($fh));
-	
+
 	$this->Close();
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/subject.txt';
 	chmod($Sys->Get('PM-TXT'), $path);
@@ -279,9 +279,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, @{$this->{'SORT'}};
 	}
@@ -292,7 +292,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -310,9 +310,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -330,12 +330,12 @@ sub Add
 {
 	my $this = shift;
 	my ($id, $subject, $res) = @_;
-	
+
 	$this->{'SUBJECT'}->{$id} = $subject;
 	$this->{'RES'}->{$id} = $res;
 	unshift @{$this->{'SORT'}}, $id;
 	$this->{'NUM'}++;
-	
+
 	return $id;
 }
 
@@ -353,7 +353,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -371,12 +371,12 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'SUBJECT'}->{$id};
 	delete $this->{'RES'}->{$id};
 	# for pool
 	#delete $this->{'ATTR'}->{$id};
-	
+
 	my $sort = $this->{'SORT'};
 	for (my $i = 0; $i < scalar(@$sort); $i++) {
 		if ($id eq $sort->[$i]) {
@@ -399,30 +399,30 @@ sub LoadAttr
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'ATTR'} = {};
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/info/attr.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 2) {
 				warn "invalid line in $path";
 				next;
 			}
-			
+
 			my $id = $elem[0];
 			# for pool, don't skip
 			#next if (!defined $this->{'SUBJECT'}->{$id});
-			
+
 			my $hash = {};
 			foreach (split /[&;]/, $elem[1]) {
 				my ($key, $val) = split(/=/, $_, 2);
@@ -432,7 +432,7 @@ sub LoadAttr
 				$val =~ s/%([0-9a-f][0-9a-f])/pack('C', hex($1))/egi;
 				$hash->{$key} = $val if ($val ne '');
 			}
-			
+
 			$this->{'ATTR'}->{$id} = $hash;
 		}
 	}
@@ -450,20 +450,20 @@ sub SaveAttr
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/info/attr.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		binmode($fh);
 		seek($fh, 0, 0);
-		
+
 		my $Attr = $this->{'ATTR'};
 		foreach my $id (keys %$Attr) {
 			my $hash = $Attr->{$id};
 			next if (!defined $hash);
-			
+
 			my $attrs = '';
 			while (my ($key, $val) = each %$hash) {
 				next if (!defined $val || $val eq '');
@@ -471,17 +471,17 @@ sub SaveAttr
 				$val =~ s/([^\w])/'%'.unpack('H2', $1)/eg;
 				$attrs .= "$key=$val&";
 			}
-			
+
 			next if ($attrs eq '');
-			
+
 			my $data = join('<>',
 				$id,
 				$attrs,
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -501,16 +501,16 @@ sub GetAttr
 {
 	my $this = shift;
 	my ($key, $attr) = @_;
-	
+
 	if (!defined $this->{'ATTR'}) {
 		warn "Attr info is not loaded.";
 		return;
 	}
 	my $Attr = $this->{'ATTR'};
-	
+
 	my $val = undef;
 	$val = $Attr->{$key}->{$attr} if (defined $Attr->{$key});
-	
+
 	# undef => empty string
 	return (defined $val ? $val : '');
 }
@@ -528,13 +528,13 @@ sub SetAttr
 {
 	my $this = shift;
 	my ($key, $attr, $val) = @_;
-	
+
 	if (!defined $this->{'ATTR'}) {
 		warn "Attr info is not loaded.";
 		return;
 	}
 	my $Attr = $this->{'ATTR'};
-	
+
 	$Attr->{$key} = {} if (!defined $Attr->{$key});
 	$Attr->{$key}->{$attr} = $val;
 }
@@ -550,13 +550,13 @@ sub DeleteAttr
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	if (!defined $this->{'ATTR'}) {
 		warn "Attr info is not loaded.";
 		return;
 	}
 	my $Attr = $this->{'ATTR'};
-	
+
 	delete $Attr->{$key};
 }
 
@@ -571,7 +571,7 @@ sub DeleteAttr
 sub GetNum
 {
 	my $this = shift;
-	
+
 	return $this->{'NUM'};
 }
 
@@ -586,7 +586,7 @@ sub GetNum
 sub GetLastID
 {
 	my $this = shift;
-	
+
 	my $sort = $this->{'SORT'};
 	return $sort->[$#$sort];
 }
@@ -602,10 +602,10 @@ sub GetLastID
 sub CustomizeOrder
 {
 	my $this = shift;
-	
+
 	my @float = ();
 	my @sort = ();
-	
+
 	foreach my $id (@{$this->{'SORT'}}) {
 		if ($this->GetAttr($id, 'float')) {
 			push @float, $id;
@@ -613,7 +613,7 @@ sub CustomizeOrder
 			push @sort, $id;
 		}
 	}
-	
+
 	$this->{'SORT'} = [@float, @sort];
 }
 
@@ -629,7 +629,7 @@ sub AGE
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $sort = $this->{'SORT'};
 	for (my $i = 0; $i < scalar(@$sort); $i++) {
 		if ($id eq $sort->[$i]) {
@@ -652,7 +652,7 @@ sub DAME
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $sort = $this->{'SORT'};
 	for (my $i = 0; $i < scalar(@$sort); $i++) {
 		if ($id eq $sort->[$i]) {
@@ -676,7 +676,7 @@ sub UpDown
 {
 	my $this = shift;
 	my ($id, $n) = @_;
-	
+
 	my $sort = $this->{'SORT'};
 	my $max = scalar(@$sort);
 	for (my $i = 0; $i < $max; $i++) {
@@ -703,11 +703,11 @@ sub Update
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $base = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/dat';
-	
+
 	$this->CustomizeOrder();
-	
+
 	foreach my $id (@{$this->{'SORT'}}) {
 		if (open(my $fh, '<', "$base/$id.dat")) {
 			flock($fh, 2);
@@ -734,17 +734,17 @@ sub UpdateAll
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $psort = $this->{'SORT'};
 	$this->{'SORT'} = [];
 	$this->{'SUBJECT'} = {};
 	$this->{'RES'} = {};
 	my $idhash = {};
 	my @dirSet = ();
-	
+
 	my $base = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/dat';
 	my $num	= 0;
-	
+
 	# ディレクトリ内一覧を取得
 	if (opendir(my $fh, $base)) {
 		@dirSet = readdir($fh);
@@ -754,7 +754,7 @@ sub UpdateAll
 		warn "can't open dir: $base";
 		return;
 	}
-	
+
 	foreach my $el (@dirSet) {
 		if ($el =~ /^(.*)\.dat$/ && open(my $fh, '<', "$base/$el")) {
 			flock($fh, 2);
@@ -764,7 +764,7 @@ sub UpdateAll
 			$n++ while (<$fh>);
 			close($fh);
 			$first =~ s/[\r\n]+\z//;
-			
+
 			my @elem = split(/<>/, $first, -1);
 			$this->{'SUBJECT'}->{$id} = $elem[4];
 			$this->{'RES'}->{$id} = $n;
@@ -773,7 +773,7 @@ sub UpdateAll
 		}
 	}
 	$this->{'NUM'} = $num;
-	
+
 	foreach my $id (@$psort) {
 		if (defined $idhash->{$id}) {
 			push @{$this->{'SORT'}}, $id;
@@ -783,7 +783,7 @@ sub UpdateAll
 	foreach my $id (sort keys %$idhash) {
 		unshift @{$this->{'SORT'}}, $id;
 	}
-	
+
 	$this->CustomizeOrder();
 }
 
@@ -799,14 +799,14 @@ sub GetPosition
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $sort = $this->{'SORT'};
 	for (my $i = 0; $i < scalar(@$sort); $i++) {
 		if ($id eq $sort->[$i]) {
 			return $i;
 		}
 	}
-	
+
 	return -1;
 }
 
@@ -832,7 +832,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'SUBJECT'	=> undef,
 		'RES'		=> undef,
@@ -841,7 +841,7 @@ sub new
 		'ATTR'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -857,23 +857,23 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SUBJECT'} = {};
 	$this->{'RES'} = {};
 	$this->{'SORT'} = [];
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/pool/subject.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		my $num = 0;
 		for (@lines) {
 			next if ($_ eq '');
-			
+
 			if ($_ =~ /^(.+?)\.dat<>(.*?) ?\(([0-9]+)\)$/) {
 				$this->{'SUBJECT'}->{$1} = $2;
 				$this->{'RES'}->{$1} = $3;
@@ -887,7 +887,7 @@ sub Load
 		}
 		$this->{'NUM'} = $num;
 	}
-	
+
 	$this->LoadAttr($Sys);
 }
 
@@ -903,21 +903,21 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .$Sys->Get('BBS') . '/pool/subject.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		my $subject = $this->{'SUBJECT'};
 		foreach (@{$this->{'SORT'}}) {
 			next if (!defined $subject->{$_});
 			print $fh "$_.dat<>$subject->{$_} ($this->{'RES'}->{$_})\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -925,7 +925,7 @@ sub Save
 		warn "can't save subject: $path";
 	}
 	chmod($Sys->Get('PM-ADM'), $path);
-	
+
 	$this->SaveAttr($Sys);
 }
 
@@ -943,9 +943,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, @{$this->{'SORT'}};
 	}
@@ -956,7 +956,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -974,9 +974,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -994,12 +994,12 @@ sub Add
 {
 	my $this = shift;
 	my ($id, $subject, $res) = @_;
-	
+
 	$this->{'SUBJECT'}->{$id} = $subject;
 	$this->{'RES'}->{$id} = $res;
 	unshift @{$this->{'SORT'}}, $id;
 	$this->{'NUM'}++;
-	
+
 	return $id;
 }
 
@@ -1017,7 +1017,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -1035,10 +1035,10 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'SUBJECT'}->{$id};
 	delete $this->{'RES'}->{$id};
-	
+
 	my $sort = $this->{'SORT'};
 	for (my $i = 0; $i < scalar(@$sort); $i++) {
 		if ($id eq $sort->[$i]) {
@@ -1060,7 +1060,7 @@ sub Delete
 sub GetNum
 {
 	my $this = shift;
-	
+
 	return $this->{'NUM'};
 }
 
@@ -1071,27 +1071,27 @@ sub GetNum
 #------------------------------------------------------------------------------------------------------------
 sub LoadAttr
 {
-	return BILBO::LoadAttr(@_);
+	return THREADS::LoadAttr(@_);
 }
 
 sub SaveAttr
 {
-	return BILBO::SaveAttr(@_);
+	return THREADS::SaveAttr(@_);
 }
 
 sub GetAttr
 {
-	return BILBO::GetAttr(@_);
+	return THREADS::GetAttr(@_);
 }
 
 sub SetAttr
 {
-	return BILBO::SetAttr(@_);
+	return THREADS::SetAttr(@_);
 }
 
 sub DeleteAttr
 {
-	return BILBO::DeleteAttr(@_);
+	return THREADS::DeleteAttr(@_);
 }
 
 #------------------------------------------------------------------------------------------------------------
@@ -1107,9 +1107,9 @@ sub Update
 	my $this = shift;
 	my ($Sys) = @_;
 	my ($id, $base, $n);
-	
+
 	$base = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/pool';
-	
+
 	foreach my $id (@{$this->{'SORT'}}) {
 		if (open(my $fh, '<', "$base/$id.cgi")) {
 			flock($fh, 2);
@@ -1136,15 +1136,15 @@ sub UpdateAll
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SORT'} = [];
 	$this->{'SUBJECT'} = {};
 	$this->{'RES'} = {};
 	my @dirSet = ();
-	
+
 	my $base = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/pool';
 	my $num = 0;
-	
+
 	# ディレクトリ内一覧を取得
 	if (opendir(my $fh, $base)) {
 		@dirSet = readdir($fh);
@@ -1154,7 +1154,7 @@ sub UpdateAll
 		warn "can't open dir: $base";
 		return;
 	}
-	
+
 	foreach my $el (@dirSet) {
 		if ($el =~ /^(.*)\.cgi$/ && open(my $fh, '<', "$base/$el")) {
 			flock($fh, 2);
@@ -1164,7 +1164,7 @@ sub UpdateAll
 			$n++ while (<$fh>);
 			close($fh);
 			$first =~ s/[\r\n]+\z//;
-			
+
 			my @elem = split(/<>/, $first, -1);
 			$this->{'SUBJECT'}->{$id} = $elem[4];
 			$this->{'RES'}->{$id} = $n;

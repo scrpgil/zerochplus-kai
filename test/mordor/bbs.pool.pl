@@ -436,7 +436,7 @@ sub FunctionThreadRepare
 	}
 	require './module/baggins.pl';
 	require './module/earendil.pl';
-	$Threads = BILBO->new;
+	$Threads = THREADS->new;
 	$Pools = FRODO->new;
 
 	$Threads->Load($Sys);
@@ -612,11 +612,11 @@ sub FunctionCreateLogs
 	require './module/thorin.pl';
 	require './module/isildur.pl';
 	require './module/galadriel.pl';
-	require './module/denethor.pl';
+	require './module/banner.pl';
 	require './module/celeborn.pl';
 	my $Dat = ARAGORN->new;
 	my $Set = ISILDUR->new;
-	my $Banner = DENETHOR->new;
+	my $Banner = BANNER->new;
 	my $Conv = GALADRIEL->new;
 	my $Page = THORIN->new;
 	my $Logs = CELEBORN->new;

@@ -20,7 +20,7 @@ use strict;
 sub Copy
 {
 	my ($src, $dst) = @_;
-	
+
 	if (open(my $fh_s, '<', $src) && open(my $fh_d, (-f $dst ? '+<' : '>'), $dst)) {
 		flock($fh_s, 2);
 		flock($fh_d, 2);
@@ -31,12 +31,12 @@ sub Copy
 		truncate($fh_d, tell($fh_d));
 		close($fh_s);
 		close($fh_d);
-		
+
 		# パーミッション設定
 		chmod((stat $src)[2], $dst);
 		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -52,7 +52,7 @@ sub Copy
 sub Move
 {
 	my ($src, $dst) = @_;
-	
+
 	if (Copy($src, $dst)) {
 		unlink $src;	# コピー元削除
 	}
@@ -69,11 +69,11 @@ sub Move
 sub DeleteDirectory
 {
 	my ($path) = @_;
-	
+
 	# ファイル情報を取得
 	my %fileList = ();
 	GetFileInfoList($path, \%fileList);
-	
+
 	foreach my $file (keys %fileList) {
 		if ($file ne '.' && $file ne '..') {
 			my (undef, undef, $attr) = split(/<>/, $fileList{$file}, -1);
@@ -100,13 +100,13 @@ sub DeleteDirectory
 sub GetFileInfoList
 {
 	my ($Path, $pList) = @_;
-	
+
 	my @arFiles = ();
 	if (opendir(my $dh, $Path)) {
 		@arFiles = readdir($dh);
 		closedir($dh);
 	}
-	
+
 	# ディレクトリ内の全ファイルを走査
 	foreach my $file (@arFiles) {
 		my $Full = "$Path/$file";
@@ -132,13 +132,13 @@ sub GetFileInfoList
 sub GetFileList
 {
 	my ($path, $pList, $opt) = @_;
-	
+
 	my @files = ();
 	if (opendir(my $dh, $path)) {
 		@files = readdir($dh);
 		closedir($dh);
 	}
-	
+
 	my $num = 0;
 	foreach my $file (@files) {
 		# ディレクトリじゃなく抽出条件が一致したら配列にプッシュする
@@ -164,7 +164,7 @@ sub GetFileList
 sub CreateDirectory
 {
 	my ($path, $perm) = @_;
-	
+
 	if (! -e $path) {
 		return mkdir($path, $perm);
 	}
@@ -182,7 +182,7 @@ sub CreateDirectory
 sub CreateFolderHierarchy
 {
 	my ($path, $perm) = @_;
-	
+
 	while (1) {
 		if (-d $path) {
 			return;
@@ -213,13 +213,13 @@ sub CreateFolderHierarchy
 sub GetFolderHierarchy
 {
 	my ($path, $pHash) = @_;
-	
+
 	my @elements = ();
 	if (opendir(my $dh, $path)) {
 		@elements = readdir($dh);
 		closedir($dh);
 	}
-	
+
 	foreach my $elem (sort @elements) {
 		# ディレクトリが見つかったら再帰的に探索する
 		if (-d "$path/$elem" && $elem ne '.' && $elem ne '..') {
@@ -249,7 +249,7 @@ sub GetFolderHierarchy
 sub GetFolderList
 {
 	my ($pHash, $pList, $base) = @_;
-	
+
 	foreach my $key (keys %$pHash) {
 		push @$pList, "$base/$key";
 		if (defined $pHash->{$key}) {

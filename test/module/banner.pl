@@ -3,7 +3,7 @@
 #	バナー管理モジュール
 #
 #============================================================================================================
-package	DENETHOR;
+package	BANNER;
 
 use strict;
 #use warnings;
@@ -19,7 +19,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'TEXTPC'	=> undef,	# PC用テキスト
 		'TEXTSB'	=> undef,	# サブバナーテキスト
@@ -28,7 +28,7 @@ sub new
 		'COLMB'		=> undef,	# 携帯用背景色
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -44,15 +44,15 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'TEXTPC'} = '<tr><td>なるほど告知欄じゃねーの</td></tr>';
 	$this->{'TEXTSB'} = '';
 	$this->{'TEXTMB'} = '<tr><td>なるほど告知欄じゃねーの</td></tr>';
 	$this->{'COLPC'} = '#ccffcc';
 	$this->{'COLMB'} = '#ccffcc';
-	
+
 	my $path = '.' . $Sys->Get('INFO');
-	
+
 	# PC用読み込み
 	if (open(my $fh, '<', "$path/bannerpc.cgi")) {
 		flock($fh, 2);
@@ -63,7 +63,7 @@ sub Load
 		$this->{'COLPC'} = $_;
 		$this->{'TEXTPC'} = join '', @lines;
 	}
-	
+
 	# サブバナー読み込み
 	if (open(my $fh, '<', "$path/bannersub.cgi")) {
 		flock($fh, 2);
@@ -71,7 +71,7 @@ sub Load
 		close($fh);
 		$this->{'TEXTSB'} = join '', @lines;
 	}
-	
+
 	# 携帯用読み込み
 	if (open(my $fh, '<', "$path/bannermb.cgi")) {
 		flock($fh, 2);
@@ -96,12 +96,12 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my @file = ();
 	$file[0] = '.' . $Sys->Get('INFO') . '/bannerpc.cgi';
 	$file[1] = '.' . $Sys->Get('INFO') . '/bannermb.cgi';
 	$file[2] = '.' . $Sys->Get('INFO') . '/bannersub.cgi';
-	
+
 	# PC用書き込み
 	chmod($Sys->Get('PM-ADM'), $file[0]);
 	if (open(my $fh, (-f $file[0] ? '+<' : '>'), $file[0])) {
@@ -114,7 +114,7 @@ sub Save
 		close($fh);
 	}
 	chmod($Sys->Get('PM-ADM'), $file[0]);
-	
+
 	# サブバナー書き込み
 	chmod($Sys->Get('PM-ADM'), $file[2]);
 	if (open(my $fh, (-f $file[2] ? '+<' : '>'), $file[2])) {
@@ -126,7 +126,7 @@ sub Save
 		close($fh);
 	}
 	chmod($Sys->Get('PM-ADM'), $file[2]);
-	
+
 	# 携帯用書き込み
 	chmod($Sys->Get('PM-ADM'), $file[1]);
 	if (open(my $fh, (-f $file[1] ? '+<' : '>'), $file[1])) {
@@ -154,7 +154,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $val) = @_;
-	
+
 	$this->{$key} = $val;
 }
 
@@ -171,9 +171,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -192,10 +192,10 @@ sub Print
 {
 	my $this = shift;
 	my ($Page, $width, $f, $mode) = @_;
-	
+
 	# 上区切り
 	$Page->Print('<hr>') if ($f & 1);
-	
+
 	# 携帯用バナー表示
 	if ($mode) {
 		$Page->Print('<table border width="100%" ');
@@ -208,7 +208,7 @@ sub Print
 		$Page->Print(" bgcolor=\"$this->{'COLPC'}\" align=\"center\">\n");
 		$Page->Print("$this->{'TEXTPC'}\n</table>\n");
 	}
-	
+
 	# 下区切り
 	$Page->Print("<hr>\n\n") if ($f & 2);
 }
@@ -225,7 +225,7 @@ sub PrintSub
 {
 	my $this = shift;
 	my ($Page) = @_;
-	
+
 	# サブバナーが存在したら表示する
 	if ($this->{'TEXTSB'} ne '') {
 		$Page->Print("<div style=\"margin-bottom:1.2em;\">\n");

@@ -19,7 +19,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'TYPE'		=> undef,
 		'METHOD'	=> undef,
@@ -27,7 +27,7 @@ sub new
 		'SYS'		=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -43,22 +43,22 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SYS'} = $Sys;
 	$this->{'USER'} = [];
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . "/info/access.cgi";
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @datas = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @datas;
-		
+
 		my @head = split(/<>/, shift(@datas), -1);
 		$this->{'TYPE'} = $head[0];
 		$this->{'METHOD'} = $head[1];
-		
+
 		push @{$this->{'USER'}}, @datas;
 		return 0;
 	}
@@ -77,25 +77,25 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . "/info/access.cgi";
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		print $fh "$this->{'TYPE'}<>$this->{'METHOD'}\n";
 		foreach (@{$this->{'USER'}}) {
 			print $fh "$_\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
 	chmod($Sys->Get('PM-ADM'), $path);
-	
+
 	return 0;
 }
 
@@ -111,7 +111,7 @@ sub Add
 {
 	my $this = shift;
 	my ($name) = @_;
-	
+
 	push @{$this->{'USER'}}, $name;
 }
 
@@ -128,9 +128,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -145,7 +145,7 @@ sub Get
 sub Clear
 {
 	my $this = shift;
-	
+
 	$this->{'USER'} = [];
 }
 
@@ -162,7 +162,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	$this->{$key} = $data;
 }
 
@@ -180,15 +180,15 @@ sub Check
 {
 	my $this = shift;
 	my ($host, $addr, $koyuu) = @_;
-	
+
 	my $Sys = $this->{'SYS'};
 	my $addrb = unpack('B32', pack('C*', split(/\./, $addr)));
 	my $flag = 0;
 	my $adex = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}';
-	
+
 	foreach my $line (@{$this->{'USER'}}) {
 		next if ($line =~ /^[#;]|^$/);
-		
+
 		# IPアドレス/CIDR
 		if ($line =~ m|^($adex)(?:/([0-9]+))?$|) {
 			my $leng = $2 || 32;
@@ -223,7 +223,7 @@ sub Check
 			last;
 		}
 	}
-	
+
 	# 規制ユーザ
 	if ($flag && $this->{'TYPE'} eq 'disable') {
 		if ($this->{'METHOD'} eq 'disable') {

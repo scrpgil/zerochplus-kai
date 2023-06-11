@@ -118,7 +118,7 @@ sub Initialize
 	my $Conv = GALADRIEL->new;
 	my $Set = ISILDUR->new;
 	my $Cookie = RADAGAST->new;
-	my $Threads = BILBO->new;
+	my $Threads = THREADS->new;
 
 	# システム情報設定
 	return $ZP::E_SYSTEM_ERROR if ($Sys->Init());
@@ -356,8 +356,8 @@ sub PrintBBSMobileThreadCreate
 	my $Sys = $CGI->{'SYS'};
 	my $Set = $CGI->{'SET'};
 
-	require './module/denethor.pl';
-	my $Banner = DENETHOR->new;
+	require './module/banner.pl';
+	my $Banner = BANNER->new;
 	$Banner->Load($Sys);
 
 	my $title = $Set->Get('BBS_TITLE');
@@ -566,8 +566,8 @@ HTML
 	}
 	# 告知欄表示(表示させたくない場合はコメントアウトか条件を0に)
 	if (0) {
-		require './module/denethor.pl';
-		my $Banner = DENETHOR->new;
+		require './module/banner.pl';
+		my $Banner = BANNER->new;
 		$Banner->Load($Sys);
 		$Banner->Print($Page, 100, 0, $Sys->Get('AGENT'));
 	}

@@ -297,8 +297,8 @@ sub UpdateIndex
 	my ($Sys, $Page) = @_;
 
 	# 告知情報読み込み
-	require './module/denethor.pl';
-	my $Banner = DENETHOR->new;
+	require './module/banner.pl';
+	my $Banner = BANNER->new;
 	$Banner->Load($Sys);
 
 	my $basePath = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS');
@@ -405,7 +405,7 @@ sub GetThreadSubject
 #	-------------------------------------------------------------------------------------
 #	@param	$Sys	MELKOR
 #	@param	$Page	THORIN
-#	@param	$Banner	DENETHOR
+#	@param	$Banner	BANNER
 #	@param	$pInfo	出力情報配列
 #	@param	$base	掲示板トップパス
 #	@param	$path	index出力パス

@@ -41,7 +41,7 @@ sub new
 #	@param	$Sys	MELKOR(必須)
 #	@param	$Form	SAMWISE(必須)
 #	@param	$Set	ISILDUR
-#	@param	$Thread	BILBO
+#	@param	$Thread	THREADS
 #	@param	$Conv	GALADRIEL
 #	@return	なし
 #
@@ -65,7 +65,7 @@ sub Init
 	}
 	if (!defined $Threads) {
 		require './module/baggins.pl';
-		$this->{'THREADS'} = BILBO->new;
+		$this->{'THREADS'} = THREADS->new;
 		$this->{'THREADS'}->Load($Sys);
 	}
 	if (!defined $Conv) {
@@ -80,8 +80,8 @@ sub Init
 	$this->{'SECURITY'}->SetGroupInfo($Sys->Get('BBS'));
 
 	# 拡張機能情報管理モジュールロード
-	require './module/athelas.pl';
-	$this->{'PLUGIN'} = ATHELAS->new;
+	require './module/plugins.pl';
+	$this->{'PLUGIN'} = PLUGINS->new;
 	$this->{'PLUGIN'}->Load($Sys);
 }
 

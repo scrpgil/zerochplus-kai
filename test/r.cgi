@@ -170,8 +170,8 @@ sub PrintReadHead
 	my ($Sys, $Page) = @_;
 	my ($Caption, $Banner, $code, $title);
 
-	require './module/denethor.pl';
-	$Banner = new DENETHOR;
+	require './module/banner.pl';
+	$Banner = new BANNER;
 	$Banner->Load($Sys->{'SYS'});
 
 	require './module/legolas.pl';

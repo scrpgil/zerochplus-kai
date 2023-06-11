@@ -32,7 +32,7 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NAME'	=> undef,
 		'PASS'	=> undef,
@@ -40,9 +40,9 @@ sub new
 		'EXPL'	=> undef,
 		'SYSAD'	=> undef,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -58,31 +58,31 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ハッシュ初期化
 	$this->{'NAME'} = {};
 	$this->{'PASS'} = {};
 	$this->{'FULL'} = {};
 	$this->{'EXPL'} = {};
 	$this->{'SYSAD'} = {};
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/users.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 6) {
 				warn "invalid line in $path";
 				next;
 			}
-			
+
 			my $id = $elem[0];
 			$this->{'NAME'}->{$id} = $elem[1];
 			$this->{'PASS'}->{$id} = $elem[2];
@@ -105,15 +105,15 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = '.' . $Sys->Get('INFO') . '/users.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		binmode($fh);
 		seek($fh, 0, 0);
-		
+
 		foreach (keys %{$this->{'NAME'}}) {
 			my $data = join('<>',
 				$_,
@@ -123,10 +123,10 @@ sub Save
 				$this->{'EXPL'}->{$_},
 				$this->{'SYSAD'}->{$_}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -147,9 +147,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($kind, $name, $pBuf) = @_;
-	
+
 	my $n = 0;
-	
+
 	if ($kind eq 'ALL') {
 		$n += push @$pBuf, keys %{$this->{'NAME'}};
 	}
@@ -160,7 +160,7 @@ sub GetKeySet
 			}
 		}
 	}
-	
+
 	return $n;
 }
 
@@ -178,9 +178,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -190,7 +190,7 @@ sub Get
 #	-------------------------------------------------------------------------------------
 #	@param	$name	情報種別
 #	@param	$pass	ユーザID
-#	@param	$full	
+#	@param	$full
 #	@param	$explan	説明
 #	@param	$sysad	管理者フラグ
 #	@return	ユーザID
@@ -200,14 +200,14 @@ sub Add
 {
 	my $this = shift;
 	my ($name, $pass, $full, $explan, $sysad) = @_;
-	
+
 	my $id = time;
 	$this->{'NAME'}->{$id} = $name;
 	$this->{'PASS'}->{$id} = $this->GetStrictPass($pass, $id);
 	$this->{'EXPL'}->{$id} = $explan;
 	$this->{'FULL'}->{$id} = $full;
 	$this->{'SYSAD'}->{$id} = $sysad;
-	
+
 	return $id;
 }
 
@@ -225,7 +225,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		if ($kind eq 'PASS') {
 			$val = $this->GetStrictPass($val, $id);
@@ -246,7 +246,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'NAME'}->{$id};
 	delete $this->{'PASS'}->{$id};
 	delete $this->{'FULL'}->{$id};
@@ -267,9 +267,9 @@ sub GetStrictPass
 {
 	my $this = shift;
 	my ($pass, $key) = @_;
-	
+
 	my $hash;
-	
+
 	if (length($pass) >= 9) {
 		require Digest::SHA::PurePerl;
 		Digest::SHA::PurePerl->import( qw(sha1_base64) );
@@ -279,7 +279,7 @@ sub GetStrictPass
 	else {
 		$hash = substr(crypt($pass, substr(crypt($key, 'ZC'), -2)), -10);
 	}
-	
+
 	return $hash;
 }
 
@@ -305,16 +305,16 @@ use strict;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'NAME'	=> undef,
 		'EXPL'	=> undef,
 		'AUTH'	=> undef,
 		'USERS'	=> undef,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -330,30 +330,30 @@ sub Load
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	# ハッシュ初期化
 	$this->{'NAME'} = {};
 	$this->{'EXPL'} = {};
 	$this->{'AUTH'} = {};
 	$this->{'USERS'} = {};
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .  $Sys->Get('BBS') . '/info/groups.cgi';
-	
+
 	if (open(my $fh, '<', $path)) {
 		flock($fh, 2);
 		my @lines = <$fh>;
 		close($fh);
 		map { s/[\r\n]+\z// } @lines;
-		
+
 		foreach (@lines) {
 			next if ($_ eq '');
-			
+
 			my @elem = split(/<>/, $_, -1);
 			if (scalar(@elem) < 5) {
 				warn "invalid line in $path";
 				next;
 			}
-			
+
 			my $id = $elem[0];
 			$elem[4] =~ s/ //g;
 			$this->{'NAME'}->{$id} = $elem[1];
@@ -376,15 +376,15 @@ sub Save
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	my $path = $Sys->Get('BBSPATH') . '/' .  $Sys->Get('BBS') . '/info/groups.cgi';
-	
+
 	chmod($Sys->Get('PM-ADM'), $path);
 	if (open(my $fh, (-f $path ? '+<' : '>'), $path)) {
 		flock($fh, 2);
 		seek($fh, 0, 0);
 		binmode($fh);
-		
+
 		foreach (keys %{$this->{'NAME'}}) {
 			my $data = join('<>',
 				$_,
@@ -393,10 +393,10 @@ sub Save
 				$this->{'AUTH'}->{$_},
 				$this->{'USERS'}->{$_}
 			);
-			
+
 			print $fh "$data\n";
 		}
-		
+
 		truncate($fh, tell($fh));
 		close($fh);
 	}
@@ -415,9 +415,9 @@ sub GetKeySet
 {
 	my $this = shift;
 	my ($pBuf) = @_;
-	
+
 	my $n += push @$pBuf, keys %{$this->{'NAME'}};
-	
+
 	return $n;
 }
 
@@ -435,9 +435,9 @@ sub Get
 {
 	my $this = shift;
 	my ($kind, $key, $default) = @_;
-	
+
 	my $val = $this->{$kind}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : undef));
 }
 
@@ -456,13 +456,13 @@ sub Add
 {
 	my $this = shift;
 	my ($name, $explan, $authors, $users) = @_;
-	
+
 	my $id = time;
 	$this->{'NAME'}->{$id} = $name;
 	$this->{'EXPL'}->{$id} = $explan;
 	$this->{'AUTH'}->{$id} = $authors;
 	$this->{'USERS'}->{$id} = $users;
-	
+
 	return $id;
 }
 
@@ -479,10 +479,10 @@ sub AddUser
 {
 	my $this = shift;
 	my ($id, $user) = @_;
-	
+
 	my @users = split(/\,/, $this->{'USERS'}->{$id});
 	my @match = grep($user, @users);
-	
+
 	# 登録済みのユーザは重複登録しない
 	if (scalar(@match)) {
 		$this->{'USERS'}->{$id} .= ",$user";
@@ -503,7 +503,7 @@ sub Set
 {
 	my $this = shift;
 	my ($id, $kind, $val) = @_;
-	
+
 	if (exists $this->{$kind}->{$id}) {
 		$this->{$kind}->{$id} = $val;
 	}
@@ -521,7 +521,7 @@ sub Delete
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	delete $this->{'NAME'}->{$id};
 	delete $this->{'EXPL'}->{$id};
 	delete $this->{'AUTH'}->{$id};
@@ -540,7 +540,7 @@ sub GetBelong
 {
 	my $this = shift;
 	my ($id) = @_;
-	
+
 	my $Users = $this->{'USERS'};
 	foreach my $group (keys %$Users) {
 		my @users = split(/\,/, $Users->{$group});
@@ -550,7 +550,7 @@ sub GetBelong
 			}
 		}
 	}
-	
+
 	return '';
 }
 
@@ -578,7 +578,7 @@ use CGI::Session;
 sub new
 {
 	my $class = shift;
-	
+
 	my $obj = {
 		'SYS'	=> undef,
 		'USER'	=> undef,
@@ -587,7 +587,7 @@ sub new
 		'SOPT'	=> undef,
 	};
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -603,22 +603,22 @@ sub Init
 {
 	my $this = shift;
 	my ($Sys) = @_;
-	
+
 	$this->{'SYS'} = $Sys;
-	
+
 	# 2重ロード防止
 	if (! defined $this->{'USER'}) {
 		$this->{'USER'} = GLORFINDEL->new;
 		$this->{'GROUP'} = GILDOR->new;
 		$this->{'USER'}->Load($Sys);
-		
+
 		my $infopath = $Sys->Get('INFO');
 		$this->{'SOPT'} = {
 			'min'		=> 30,
 			'driver'	=> 'driver:file;serializer:default',
 			'option'	=> { Directory => ".$infopath/.session/" },
 		};
-		
+
 		$this->CleanSessions;
 	}
 }
@@ -638,15 +638,15 @@ sub IsLogin
 {
 	my $this = shift;
 	my ($name, $pass, $sid) = @_;
-	
+
 	my $User = $this->{'USER'};
 	my @keySet = ();
 	$User->GetKeySet('NAME', $name, \@keySet);
-	
+
 	return (0, '') if (!scalar(@keySet));
-	
+
 	my $opt = $this->{'SOPT'};
-	
+
 	if (defined $pass && $pass ne '') {
 		my $userid = undef;
 		foreach my $id (@keySet) {
@@ -657,31 +657,31 @@ sub IsLogin
 				last;
 			}
 		}
-		
+
 		return (0, '') if (!$userid);
-		
+
 		my $session = CGI::Session->new($opt->{'driver'}, undef, $opt->{'option'});
 		$session->param('addr', $ENV{'REMOTE_ADDR'});
 		$session->param('user', $name);
 		$session->param('uid', $userid);
 		$session->expire("+$opt->{'min'}m");
-		
+
 		return ($userid, $session->id());
 	} elsif (defined $sid && $sid ne '') {
 		my $session = CGI::Session->new($opt->{'driver'}, $sid, $opt->{'option'});
-		
+
 		$_ = $session->param('addr');
 		if (!defined $_ || $_ ne $ENV{'REMOTE_ADDR'}) {
 			$session->delete();
 			return (0, '');
 		}
-		
+
 		$_ = $session->param('user');
 		if (!defined $_ || $_ ne $name) {
 			$session->delete();
 			return (0, '');
 		}
-		
+
 		my $userid = undef;
 		$_ = $session->param('uid');
 		foreach my $id (@keySet) {
@@ -690,14 +690,14 @@ sub IsLogin
 				last;
 			}
 		}
-		
+
 		if (!$userid) {
 			$session->delete();
 			return (0, '');
 		}
-		
+
 		$session->expire("+$opt->{'min'}m");
-		
+
 		return ($userid, $session->id());
 	} else {
 		return (0, '');
@@ -708,7 +708,7 @@ sub Logout
 {
 	my $this = shift;
 	my ($sid) = @_;
-	
+
 	my $opt = $this->{'SOPT'};
 	my $session = CGI::Session->new($opt->{'driver'}, $sid, $opt->{'option'});
 	$session->delete();
@@ -717,7 +717,7 @@ sub Logout
 sub CleanSessions
 {
 	my $this = shift;
-	
+
 	my $opt = $this->{'SOPT'};
 	CGI::Session->find($opt->{'driver'}, sub {
 		my ($session) = @_;
@@ -739,15 +739,15 @@ sub SetGroupInfo
 {
 	my $this = shift;
 	my ($bbs) = @_;
-	
+
 	my $Sys = $this->{'SYS'};
-	
+
 	my $oldbbs = $Sys->Get('BBS');
 	$Sys->Set('BBS', $bbs);
 	$this->{'BBS'} = $bbs;
-	
+
 	$this->{'GROUP'}->Load($Sys);
-	
+
 	$Sys->Set('BBS', $oldbbs);
 }
 
@@ -765,16 +765,16 @@ sub IsAuthority
 {
 	my $this = shift;
 	my ($id, $author, $bbs) = @_;
-	
+
 	# システム管理権限グループなら無条件OK
 	my $sysad = $this->{'USER'}->Get('SYSAD', $id);
 	return 1 if ($sysad);
 	return 0 if ($bbs eq '*');
-	
+
 	# 対象BBSに所属しているか確認
 	my $group = $this->{'GROUP'}->GetBelong($id);
 	return 0 if ($group eq '');
-	
+
 	# 権限を持っているか確認
 	my $auth = $this->{'GROUP'}->Get('AUTH', $group);
 	my @authors = split(/\,/, $auth);
@@ -783,7 +783,7 @@ sub IsAuthority
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -801,9 +801,9 @@ sub GetBelongBBSList
 {
 	my $this = shift;
 	my ($id, $Bbs, $pList) = @_;
-	
+
 	my $n = 0;
-	
+
 	# システム管理ユーザは全てのBBSに所属とする
 	if ($this->{'USER'}->Get('SYSAD', $id)) {
 		$Bbs->GetKeySet('ALL', '', $pList);
@@ -814,7 +814,7 @@ sub GetBelongBBSList
 		my $origbbs = $this->{'BBS'};
 		my @keySet = ();
 		$Bbs->GetKeySet('ALL', '', \@keySet);
-		
+
 		foreach my $bbsID (@keySet) {
 			my $bbsDir = $Bbs->Get('DIR', $bbsID);
 			SetGroupInfo($this, $bbsDir);
@@ -822,7 +822,7 @@ sub GetBelongBBSList
 				$n += push @$pList, $bbsID;
 			}
 		}
-		
+
 		# 後処理
 		if (defined $origbbs) {
 			SetGroupInfo($this, $origbbs);

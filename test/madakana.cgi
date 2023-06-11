@@ -117,9 +117,9 @@ sub PrintMadaHead
 	my ($Caption, $Banner, $code, $HOST, $ADDR);
 
 	require './module/legolas.pl';
-	require './module/denethor.pl';
+	require './module/banner.pl';
 	$Caption = new LEGOLAS;
-	$Banner = new DENETHOR;
+	$Banner = new BANNER;
 
 	$Caption->Load($Sys->{'SYS'}, 'META');
 	$Banner->Load($Sys->{'SYS'});

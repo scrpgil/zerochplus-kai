@@ -31,36 +31,36 @@ sub PCGI
 	my ($Sys, $Threads, $Set, $Page, $Form, $Conv);
 	my (%pPath, @tList);
 	my ($base, $max, $err);
-	
+
 	require './module/baggins.pl';
 	require './module/isildur.pl';
 	require './module/galadriel.pl';
 	require './module/melkor.pl';
 	require './module/samwise.pl';
 	require './module/thorin.pl';
-	
-	$Threads	= new BILBO;
+
+	$Threads	= new THREADS;
 	$Conv		= new GALADRIEL;
 	$Set		= new ISILDUR;
 	$Sys		= new MELKOR;
 	$Form		= SAMWISE->new(0);
 	$Page		= new THORIN;
-	
+
 	$max = 0;
 	$err = 1;
-	
+
 	# urlからパスを解析
 	GetPathData(\%pPath);
-	
+
 	# モジュールの初期化
 	$Form->DecodeForm(1);
 	$Sys->Init();
 	$Sys->Set('BBS', $pPath{'bbs'});
 	$err = $Set->Load($Sys);
-	
+
 	if ($err == 1) {
 		$Threads->Load($Sys);
-		
+
 		# スレッドリストの作成
 		if ($Form->Equal('method', '')) {
 			# 検索無し
@@ -71,12 +71,12 @@ sub PCGI
 			$max = CreateThreadList($Threads, $Set, \@tList, \%pPath, $Form->Get('word', ''));
 		}
 	}
-	
+
 	# ページの出力
 	PrintHead($Page, $Sys, $Set, $pPath{'st'}, $max);
 	PrintThreadList($Page, $Sys, $Conv, \@tList) if ($err == 1);
 	PrintFoot($Page, $Sys, $Set, $pPath{'st'}, $max);
-	
+
 	# 画面へ出力
 	$Page->Flush(0, 0, '');
 }
@@ -96,20 +96,20 @@ sub PrintHead
 {
 	my ($Page, $Sys, $Set, $start, $last) = @_;
 	my ($path, $st, $bbs, $code);
-	
+
 	$path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . '/p.cgi';
 	$bbs	= $Sys->Get('BBS');
 	$start	= $start - $Set->Get('BBS_MAX_MENU_THREAD');
 	$st		= $start < 1 ? 1 : $start;
 	$code	= 'Shift_JIS';
-	
+
 	# HTMLヘッダの出力
 	$Page->Print("Content-type: text/html\n\n");
 	$Page->Print('<html><!--nobanner--><head><title>i-mode 0ch</title>');
 	$Page->Print("<meta http-equiv=Content-Type content=\"text/html;charset=$code\">");
 	$Page->Print('</head>');
 	$Page->Print("<body><form action=\"$path/$bbs\" method=\"POST\">");
-	
+
 	if ($Sys->Get('PATHKIND')) {
 		$Page->Print("<a href=\"$path?bbs=$bbs&st=$st\">前</a> ");
 		$Page->Print("<a href=\"$path?bbs=$bbs&st=$last\">次</a><br>\n");
@@ -138,7 +138,7 @@ sub PrintThreadList
 {
 	my ($Page, $Sys, $Conv, $pList) = @_;
 	my (@elem, $path);
-	
+
 	foreach (@{$pList}) {
 		@elem = split(/<>/, $_);
 		$path = $Conv->CreatePath($Sys, 1, $Sys->Get('BBS'), $elem[1], 'l10');
@@ -161,13 +161,13 @@ sub PrintFoot
 {
 	my ($Page, $Sys, $Set, $start, $last) = @_;
 	my ($ver, $path, $st, $bbs);
-	
+
 	$path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . '/p.cgi';
 	$bbs	= $Sys->Get('BBS');
 	$ver	= $Sys->Get('VERSION');
 	$start	= $start - $Set->Get('BBS_MAX_MENU_THREAD');
 	$st		= $start < 1 ? 1 : $start;
-	
+
 	if ($Sys->Get('PATHKIND')) {
 		$Page->Print("<hr><a href=\"$path?bbs=$bbs&st=$st\">前</a> ");
 		$Page->Print("<a href=\"$path?bbs=$bbs&st=$last\">次</a><br>\n");
@@ -194,10 +194,10 @@ sub GetPathData
 {
 	my ($pHash) = @_;
 	my (@plist, $var, $val);
-	
+
 	$pHash->{'bbs'} = '';
 	$pHash->{'st'} = 0;
-	
+
 	if ($ENV{'PATH_INFO'}) {
 		use CGI;
 		@plist = split(/\//, CGI::escapeHTML($ENV{'PATH_INFO'}));
@@ -217,7 +217,7 @@ sub GetPathData
 #
 #	スレッドリストの生成
 #	-------------------------------------------------------------------------------------
-#	@param	$Threads	BILBO
+#	@param	$Threads	THREADS
 #	@param	$Set		ISILDUR
 #	@param	$pList		結果格納用配列
 #	@param	$pHash		情報ハッシュ
@@ -230,11 +230,11 @@ sub CreateThreadList
 	my ($Threads, $Set, $pList, $pHash, $keyWord) = @_;
 	my (@threadSet, $threadNum, $max, $start);
 	my ($key, $subject, $res, $i, $data);
-	
+
 	# スレッド一覧の取得
 	$Threads->GetKeySet('ALL', '', \@threadSet);
 	$threadNum = @threadSet;
-	
+
 	# 検索ワード無しの場合は開始からスレッド表示最大数までのリストを作成
 	if ($keyWord eq '') {
 		$start	= $pHash->{'st'} > $threadNum ? $threadNum : $pHash->{'st'};

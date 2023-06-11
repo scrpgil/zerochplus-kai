@@ -91,8 +91,8 @@ sub PrintHead
 	$BBSpath = $Sys->Get('BBSPATH');
 
 	# ƒoƒi[‚Ì“Ç‚Ýž‚Ý
-	require './module/denethor.pl';
-	$Banner = new DENETHOR;
+	require './module/banner.pl';
+	$Banner = new BANNER;
 	$Banner->Load($Sys);
 
 	$Page->Print("Content-type: text/html;charset=Shift_JIS\n\n");

@@ -173,9 +173,9 @@ sub PrintReadHead
 	my $Dat = $CGI->{'DAT'};
 
 	require './module/legolas.pl';
-	require './module/denethor.pl';
+	require './module/banner.pl';
 	my $Caption = LEGOLAS->new;
-	my $Banner = DENETHOR->new;
+	my $Banner = BANNER->new;
 
 	$Caption->Load($Sys, 'META');
 	$Banner->Load($Sys);
@@ -335,8 +335,8 @@ sub PrintReadContents
 	my $Sys = $CGI->{'SYS'};
 
 	# 拡張機能ロード
-	require './module/athelas.pl';
-	my $Plugin = ATHELAS->new;
+	require './module/plugins.pl';
+	my $Plugin = PLUGINS->new;
 	$Plugin->Load($Sys);
 
 	# 有効な拡張機能一覧を取得
