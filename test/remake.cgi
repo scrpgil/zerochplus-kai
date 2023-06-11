@@ -37,9 +37,9 @@ sub REMAKECGI
 	# 初期化に成功したら更新処理を開始
 	if (($err = Initialize(\%SYS, $Page)) == 0) {
 		#require './module/baggins.pl';
-		require './module/varda.pl';
+		require './module/bbs_support.pl';
 		#my $Threads = THREADS->new;
-		my $BBSAid = new VARDA;
+		my $BBSAid = new BBS_SUPPORT;
 		my $Sys = $SYS{'SYS'};
 
 		# subject.txt

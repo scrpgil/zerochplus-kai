@@ -51,8 +51,8 @@ sub BBSCGI
 		# ‘‚«ž‚Ý‚É¬Œ÷‚µ‚½‚çŒfŽ¦”Â\¬—v‘f‚ðXV‚·‚é
 		if ($err == $ZP::E_SUCCESS) {
 			if (!$Sys->Equal('FASTMODE', 1)) {
-				require './module/varda.pl';
-				my $BBSAid = VARDA->new;
+				require './module/bbs_support.pl';
+				my $BBSAid = BBS_SUPPORT->new;
 
 				$BBSAid->Init($Sys, $Set);
 				$BBSAid->CreateIndex();

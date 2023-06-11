@@ -688,8 +688,8 @@ sub FunctionBBSCreate
 
 	# ŒfŽ¦”Â\¬—v‘f¶¬
 	my ($BBSAid);
-	require './module/varda.pl';
-	$BBSAid = VARDA->new;
+	require './module/bbs_support.pl';
+	$BBSAid = BBS_SUPPORT->new;
 
 	$Sys->Set('MODE', 'CREATE');
 	$BBSAid->Init($Sys, $bbsSetting);
@@ -744,9 +744,9 @@ sub FunctionBBSUpdate
 	my ($BBSAid, $BBS, @bbsSet, $id, $bbs, $name);
 
 	require './module/bbs_manage.pl';
-	require './module/varda.pl';
+	require './module/bbs_support.pl';
 	$BBS = BBS_MANAGE->new;
-	$BBSAid = VARDA->new;
+	$BBSAid = BBS_SUPPORT->new;
 
 	$BBS->Load($Sys);
 	@bbsSet = $Form->GetAtArray('BBSS');
