@@ -109,7 +109,7 @@ sub Initialize
 	# 使用モジュールの初期化
 	require './module/sys_data.pl';
 	require './module/settings.pl';
-	require './module/radagast.pl';
+	require './module/cookie.pl';
 	require './module/data_utils.pl';
 	require './module/samwise.pl';
 	require './module/baggins.pl';
@@ -117,7 +117,7 @@ sub Initialize
 	my $Sys = SYS_DATA->new;
 	my $Conv = DATA_UTILS->new;
 	my $Set = SETTINGS->new;
-	my $Cookie = RADAGAST->new;
+	my $Cookie = COOKIE->new;
 	my $Threads = THREADS->new;
 
 	# システム情報設定

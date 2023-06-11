@@ -266,13 +266,13 @@ sub PrintBBSError
 	my ($sys, $form, $err) = @_;
 	my $SYS;
 
-	require './module/radagast.pl';
+	require './module/cookie.pl';
 	require './module/settings.pl';
 	require './module/thorin.pl';
 
 	$SYS->{'SYS'} = $sys;
 	$SYS->{'FORM'} = $form;
-	$SYS->{'COOKIE'} = RADAGAST->new;
+	$SYS->{'COOKIE'} = COOKIE->new;
 	$SYS->{'COOKIE'}->Init;
 	$SYS->{'SET'} = SETTINGS->new;
 	$SYS->{'SET'}->Load($sys);

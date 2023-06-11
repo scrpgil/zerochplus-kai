@@ -451,8 +451,8 @@ sub PrintReadFoot
 
 		# cookieÝ’èONŽž‚Ícookie‚ðŽæ“¾‚·‚é
 		if (($Sys->Get('CLIENT') & $ZP::C_PC) && $Set->Equal('SUBBBS_CGI_ON', 1)) {
-			require './module/radagast.pl';
-			my $Cookie = RADAGAST->new;
+			require './module/cookie.pl';
+			my $Cookie = COOKIE->new;
 			$Cookie->Init();
 			my $sanitize = sub {
 				$_ = shift;

@@ -81,14 +81,14 @@ sub Initialize
 	# 使用モジュールの初期化
 	require './module/sys_data.pl';
 	require './module/settings.pl';
-	require './module/radagast.pl';
+	require './module/cookie.pl';
 	require './module/data_utils.pl';
 	require './module/samwise.pl';
 
 	%$Sys = (
 		'SYS'		=> new SYS_DATA,
 		'SET'		=> new SETTINGS,
-		'COOKIE'	=> new RADAGAST,
+		'COOKIE'	=> new COOKIE,
 		'CONV'		=> new DATA_UTILS,
 		'FORM'		=> SAMWISE->new(1),
 		'PAGE'		=> $Page,

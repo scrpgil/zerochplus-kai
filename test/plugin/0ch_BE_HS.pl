@@ -364,13 +364,13 @@ sub PrintBBSError
 	my ($Sys,$Form,$err) = @_;
 	my $CGI;
 
-	require('./module/radagast.pl');
+	require('./module/cookie.pl');
 	require('./module/settings.pl');
 	require('./module/thorin.pl');
 
 	$CGI->{'SYS'}		= $Sys;
 	$CGI->{'FORM'}		= $Form;
-	$CGI->{'COOKIE'}	= RADAGAST->new;
+	$CGI->{'COOKIE'}	= COOKIE->new;
 	$CGI->{'COOKIE'}->Init();
 	$CGI->{'SET'}		= SETTINGS->new;
 	$CGI->{'SET'}->Load($Sys);

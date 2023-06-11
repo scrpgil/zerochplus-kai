@@ -310,8 +310,8 @@ HEAD
 
 	# cookie—pscript‚Ìo—Í
 	if ($this->{'SET'}->Equal('SUBBBS_CGI_ON', 1)) {
-		require './module/radagast.pl';
-		RADAGAST::Print(undef, $Page);
+		require './module/cookie.pl';
+		COOKIE::Print(undef, $Page);
 	}
 	$Page->Print("</head>\n<!--nobanner-->\n");
 
