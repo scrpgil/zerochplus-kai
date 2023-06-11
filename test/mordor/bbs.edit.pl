@@ -217,10 +217,10 @@ sub PrintHeaderEdit
 
 	$SYS->Set('_TITLE', 'BBS Header Edit');
 
-	require './module/isildur.pl';
+	require './module/settings.pl';
 	require './module/legolas.pl';
 	$Head = LEGOLAS->new;
-	$Setting = ISILDUR->new;
+	$Setting = SETTINGS->new;
 	$Head->Load($SYS, 'HEAD');
 	$Setting->Load($SYS);
 
@@ -568,8 +568,8 @@ sub PrintLastEdit
 	$SYS->Set('_TITLE', 'BBS 1001 Edit');
 	$Form->DecodeForm(1);
 
-	require './module/isildur.pl';
-	my $Set = ISILDUR->new;
+	require './module/settings.pl';
+	my $Set = SETTINGS->new;
 	$Set->Load($SYS);
 
 	$resmax		= $Set->Get('BBS_RES_MAX') || $SYS->Get('RESMAX');

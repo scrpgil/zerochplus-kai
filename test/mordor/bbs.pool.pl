@@ -610,12 +610,12 @@ sub FunctionCreateLogs
 
 	require './module/gondor.pl';
 	require './module/thorin.pl';
-	require './module/isildur.pl';
+	require './module/settings.pl';
 	require './module/data_utils.pl';
 	require './module/banner.pl';
 	require './module/kako_log.pl';
 	my $Dat = DAT->new;
-	my $Set = ISILDUR->new;
+	my $Set = SETTINGS->new;
 	my $Banner = BANNER->new;
 	my $Conv = DATA_UTILS->new;
 	my $Page = THORIN->new;

@@ -573,8 +573,8 @@ sub FunctionResDelete
 	# ‚ ‚Ú`‚ñŽž‚Ííœ–¼‚ðŽæ“¾
 	if ($mode) {
 		my $Setting;
-		require './module/isildur.pl';
-		$Setting = ISILDUR->new;
+		require './module/settings.pl';
+		$Setting = SETTINGS->new;
 		$Setting->Load($Sys);
 		$abone	= $Setting->Get('BBS_DELETE_NAME');
 	}

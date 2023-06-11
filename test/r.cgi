@@ -84,12 +84,12 @@ sub Initialize
 
 	# 各使用モジュールの生成と初期化
 	require './module/melkor.pl';
-	require './module/isildur.pl';
+	require './module/settings.pl';
 	require './module/gondor.pl';
 	require './module/data_utils.pl';
 
 	$oSYS	= new MELKOR;
-	$oSET	= new ISILDUR;
+	$oSET	= new SETTINGS;
 	$oCONV	= new DATA_UTILS;
 	$oDAT	= new DAT;
 

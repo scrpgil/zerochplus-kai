@@ -38,7 +38,7 @@ sub new
 #	‰Šú‰»
 #	-------------------------------------------------------------------------------------
 #	@param	$Sys		MELKOR
-#	@param	$Setting	ISILDUR
+#	@param	$Setting	SETTINGS
 #	@return	‚È‚µ
 #
 #------------------------------------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ sub Init
 	$this->{'CODE'} = 'sjis';
 
 	if (!defined $Setting) {
-		require './module/isildur.pl';
-		$this->{'SET'} = ISILDUR->new;
+		require './module/settings.pl';
+		$this->{'SET'} = SETTINGS->new;
 		$this->{'SET'}->Load($Sys);
 	}
 	else {

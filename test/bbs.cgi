@@ -108,7 +108,7 @@ sub Initialize
 
 	# 使用モジュールの初期化
 	require './module/melkor.pl';
-	require './module/isildur.pl';
+	require './module/settings.pl';
 	require './module/radagast.pl';
 	require './module/data_utils.pl';
 	require './module/samwise.pl';
@@ -116,7 +116,7 @@ sub Initialize
 
 	my $Sys = MELKOR->new;
 	my $Conv = DATA_UTILS->new;
-	my $Set = ISILDUR->new;
+	my $Set = SETTINGS->new;
 	my $Cookie = RADAGAST->new;
 	my $Threads = THREADS->new;
 

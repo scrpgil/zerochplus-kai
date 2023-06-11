@@ -33,7 +33,7 @@ sub PCGI
 	my ($base, $max, $err);
 
 	require './module/baggins.pl';
-	require './module/isildur.pl';
+	require './module/settings.pl';
 	require './module/data_utils.pl';
 	require './module/melkor.pl';
 	require './module/samwise.pl';
@@ -41,7 +41,7 @@ sub PCGI
 
 	$Threads	= new THREADS;
 	$Conv		= new DATA_UTILS;
-	$Set		= new ISILDUR;
+	$Set		= new SETTINGS;
 	$Sys		= new MELKOR;
 	$Form		= SAMWISE->new(0);
 	$Page		= new THORIN;
@@ -218,7 +218,7 @@ sub GetPathData
 #	スレッドリストの生成
 #	-------------------------------------------------------------------------------------
 #	@param	$Threads	THREADS
-#	@param	$Set		ISILDUR
+#	@param	$Set		SETTINGS
 #	@param	$pList		結果格納用配列
 #	@param	$pHash		情報ハッシュ
 #	@param	$keyWord	検索ワード

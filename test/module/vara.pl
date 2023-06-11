@@ -40,7 +40,7 @@ sub new
 #	-------------------------------------------------------------------------------------
 #	@param	$Sys	MELKOR(必須)
 #	@param	$Form	SAMWISE(必須)
-#	@param	$Set	ISILDUR
+#	@param	$Set	SETTINGS
 #	@param	$Thread	THREADS
 #	@param	$Conv	DATA_UTILS
 #	@return	なし
@@ -59,8 +59,8 @@ sub Init
 
 	# モジュールが用意されてない場合はここで生成する
 	if (!defined $Set) {
-		require './module/isildur.pl';
-		$this->{'SET'} = ISILDUR->new;
+		require './module/settings.pl';
+		$this->{'SET'} = SETTINGS->new;
 		$this->{'SET'}->Load($Sys);
 	}
 	if (!defined $Threads) {

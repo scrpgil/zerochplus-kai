@@ -80,14 +80,14 @@ sub Initialize
 
 	# 使用モジュールの初期化
 	require './module/melkor.pl';
-	require './module/isildur.pl';
+	require './module/settings.pl';
 	require './module/radagast.pl';
 	require './module/data_utils.pl';
 	require './module/samwise.pl';
 
 	%$Sys = (
 		'SYS'		=> new MELKOR,
-		'SET'		=> new ISILDUR,
+		'SET'		=> new SETTINGS,
 		'COOKIE'	=> new RADAGAST,
 		'CONV'		=> new DATA_UTILS,
 		'FORM'		=> SAMWISE->new(1),

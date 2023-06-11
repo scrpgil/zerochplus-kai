@@ -942,7 +942,7 @@ sub GetDateFromSerial
 #
 #	ID•”•ª•¶š—ñ¶¬
 #	-------------------------------------------------------------------------------------
-#	@param	$Set	ISILDUR
+#	@param	$Set	SETTINGS
 #	@param	$Form	SAMWISE
 #	@param	$Sec
 #	@param	$id		ID

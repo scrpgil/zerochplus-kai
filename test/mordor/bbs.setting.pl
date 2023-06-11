@@ -211,8 +211,8 @@ sub PrintSettingInfo
 
 	$SYS->Set('_TITLE', 'BBS Setting Information');
 
-	require './module/isildur.pl';
-	$Setting = ISILDUR->new;
+	require './module/settings.pl';
+	$Setting = SETTINGS->new;
 	$Setting->Load($SYS);
 
 	$Setting->GetKeySet(\@settingKeys);
@@ -251,8 +251,8 @@ sub PrintBaseSetting
 
 	$Sys->Set('_TITLE', 'BBS Base Setting');
 
-	require './module/isildur.pl';
-	my $Setting = ISILDUR->new;
+	require './module/settings.pl';
+	my $Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	my $setSubTitle		= $Setting->Get('BBS_SUBTITLE');
@@ -310,8 +310,8 @@ sub PrintColorSetting
 
 	# SETTING.TXTから値を取得
 	if ($flg == 0) {
-		require './module/isildur.pl';
-		$Setting = ISILDUR->new;
+		require './module/settings.pl';
+		$Setting = SETTINGS->new;
 		$Setting->Load($SYS);
 	}
 	# フォーム情報から値を取得
@@ -418,8 +418,8 @@ sub PrintLimitSetting
 
 	$Sys->Set('_TITLE', 'BBS Limitter Setting');
 
-	require './module/isildur.pl';
-	my $Setting = ISILDUR->new;
+	require './module/settings.pl';
+	my $Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	# 設定値を取得
@@ -540,8 +540,8 @@ sub PrintOtherSetting
 
 	$Sys->Set('_TITLE', 'BBS Other Setting');
 
-	require './module/isildur.pl';
-	my $Setting = ISILDUR->new;
+	require './module/settings.pl';
+	my $Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	my $setIPSave		= $Setting->Get('BBS_SLIP');
@@ -695,8 +695,8 @@ sub FunctionBaseSetting
 			push @$pLog, "「$_」を「" . $Form->Get($_) . '」に設定';
 		}
 	}
-	require './module/isildur.pl';
-	$Setting = ISILDUR->new;
+	require './module/settings.pl';
+	$Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	$Setting->Set('BBS_SUBTITLE', $Form->Get('BBS_SUBTITLE'));
@@ -749,8 +749,8 @@ sub FunctionColorSetting
 			push @$pLog, "「$_」を「" . $Form->Get($_) . '」に設定';
 		}
 	}
-	require './module/isildur.pl';
-	$Setting = ISILDUR->new;
+	require './module/settings.pl';
+	$Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	$Setting->Set('BBS_TITLE_COLOR', $Form->Get('BBS_TITLE_COLOR'));
@@ -820,8 +820,8 @@ sub FunctionLimitSetting
 			push @$pLog, "「$_」を「" . $Form->Get($_) . '」に設定';
 		}
 	}
-	require './module/isildur.pl';
-	$Setting = ISILDUR->new;
+	require './module/settings.pl';
+	$Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	if ( $Form->Get('timeclose') eq 0 && $Form->Get('timecount') eq 0 ) {
@@ -893,8 +893,8 @@ sub FunctionOtherSetting
 			push @$pLog, "「$_」を「" . $Form->Get($_) . '」に設定';
 		}
 	}
-	require './module/isildur.pl';
-	$Setting = ISILDUR->new;
+	require './module/settings.pl';
+	$Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	$Setting->Set('BBS_THREAD_NUMBER', $Form->Get('BBS_THREAD_NUMBER'));
@@ -988,8 +988,8 @@ sub FunctionSettingImport
 			}
 		}
 	}
-	require './module/isildur.pl';
-	$Setting = ISILDUR->new;
+	require './module/settings.pl';
+	$Setting = SETTINGS->new;
 	$Setting->Load($Sys);
 
 	# importするキーを設定する
@@ -1003,7 +1003,7 @@ sub FunctionSettingImport
 	# 既存BBSからインポート
 	if ($Form->Equal('IMPORT_KIND', 'FROM_BBS')) {
 		my $bbs = $BBS->Get('DIR', $Form->Get('IMPORT_BBS'));
-		my $baseSetting = ISILDUR->new;
+		my $baseSetting = SETTINGS->new;
 		my $path = $Sys->Get('BBSPATH') . "/$bbs/SETTING.TXT";
 
 		push @$pLog, "■掲示板「$path」から設定情報をインポートします。";

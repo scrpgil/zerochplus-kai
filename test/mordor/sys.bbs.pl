@@ -666,8 +666,8 @@ sub FunctionBBSCreate
 	my ($bbsSetting);
 
 	# ŒfŽ¦”ÂÝ’èî•ñ¶¬
-	require './module/isildur.pl';
-	$bbsSetting = ISILDUR->new;
+	require './module/settings.pl';
+	$bbsSetting = SETTINGS->new;
 
 	$Sys->Set('BBS', $bbsDir);
 	$bbsSetting->Load($Sys);

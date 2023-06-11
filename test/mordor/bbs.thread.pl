@@ -261,8 +261,8 @@ sub PrintThreadList
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:20px\">Res</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:100px\">Attribute</td></tr>\n");
 
-	require './module/isildur.pl';
-	my $Set = ISILDUR->new;
+	require './module/settings.pl';
+	my $Set = SETTINGS->new;
 	$Set->Load($SYS);
 	my $resmax = $Set->Get('BBS_RES_MAX') || $SYS->Get('RESMAX');
 

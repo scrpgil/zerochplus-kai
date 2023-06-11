@@ -132,8 +132,8 @@ sub execute
 		else {
 			require './module/data_utils.pl';
 			$Conv = DATA_UTILS->new;
-			require './module/isildur.pl';
-			$Set = ISILDUR->new;
+			require './module/settings.pl';
+			$Set = SETTINGS->new;
 			$Set->Load($Sys);
 			$column = $Set->Get('BBS_TRIPCOLUMN');
 			$key = "#$key";
@@ -365,14 +365,14 @@ sub PrintBBSError
 	my $CGI;
 
 	require('./module/radagast.pl');
-	require('./module/isildur.pl');
+	require('./module/settings.pl');
 	require('./module/thorin.pl');
 
 	$CGI->{'SYS'}		= $Sys;
 	$CGI->{'FORM'}		= $Form;
 	$CGI->{'COOKIE'}	= RADAGAST->new;
 	$CGI->{'COOKIE'}->Init();
-	$CGI->{'SET'}		= ISILDUR->new;
+	$CGI->{'SET'}		= SETTINGS->new;
 	$CGI->{'SET'}->Load($Sys);
 	my $Page = THORIN->new;
 
