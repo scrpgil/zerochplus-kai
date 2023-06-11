@@ -43,8 +43,8 @@ sub BBSCGI
 		my $Conv = $CGI->{'CONV'};
 		my $Threads = $CGI->{'THREADS'};
 
-		require './module/vara.pl';
-		my $WriteAid = VARA->new;
+		require './module/nns_write.pl';
+		my $WriteAid = BBS_WRITE->new;
 		$WriteAid->Init($Sys, $Form, $Set, $Threads, $Conv);
 
 		$err = $WriteAid->Write();
