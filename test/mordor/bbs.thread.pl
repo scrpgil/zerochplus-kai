@@ -272,7 +272,7 @@ sub PrintThreadList
 		$subj	= $Threads->Get('SUBJECT', $id);
 		$res	= $Threads->Get('RES', $id);
 
-		my $permt = ARAGORN::GetPermission("$base/$id.dat");
+		my $permt = DAT::GetPermission("$base/$id.dat");
 		my $perms = $SYS->Get('PM-STOP');
 		my $isstop = $permt == $perms;
 
@@ -280,7 +280,7 @@ sub PrintThreadList
 		#if ($Threads->GetAttr($id, 'stop')) { # use from 0.8.x
 		if ($isstop) {								$bgColor = '#ffcfff'; }	# 停止スレッド
 		elsif ($res > $resmax) {					$bgColor = '#cfffff'; }	# 最大数スレッド
-		elsif (ARAGORN::IsMoved("$base/$id.dat")) {	$bgColor = '#ffffcf'; }	# 移転スレッド
+		elsif (DAT::IsMoved("$base/$id.dat")) {	$bgColor = '#ffffcf'; }	# 移転スレッド
 		else {										$bgColor = '#ffffff'; }	# 通常スレッド
 
 		$common = "\"javascript:SetOption('TARGET_THREAD','$id');";
@@ -623,7 +623,7 @@ sub FunctionThreadStop
 	require './module/gondor.pl';
 	require './module/baggins.pl'; # use from 0.8.x
 
-	$Thread		= ARAGORN->new;
+	$Thread		= DAT->new;
 	my $Threads	= THREADS->new; # use from 0.8.x
 	@threadList	= $Form->GetAtArray('THREADS');
 	$base		= $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/dat';
@@ -954,9 +954,9 @@ sub FunctionThreadAutoPooling
 		# 停止・移動スレッド
 		if ($Form->Equal('CONDITION_BYSTOP', 'on') && $bPool == 0) {
 			my ($permt, $perms);
-			$permt = ARAGORN::GetPermission("$base/dat/$id.dat");
+			$permt = DAT::GetPermission("$base/dat/$id.dat");
 			$perms = $Sys->Get('PM-STOP');
-			if (($permt eq $perms) || (ARAGORN::IsMoved("$base/dat/$id.dat"))) {
+			if (($permt eq $perms) || (DAT::IsMoved("$base/dat/$id.dat"))) {
 				$bPool = 1;
 			}
 		}

@@ -82,7 +82,7 @@ sub GetArgument
 #	表示レス数正規化 - RegularDispNum
 #	-------------------------------------------
 #	引　数：$Sys   : MELKOR
-#			$Dat   : ARAGORNオブジェクト
+#			$Dat   : DATオブジェクト
 #			$last  : lastフラグ
 #			$start : 開始行
 #			$end   : 終了行

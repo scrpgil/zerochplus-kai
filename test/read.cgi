@@ -88,7 +88,7 @@ sub Initialize
 	my $Sys = MELKOR->new;
 	my $Conv = DATA_UTILS->new;
 	my $Set = ISILDUR->new;
-	my $Dat = ARAGORN->new;
+	my $Dat = DAT->new;
 
 	%$CGI = (
 		'SYS'		=> $Sys,

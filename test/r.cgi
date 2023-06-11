@@ -91,7 +91,7 @@ sub Initialize
 	$oSYS	= new MELKOR;
 	$oSET	= new ISILDUR;
 	$oCONV	= new DATA_UTILS;
-	$oDAT	= new ARAGORN;
+	$oDAT	= new DAT;
 
 	%$pSYS = (
 		'SYS'	=> $oSYS,

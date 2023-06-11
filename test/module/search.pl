@@ -113,9 +113,9 @@ sub Create
 	}
 
 	# datモジュール読み込み
-	if (! defined $this->{'ARAGORN'}) {
+	if (! defined $this->{'DAT'}) {
 		require './module/gondor.pl';
-		$this->{'ARAGORN'} = ARAGORN->new;
+		$this->{'DAT'} = DAT->new;
 	}
 }
 
@@ -176,18 +176,18 @@ sub Search
 	my $bbs = $this->{'SYS'}->Get('BBS');
 	my $key = $this->{'SYS'}->Get('KEY');
 	my $Path = $this->{'SYS'}->Get('BBSPATH') . "/$bbs/dat/$key.dat";
-	my $ARAGORN = $this->{'ARAGORN'};
+	my $DAT = $this->{'DAT'};
 
 	my $word = decode('cp932', $word);
 
-	if ($ARAGORN->Load($this->{'SYS'}, $Path, 1)) {
+	if ($DAT->Load($this->{'SYS'}, $Path, 1)) {
 		my $pResultSet = $this->{'RESULTSET'};
 		my $type = $this->{'TYPE'} || 0x7;
 
 		# すべてのレス数でループ
-		for (my $i = 0 ; $i < $ARAGORN->Size() ; $i++) {
+		for (my $i = 0 ; $i < $DAT->Size() ; $i++) {
 			my $bFind = 0;
-			my $pDat = $ARAGORN->Get($i);
+			my $pDat = $DAT->Get($i);
 			my $data = decode('cp932', $$pDat);
 			my @elem = split(/<>/, $data, -1);
 
@@ -217,7 +217,7 @@ sub Search
 			}
 		}
 	}
-	$ARAGORN->Close();
+	$DAT->Close();
 }
 
 #============================================================================================================

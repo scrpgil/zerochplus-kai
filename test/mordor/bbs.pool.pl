@@ -614,7 +614,7 @@ sub FunctionCreateLogs
 	require './module/data_utils.pl';
 	require './module/banner.pl';
 	require './module/kako_log.pl';
-	my $Dat = ARAGORN->new;
+	my $Dat = DAT->new;
 	my $Set = ISILDUR->new;
 	my $Banner = BANNER->new;
 	my $Conv = DATA_UTILS->new;

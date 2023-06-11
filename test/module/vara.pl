@@ -141,7 +141,7 @@ sub Write
 	$Sys->Set('updown', $updown);
 
 	# 書き込み直前処理
-	$err = $this->ReadyBeforeWrite(ARAGORN::GetNumFromFile($Sys->Get('DATPATH')) + 1);
+	$err = $this->ReadyBeforeWrite(DAT::GetNumFromFile($Sys->Get('DATPATH')) + 1);
 	return $err if ($err != $ZP::E_SUCCESS);
 
 	# レス要素の取得
@@ -176,14 +176,14 @@ sub Write
 
 	# datファイルへ直接書き込み
 	my $resNum = 0;
-	my $err2 = ARAGORN::DirectAppend($Sys, $datPath, $line);
+	my $err2 = DAT::DirectAppend($Sys, $datPath, $line);
 	if ($err2 == 0) {
 		# レス数が最大数を超えたらover設定をする
-		$resNum = ARAGORN::GetNumFromFile($datPath);
+		$resNum = DAT::GetNumFromFile($datPath);
 		if ($resNum >= $Sys->Get('RESMAX')) {
 			# datにOVERスレッドレスを書き込む
 			Get1001Data($Sys, \$line);
-			ARAGORN::DirectAppend($Sys, $datPath, $line);
+			DAT::DirectAppend($Sys, $datPath, $line);
 			$resNum++;
 		}
 		$err = $ZP::E_SUCCESS;
@@ -434,10 +434,10 @@ sub IsRegulation
 		require './module/gondor.pl';
 
 		# 移転スレッド
-		return $ZP::E_LIMIT_MOVEDTHREAD if (ARAGORN::IsMoved($datPath));
+		return $ZP::E_LIMIT_MOVEDTHREAD if (DAT::IsMoved($datPath));
 
 		# レス最大数
-		return $ZP::E_LIMIT_OVERMAXRES if ($Sys->Get('RESMAX') < ARAGORN::GetNumFromFile($datPath));
+		return $ZP::E_LIMIT_OVERMAXRES if ($Sys->Get('RESMAX') < DAT::GetNumFromFile($datPath));
 
 		# datファイルサイズ制限
 		if ($Set->Get('BBS_DATMAX')) {

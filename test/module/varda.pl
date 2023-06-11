@@ -454,7 +454,7 @@ sub PrintIndexPreview
 	}
 
 	require './module/gondor.pl';
-	my $Dat = ARAGORN->new;
+	my $Dat = DAT->new;
 
 	my @threadSet = ();
 	$this->{'THREADS'}->GetKeySet('ALL', '', \@threadSet);
