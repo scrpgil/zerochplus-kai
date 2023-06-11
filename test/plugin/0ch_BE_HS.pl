@@ -376,8 +376,8 @@ sub PrintBBSError
 	$CGI->{'SET'}->Load($Sys);
 	my $Page = THORIN->new;
 
-	require('./module/orald.pl');
-	$ERROR = ORALD->new;
+	require('./module/error.pl');
+	$ERROR = ERROR->new;
 	$ERROR->Load($Sys);
 
 	$ERROR->Print($CGI,$Page,$err,$Sys->Get('AGENT'));

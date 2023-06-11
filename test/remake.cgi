@@ -187,8 +187,8 @@ sub PrintBBSError
 	my ($Sys, $Page, $err) = @_;
 	my ($ERROR);
 
-	require './module/orald.pl';
-	$ERROR = new ORALD;
+	require './module/error.pl';
+	$ERROR = new ERROR;
 	$ERROR->Load($Sys->{'SYS'});
 
 	$ERROR->Print($Sys, $Page, $err, $Sys->{'SYS'}->Get('AGENT'));

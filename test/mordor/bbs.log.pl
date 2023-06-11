@@ -288,8 +288,8 @@ sub PrintLogs
 	}
 
 	require './module/data_utils.pl';
-	require './module/orald.pl';
-	my $Error = ORALD->new;
+	require './module/error.pl';
+	my $Error = ERROR->new;
 	$Error->Load($Sys);
 
 	# ƒƒOˆê——‚ðo—Í

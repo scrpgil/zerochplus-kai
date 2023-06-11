@@ -144,8 +144,8 @@ sub PrintBBSError
 	$SYS->{'SET'}->Load($sys);
 	my $Page = new THORIN;
 
-	require('./module/orald.pl');
-	$ERROR = new ORALD;
+	require('./module/error.pl');
+	$ERROR = new ERROR;
 	$ERROR->Load($sys);
 
 	$ERROR->Print($SYS,$Page,$err,$sys->Get('AGENT'));

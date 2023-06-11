@@ -588,8 +588,8 @@ sub PrintBBSError
 {
 	my ($CGI, $Page, $err) = @_;
 
-	require './module/orald.pl';
-	my $Error = ORALD->new;
+	require './module/error.pl';
+	my $Error = ERROR->new;
 	$Error->Load($CGI->{'SYS'});
 
 	$Error->Print($CGI, $Page, $err, $CGI->{'SYS'}->Get('AGENT'));
