@@ -5,7 +5,7 @@
 #	このモジュールは管理CGIのセキュリティ情報を管理します。
 #	以下の3つのパッケージによって構成されます
 #
-#	GLORFINDEL	: ユーザ情報管理
+#	SYS_SECURITY	: ユーザ情報管理
 #	GILDOR		: グループ情報管理
 #	ARWEN		: セキュリティインタフェイス
 #
@@ -16,7 +16,7 @@
 #	ユーザ管理パッケージ
 #
 #============================================================================================================
-package	GLORFINDEL;
+package	SYS_SECURITY;
 
 use strict;
 #use warnings;
@@ -608,7 +608,7 @@ sub Init
 
 	# 2重ロード防止
 	if (! defined $this->{'USER'}) {
-		$this->{'USER'} = GLORFINDEL->new;
+		$this->{'USER'} = SYS_SECURITY->new;
 		$this->{'GROUP'} = GILDOR->new;
 		$this->{'USER'}->Load($Sys);
 

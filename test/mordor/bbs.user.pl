@@ -263,7 +263,7 @@ sub PrintGroupSetting
 	$Sys->Set('_TITLE', 'Group Create')	if ($mode == 0);
 
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
+	$User = SYS_SECURITY->new;
 	$Group = GILDOR->new;
 
 	# ユーザ情報の読み込み
@@ -484,7 +484,7 @@ sub FunctionGroupSetting
 		}
 	}
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
+	$User = SYS_SECURITY->new;
 	$Group = GILDOR->new;
 
 	# ユーザ情報の読み込み

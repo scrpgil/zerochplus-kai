@@ -23,12 +23,12 @@ sub new
 {
 	my $this = shift;
 	my ($obj, @LOG);
-	
+
 	$obj = {
 		'LOG'	=> \@LOG
 	};
 	bless $obj, $this;
-	
+
 	return $obj;
 }
 
@@ -47,17 +47,17 @@ sub DoPrint
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
-	
+
 	require './mordor/sauron.pl';
 	$BASE = SAURON->new;
-	
+
 	# 管理マスタオブジェクトの生成
 	$Page		= $BASE->Create($Sys, $Form);
 	$subMode	= $Form->Get('MODE_SUB');
-	
+
 	# メニューの設定
 	SetMenuList($BASE, $pSys);
-	
+
 	if ($subMode eq 'LIST') {														# スレッド一覧画面
 		PrintUserList($Page, $Sys, $Form);
 	}
@@ -78,7 +78,7 @@ sub DoPrint
 		$Sys->Set('_TITLE', 'Process Failed');
 		$BASE->PrintError($this->{'LOG'});
 	}
-	
+
 	$BASE->Print($Sys->Get('_TITLE'), 1);
 }
 
@@ -97,10 +97,10 @@ sub DoFunction
 	my $this = shift;
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $err);
-	
+
 	$subMode	= $Form->Get('MODE_SUB');
 	$err		= 0;
-	
+
 	if ($subMode eq 'CREATE') {														# ユーザ作成
 		$err = FuncUserSetting($Sys, $Form, 0, $this->{'LOG'});
 	}
@@ -110,7 +110,7 @@ sub DoFunction
 	elsif ($subMode eq 'DELETE') {													# ユーザ削除
 		$err = FuncUserDelete($Sys, $Form, $this->{'LOG'});
 	}
-	
+
 	# 処理結果表示
 	if ($err) {
 		$pSys->{'LOGGER'}->Put($Form->Get('UserName'), "USER($subMode)", "ERROR:$err");
@@ -138,10 +138,10 @@ sub DoFunction
 sub SetMenuList
 {
 	my ($Base, $pSys) = @_;
-	
+
 	# 共通表示メニュー
 	$Base->SetMenu('ユーザー一覧', "'sys.user','DISP','LIST'");
-	
+
 	# システム管理権限のみ
 	if ($pSys->{'SECINFO'}->IsAuthority($pSys->{'USER'}, $ZP::AUTH_SYSADMIN, '*')) {
 		$Base->SetMenu('ユーザー登録', "'sys.user','DISP','CREATE'");
@@ -163,27 +163,27 @@ sub PrintUserList
 	my ($Page, $Sys, $Form) = @_;
 	my ($User, @userSet, $name, $expl, $full, $id, $common);
 	my ($dispNum, $i, $dispSt, $dispEd, $userNum, $isAuth);
-	
+
 	$Sys->Set('_TITLE', 'Users List');
-	
+
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
-	
+	$User = SYS_SECURITY->new;
+
 	# ユーザ情報の読み込み
 	$User->Load($Sys);
-	
+
 	# ユーザ情報を取得
 	$User->GetKeySet('ALL', '', \@userSet);
-	
+
 	# 表示数の設定
 	$userNum	= @userSet;
 	$dispNum	= ($Form->Get('DISPNUM') eq '' ? 10 : $Form->Get('DISPNUM'));
 	$dispSt		= ($Form->Get('DISPST') eq '' ? 0 : $Form->Get('DISPST'));
 	$dispSt		= ($dispSt < 0 ? 0 : $dispSt);
 	$dispEd		= (($dispSt + $dispNum) > $userNum ? $userNum : ($dispSt + $dispNum));
-	
+
 	$common		= "DoSubmit('sys.user','DISP','LIST');";
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2 width=100%>");
 	$Page->Print("<tr><td colspan=2><b><a href=\"javascript:SetOption('DISPST', " . ($dispSt - $dispNum));
 	$Page->Print(");$common\">&lt;&lt; PREV</a> | <a href=\"javascript:SetOption('DISPST', ");
@@ -196,20 +196,20 @@ sub PrintUserList
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">User Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">User Full Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:200\">Explanation</td></td>\n");
-	
+
 	# 権限取得
 	$isAuth = $Sys->Get('ADMIN')->{'SECINFO'}->IsAuthority($Sys->Get('ADMIN')->{'USER'}, $ZP::AUTH_SYSADMIN, '*');
-	
+
 	# ユーザ一覧を出力
 	for ($i = $dispSt ; $i < $dispEd ; $i++) {
 		$id		= $userSet[$i];
 		$name	= $User->Get('NAME', $id);
 		$full	= $User->Get('FULL', $id);
 		$expl	= $User->Get('EXPL', $id);
-		
+
 		$common = "\"javascript:SetOption('SELECT_USER','$id');";
 		$common .= "DoSubmit('sys.user','DISP','EDIT')\"";
-		
+
 		# システム権限有無による表示抑制
 		if ($isAuth) {
 			$Page->Print("<tr><td><input type=checkbox name=USERS value=$id></td>");
@@ -221,10 +221,10 @@ sub PrintUserList
 		$Page->Print("<td>$full</td><td>$expl</td></tr>\n");
 	}
 	$common = "onclick=\"DoSubmit('sys.user','DISP'";
-	
+
 	$Page->HTMLInput('hidden', 'SELECT_USER', '');
 	$Page->Print("<tr><td colspan=4><hr></td></tr>\n");
-	
+
 	# システム権限有無による表示抑制
 	if ($isAuth) {
 		$Page->Print("<tr><td colspan=4 align=left>");
@@ -232,7 +232,7 @@ sub PrintUserList
 		$Page->Print("</td></tr>\n");
 	}
 	$Page->Print("</table>");
-	
+
 	$Page->HTMLInput('hidden', 'DISPST', '');
 }
 
@@ -251,16 +251,16 @@ sub PrintUserSetting
 {
 	my ($Page, $Sys, $Form, $mode) = @_;
 	my ($User, $id, $common, $name, $pass, $expl, $full, $sysad);
-	
+
 	$Sys->Set('_TITLE', 'User Edit')	if ($mode == 1);
 	$Sys->Set('_TITLE', 'User Create')	if ($mode == 0);
-	
+
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
-	
+	$User = SYS_SECURITY->new;
+
 	# ユーザ情報の読み込み
 	$User->Load($Sys);
-	
+
 	# 編集モードならユーザ情報を取得する
 	if ($mode) {
 		$name	= $User->Get('NAME', $Form->Get('SELECT_USER'));
@@ -277,11 +277,11 @@ sub PrintUserSetting
 		$full	= '';
 		$sysad	= '';
 	}
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2>");
 	$Page->Print("<tr><td colspan=2>各項目を設定して[設定]ボタンを押してください。</td></tr>");
 	$Page->Print("<tr><td colspan=2><hr></td></tr>\n");
-	
+
 	$Page->Print("<tr><td class=\"DetailTitle\">ユーザ名</td><td>");
 	$Page->Print("<input type=text size=30 name=NAME value=\"$name\"></td></tr>");
 	$Page->Print("<tr><td class=\"DetailTitle\">パスワード</td><td>");
@@ -292,13 +292,13 @@ sub PrintUserSetting
 	$Page->Print("<input type=text size=30 name=EXPL value=\"$expl\"></td></tr>");
 	$Page->Print("<tr><td class=\"DetailTitle\" colspan=2 valign=absmiddle>");
 	$Page->Print("<input type=checkbox name=SYSAD $sysad value=on>システム管理者権限</td></tr>");
-	
+
 	$Page->HTMLInput('hidden', 'SELECT_USER', $Form->Get('SELECT_USER'));
-	
+
 	# submit設定
 	$common = "'" . $Form->Get('MODE_SUB') . "'";
 	$common = "onclick=\"DoSubmit('sys.user','FUNC',$common)\"";
-	
+
 	$Page->Print("<tr><td colspan=2><hr></td></tr>\n");
 	$Page->Print("<tr><td colspan=2 align=center>");
 	$Page->Print("<input type=button value=\"　設定　\" $common></td></tr>\n");
@@ -319,38 +319,38 @@ sub PrintUserDelete
 {
 	my ($Page, $SYS, $Form) = @_;
 	my ($User, $Group, @userSet, $id, $name, $grop, $expl, $full);
-	
+
 	$SYS->Set('_TITLE', 'User Delete Confirm');
-	
+
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
-	
-	
+	$User = SYS_SECURITY->new;
+
+
 	# ユーザ情報を取得
 	$User->Load($SYS);
 	@userSet = $Form->GetAtArray('USERS');
-	
+
 	$Page->Print("<center><table border=0 cellspacing=2 width=100%>");
 	$Page->Print("<tr><td colspan=3>以下のユーザを削除します。</td></tr>");
 	$Page->Print("<tr><td colspan=3><hr></td></tr>");
-	
+
 	$Page->Print("<tr bgcolor=silver>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">User Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:150\">User Full Name</td>");
 	$Page->Print("<td class=\"DetailTitle\" style=\"width:200\">Explanation</td></td>\n");
-	
+
 	# ユーザリストを出力
 	foreach $id (@userSet) {
 		$name = $User->Get('NAME', $id);
 		$expl = $User->Get('EXPL', $id);
 		$full = $User->Get('FULL', $id);
-		
+
 		$Page->Print("<tr><td>$name</a></td>");
 		$Page->Print("<td>$full</td>");
 		$Page->Print("<td>$expl</td></tr>\n");
 		$Page->HTMLInput('hidden', 'USERS', $id);
 	}
-	
+
 	$Page->Print("<tr><td colspan=3><hr></td></tr>");
 	$Page->Print("<tr><td bgcolor=yellow colspan=3><b><font color=red>");
 	$Page->Print("※注：削除したユーザを元に戻すことはできません。</b><br>");
@@ -376,12 +376,12 @@ sub FuncUserSetting
 {
 	my ($Sys, $Form, $mode, $pLog) = @_;
 	my ($User, $name, $pass, $expl, $grop, $chg, $full, $sysad);
-	
+
 	# 権限チェック
 	{
 		my $SEC = $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_SYSADMIN, '*')) == 0) {
 			return 1000;
 		}
@@ -397,10 +397,10 @@ sub FuncUserSetting
 		}
 	}
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
-	
+	$User = SYS_SECURITY->new;
+
 	$User->Load($Sys);
-	
+
 	# 設定入力情報を取得
 	$name	= $Form->Get('NAME');
 	$pass	= $Form->Get('PASS');
@@ -408,7 +408,7 @@ sub FuncUserSetting
 	$full	= $Form->Get('FULL');
 	$sysad	= $Form->Equal('SYSAD', 'on') ? 1 : 0;
 	$chg	= 0;
-	
+
 	if ($mode) {																	# 編集モード
 		# パスワードが変更されていたら再設定する
 		if ($pass ne $User->Get('PASS', $Form->Get('SELECT_USER'))) {
@@ -424,10 +424,10 @@ sub FuncUserSetting
 		$User->Add($name, $pass, $full, $expl, $sysad);
 		$chg = 1;
 	}
-	
+
 	# 設定情報を保存
 	$User->Save($Sys);
-	
+
 	# ログの設定
 	{
 		push @$pLog, "■ ユーザ [ $name ] " . ($mode ? '設定' : '作成');
@@ -436,7 +436,7 @@ sub FuncUserSetting
 		push @$pLog, "　　　　説明：$expl";
 		push @$pLog, '　　　　システム管理：' . ($sysad ? '有り' : '無し');
 	}
-	
+
 	return 0;
 }
 
@@ -454,26 +454,26 @@ sub FuncUserDelete
 {
 	my ($Sys, $Form, $pLog) = @_;
 	my ($User, $Sec, @userSet, $id, $name);
-	
+
 	# 権限チェック
 	{
 		my $SEC = $Sys->Get('ADMIN')->{'SECINFO'};
 		my $chkID = $Sys->Get('ADMIN')->{'USER'};
 		$id = $chkID;
-		
+
 		if (($SEC->IsAuthority($chkID, $ZP::AUTH_SYSADMIN, '*')) == 0) {
 			return 1000;
 		}
 	}
 	require './module/elves.pl';
-	$User = GLORFINDEL->new;
+	$User = SYS_SECURITY->new;
 	$Sec = ARWEN->new;
-	
+
 	$User->Load($Sys);
 	$Sec->Init($Sys);
-	
+
 	@userSet = $Form->GetAtArray('USERS');
-	
+
 	# 選択ユーザを全削除
 	foreach (@userSet) {
 		next if (! defined $User->Get('NAME', $_));
@@ -493,10 +493,10 @@ sub FuncUserDelete
 			$User->Delete($_);
 		}
 	}
-	
+
 	# 設定情報を保存
 	$User->Save($Sys);
-	
+
 	return 0;
 }
 
