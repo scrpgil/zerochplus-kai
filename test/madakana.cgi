@@ -74,7 +74,7 @@ sub Initialize
 
 	require './module/sys_data.pl';
 	require './module/data_utils.pl';
-	require './module/samwise.pl';
+	require './module/forms.pl';
 
 	$oSYS	= new SYS_DATA;
 	$oCONV	= new DATA_UTILS;
@@ -86,7 +86,7 @@ sub Initialize
 		'CODE'	=> 'Shift_JIS',
 	);
 
-	$pSYS->{'FORM'} = SAMWISE->new($oSYS->Get('BBSGET')),
+	$pSYS->{'FORM'} = FORMS->new($oSYS->Get('BBSGET')),
 
 	# ƒVƒXƒeƒ€‰Šú‰»
 	$oSYS->Init();

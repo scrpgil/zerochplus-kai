@@ -34,11 +34,11 @@ sub SearchCGI
 
 	require './module/sys_data.pl';
 	require './module/thorin.pl';
-	require './module/samwise.pl';
+	require './module/forms.pl';
 	require './module/bbs_manage.pl';
 	$Sys	= new SYS_DATA;
 	$Page	= new THORIN;
-	$Form	= SAMWISE->new(1);
+	$Form	= FORMS->new(1);
 	$BBS	= new BBS_MANAGE;
 
 	$Form->DecodeForm(1);

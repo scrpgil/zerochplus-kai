@@ -39,7 +39,7 @@ sub new
 #	‰Šú‰»
 #	-------------------------------------------------------------------------------------
 #	@param	$Sys	SYS_DATA(•K{)
-#	@param	$Form	SAMWISE(•K{)
+#	@param	$Form	FORMS(•K{)
 #	@param	$Set	SETTINGS
 #	@param	$Thread	THREADS
 #	@param	$Conv	DATA_UTILS

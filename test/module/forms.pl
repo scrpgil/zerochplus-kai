@@ -3,7 +3,7 @@
 #	フォーム情報管理モジュール
 #
 #============================================================================================================
-package	SAMWISE;
+package	FORMS;
 
 use strict;
 #use warnings;
@@ -20,7 +20,7 @@ sub new
 {
 	my $class = shift;
 	my ($throughget) = @_;
-	
+
 	my $form = '';
 	if ($ENV{'REQUEST_METHOD'} eq 'POST') {
 		read STDIN, $form, $ENV{'CONTENT_LENGTH'};
@@ -28,16 +28,16 @@ sub new
 	elsif ($throughget && defined $ENV{'QUERY_STRING'}) {
 		$form = $ENV{'QUERY_STRING'};
 	}
-	
+
 	my @SRC = split(/[&;]/, $form);
-	
+
 	my $obj = {
 		'FORM'	=> undef,
 		'SRC'	=> \@SRC,
 	};
-	
+
 	bless $obj, $class;
-	
+
 	return $obj;
 }
 
@@ -45,7 +45,7 @@ sub new
 #
 #	フォーム情報デコード - DecodeForm
 #	-------------------------------------------
-#	引　数：$mode : 
+#	引　数：$mode :
 #	戻り値：なし
 #
 #------------------------------------------------------------------------------------------------------------
@@ -53,9 +53,9 @@ sub DecodeForm
 {
 	my $this = shift;
 	my ($mode) = @_;
-	
+
 	$this->{'FORM'} = {};
-	
+
 	foreach (@{$this->{'SRC'}}) {
 		my ($var, $val) = split(/=/, $_, 2);
 		$val =~ tr/+/ /;
@@ -80,9 +80,9 @@ sub GetAtArray
 {
 	my $this = shift;
 	my ($key, $f) = @_;
-	
+
 	my @ret = ();
-	
+
 	foreach (@{$this->{'SRC'}}) {
 		my ($var, $val) = split(/=/, $_, 2);
 		if ($key eq $var) {
@@ -115,9 +115,9 @@ sub Get
 {
 	my $this = shift;
 	my ($key, $default) = @_;
-	
+
 	my $val = $this->{'FORM'}->{$key};
-	
+
 	return (defined $val ? $val : (defined $default ? $default : ''));
 }
 
@@ -134,7 +134,7 @@ sub Set
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	$this->{'FORM'}->{$key} = $data;
 }
 
@@ -151,9 +151,9 @@ sub Equal
 {
 	my $this = shift;
 	my ($key, $data) = @_;
-	
+
 	my $val = $this->{'FORM'}->{$key};
-	
+
 	return (defined $val && $val eq $data);
 }
 
@@ -169,7 +169,7 @@ sub IsInput
 {
 	my $this = shift;
 	my ($pKeyList) = @_;
-	
+
 	foreach (@$pKeyList) {
 		my $val = $this->{'FORM'}->{$_};
 		if (!defined $val || $val eq '') {
@@ -190,7 +190,7 @@ sub IsInput
 sub IsInputAll
 {
 	my $this = shift;
-	
+
 	foreach (values %{$this->{'FORM'}}) {
 		if ($_ eq '') {
 			return 0;
@@ -211,7 +211,7 @@ sub IsExist
 {
 	my $this = shift;
 	my ($key) = @_;
-	
+
 	return exists $this->{'FORM'}->{$key};
 }
 
@@ -228,7 +228,7 @@ sub Contain
 {
 	my $this = shift;
 	my ($key, $string) = @_;
-	
+
 	if ($this->{'FORM'}->{$key} =~ /\Q$string\E/) {
 		return 1;
 	}
@@ -248,7 +248,7 @@ sub GetListData
 {
 	my $this = shift;
 	my ($pArray, @list) = @_;
-	
+
 	foreach (@list) {
 		push @$pArray, $this->{'FORM'}->{$_};
 	}
@@ -266,7 +266,7 @@ sub IsNumber
 {
 	my $this = shift;
 	my ($pKeys) = @_;
-	
+
 	foreach (@$pKeys) {
 		if ($this->{'FORM'}->{$_} =~ /[^0-9]/) {
 			return 0;
@@ -287,7 +287,7 @@ sub IsAlphabet
 {
 	my $this = shift;
 	my ($pKeys) = @_;
-	
+
 	foreach (@$pKeys) {
 		if ($this->{'FORM'}->{$_} =~ /[^0-9a-zA-Z_@]/) {
 			return 0;
@@ -308,7 +308,7 @@ sub IsCapKey
 {
 	my $this = shift;
 	my ($pKeys) = @_;
-	
+
 	foreach (@$pKeys) {
 		if ($this->{'FORM'}->{$_} =~ /[^0-9a-zA-Z\_\.\+\-\*\/\@\:\!\%\&\(\)\=\~\^]/) {
 			return 0;
@@ -329,7 +329,7 @@ sub IsBBSDir
 {
 	my $this = shift;
 	my ($pKeys) = @_;
-	
+
 	foreach (@$pKeys) {
 		if ($this->{'FORM'}->{$_} =~ /[^0-9a-zA-Z\_\-]/) {
 			return 0;

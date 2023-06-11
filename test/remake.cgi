@@ -83,14 +83,14 @@ sub Initialize
 	require './module/settings.pl';
 	require './module/cookie.pl';
 	require './module/data_utils.pl';
-	require './module/samwise.pl';
+	require './module/forms.pl';
 
 	%$Sys = (
 		'SYS'		=> new SYS_DATA,
 		'SET'		=> new SETTINGS,
 		'COOKIE'	=> new COOKIE,
 		'CONV'		=> new DATA_UTILS,
-		'FORM'		=> SAMWISE->new(1),
+		'FORM'		=> FORMS->new(1),
 		'PAGE'		=> $Page,
 	);
 

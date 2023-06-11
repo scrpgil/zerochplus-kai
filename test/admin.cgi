@@ -45,8 +45,8 @@ sub AdminCGI
 	$Sys->Set('MainCGI', $CGI);
 
 	# ƒtƒH[ƒ€î•ñ‚ðŽæ“¾
-	require "./module/samwise.pl";
-	my $Form = SAMWISE->new(0);
+	require "./module/forms.pl";
+	my $Form = FORMS->new(0);
 	$Form->DecodeForm(0);
 	$Form->Set('FALSE', 0);
 

@@ -111,7 +111,7 @@ sub Initialize
 	require './module/settings.pl';
 	require './module/cookie.pl';
 	require './module/data_utils.pl';
-	require './module/samwise.pl';
+	require './module/forms.pl';
 	require './module/baggins.pl';
 
 	my $Sys = SYS_DATA->new;
@@ -123,7 +123,7 @@ sub Initialize
 	# ƒVƒXƒeƒ€î•ñÝ’è
 	return $ZP::E_SYSTEM_ERROR if ($Sys->Init());
 
-	my $Form = SAMWISE->new($Sys->Get('BBSGET'));
+	my $Form = FORMS->new($Sys->Get('BBSGET'));
 
 	%$CGI = (
 		'SYS'		=> $Sys,

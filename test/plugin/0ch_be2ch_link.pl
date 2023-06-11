@@ -90,7 +90,7 @@ sub getType
 #	拡張機能実行インタフェイス
 #	-------------------------------------------------------------------------------------
 #	@param	$sys	SYS_DATA
-#	@param	$form	SAMWISE
+#	@param	$form	FORMS
 #	@param	$mode	拡張機能タイプ
 #	@return	正常終了の場合は0
 #

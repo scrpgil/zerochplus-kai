@@ -133,7 +133,7 @@ sub Check
 		flock($fh, 2);
 		while ( <$fh> ) {
 			# $l =~ s/\x0d?\x0a?$//;
-			# samwiseと同等のサニタイジングを行います
+			# formsと同等のサニタイジングを行います
 			$_ =~ s/[\x0d\x0a\0]//g;
 			$_ =~ s/"/&quot;/g;
 			$_ =~ s/</&lt;/g;

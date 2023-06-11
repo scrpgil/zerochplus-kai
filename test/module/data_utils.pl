@@ -943,7 +943,7 @@ sub GetDateFromSerial
 #	ID•”•ª•¶š—ñ¶¬
 #	-------------------------------------------------------------------------------------
 #	@param	$Set	SETTINGS
-#	@param	$Form	SAMWISE
+#	@param	$Form	FORMS
 #	@param	$Sec
 #	@param	$id		ID
 #	@param	$koyuu	’[––ŒÅ—L”Ô†

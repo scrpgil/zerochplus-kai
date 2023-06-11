@@ -36,14 +36,14 @@ sub PCGI
 	require './module/settings.pl';
 	require './module/data_utils.pl';
 	require './module/sys_data.pl';
-	require './module/samwise.pl';
+	require './module/forms.pl';
 	require './module/thorin.pl';
 
 	$Threads	= new THREADS;
 	$Conv		= new DATA_UTILS;
 	$Set		= new SETTINGS;
 	$Sys		= new SYS_DATA;
-	$Form		= SAMWISE->new(0);
+	$Form		= FORMS->new(0);
 	$Page		= new THORIN;
 
 	$max = 0;
