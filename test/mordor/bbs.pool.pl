@@ -613,13 +613,13 @@ sub FunctionCreateLogs
 	require './module/isildur.pl';
 	require './module/galadriel.pl';
 	require './module/banner.pl';
-	require './module/celeborn.pl';
+	require './module/kako_log.pl';
 	my $Dat = ARAGORN->new;
 	my $Set = ISILDUR->new;
 	my $Banner = BANNER->new;
 	my $Conv = GALADRIEL->new;
 	my $Page = THORIN->new;
-	my $Logs = CELEBORN->new;
+	my $Logs = KAKO_LOG->new;
 
 	$Set->Load($Sys);
 	$Banner->Load($Sys);

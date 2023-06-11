@@ -701,8 +701,8 @@ sub FunctionBBSCreate
 
 	# 過去ログインデクス生成
 	require './module/thorin.pl';
-	require './module/celeborn.pl';
-	my $PastLog = CELEBORN->new;
+	require './module/kako_log.pl';
+	my $PastLog = KAKO_LOG->new;
 	my $Page = THORIN->new;
 	$PastLog->Load($Sys);
 	$PastLog->UpdateInfo($Sys);
