@@ -164,8 +164,8 @@ sub PrintCapList
 
 	$Sys->Set('_TITLE', 'Caps List');
 
-	require './module/ungoliants.pl';
-	$Cap = UNGOLIANT->new;
+	require './module/caption.pl';
+	$Cap = CAPTION->new;
 
 	# キャップ情報の読み込み
 	$Cap->Load($Sys);
@@ -255,8 +255,8 @@ sub PrintCapSetting
 	$Sys->Set('_TITLE', 'Cap Edit')		if ($mode == 1);
 	$Sys->Set('_TITLE', 'Cap Create')	if ($mode == 0);
 
-	require './module/ungoliants.pl';
-	$User = UNGOLIANT->new;
+	require './module/caption.pl';
+	$User = CAPTION->new;
 
 	# キャップ情報の読み込み
 	$User->Load($Sys);
@@ -325,8 +325,8 @@ sub PrintCapDelete
 
 	$SYS->Set('_TITLE', 'Cap Delete Confirm');
 
-	require './module/ungoliants.pl';
-	$Cap = UNGOLIANT->new;
+	require './module/caption.pl';
+	$Cap = CAPTION->new;
 
 	# キャップ情報を取得
 	$Cap->Load($SYS);
@@ -397,8 +397,8 @@ sub FuncCapSetting
 			return 1002;
 		}
 	}
-	require './module/ungoliants.pl';
-	$Cap = UNGOLIANT->new;
+	require './module/caption.pl';
+	$Cap = CAPTION->new;
 
 	$Cap->Load($Sys);
 
@@ -468,8 +468,8 @@ sub FuncCapDelete
 			return 1000;
 		}
 	}
-	require './module/ungoliants.pl';
-	$Cap = UNGOLIANT->new;
+	require './module/caption.pl';
+	$Cap = CAPTION->new;
 
 	$Cap->Load($Sys);
 	@userSet = $Form->GetAtArray('CAPS');

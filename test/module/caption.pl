@@ -5,7 +5,7 @@
 #	このモジュールはキャップ情報を管理します。
 #	以下の3つのパッケージによって構成されます
 #
-#	UNGOLIANT	: キャップ情報管理
+#	CAPTION	: キャップ情報管理
 #	SHELOB		: キャップグループ情報管理
 #	SECURITY	: セキュリティインタフェイス
 #
@@ -16,7 +16,7 @@
 #	キャップ管理パッケージ
 #
 #============================================================================================================
-package	UNGOLIANT;
+package	CAPTION;
 
 use strict;
 #use warnings;
@@ -673,7 +673,7 @@ sub Init
 
 	# 2重ロード防止
 	if (! defined $this->{'CAP'}) {
-		$this->{'CAP'} = UNGOLIANT->new;
+		$this->{'CAP'} = CAPTION->new;
 		$this->{'GROUP'} = SHELOB->new;
 		$this->{'CAP'}->Load($Sys);
 	}

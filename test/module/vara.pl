@@ -74,7 +74,7 @@ sub Init
 	}
 
 	# キャップ管理モジュールロード
-	require './module/ungoliants.pl';
+	require './module/caption.pl';
 	$this->{'SECURITY'} = SECURITY->new;
 	$this->{'SECURITY'}->Init($Sys);
 	$this->{'SECURITY'}->SetGroupInfo($Sys->Get('BBS'));

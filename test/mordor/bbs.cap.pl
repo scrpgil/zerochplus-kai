@@ -196,7 +196,7 @@ sub PrintGroupList
 
 	$Sys->Set('_TITLE', 'CAP Group List');
 
-	require './module/ungoliants.pl';
+	require './module/caption.pl';
 	$Group = SHELOB->new;
 
 	# グループ情報の読み込み
@@ -268,8 +268,8 @@ sub PrintGroupSetting
 	$Sys->Set('_TITLE', 'CAP Group Edit')	if ($mode == 1);
 	$Sys->Set('_TITLE', 'CAP Group Create')	if ($mode == 0);
 
-	require './module/ungoliants.pl';
-	$User = UNGOLIANT->new;
+	require './module/caption.pl';
+	$User = CAPTION->new;
 	$Group = SHELOB->new;
 
 	# ユーザ情報の読み込み
@@ -395,7 +395,7 @@ sub PrintGroupDelete
 
 	$SYS->Set('_TITLE', 'CAP Group Delete Confirm');
 
-	require './module/ungoliants.pl';
+	require './module/caption.pl';
 	$Group = SHELOB->new;
 	$Group->Load($SYS);
 
@@ -505,8 +505,8 @@ sub FunctionGroupSetting
 			return 1001;
 		}
 	}
-	require './module/ungoliants.pl';
-	$User = UNGOLIANT->new;
+	require './module/caption.pl';
+	$User = CAPTION->new;
 	$Group = SHELOB->new;
 
 	# ユーザ情報の読み込み
@@ -614,7 +614,7 @@ sub FunctionGroupDelete
 			return 1000;
 		}
 	}
-	require './module/ungoliants.pl';
+	require './module/caption.pl';
 	$Group = SHELOB->new;
 
 	# ユーザ情報の読み込み
