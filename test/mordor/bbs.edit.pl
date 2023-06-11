@@ -492,8 +492,8 @@ sub PrintNGWordsEdit
 
 	$SYS->Set('_TITLE', 'BBS NG Words Edit');
 
-	require './module/wormtongue.pl';
-	$Words = WORMTONGUE->new;
+	require './module/ng_word.pl';
+	$Words = NG_WORD->new;
 	$Words->Load($SYS);
 
 	# Œ ŒÀŽæ“¾
@@ -833,8 +833,8 @@ sub FunctionNGWordEdit
 			return 1000;
 		}
 	}
-	require './module/wormtongue.pl';
-	$Words = WORMTONGUE->new;
+	require './module/ng_word.pl';
+	$Words = NG_WORD->new;
 	$Words->Load($Sys);
 
 	@ngWords = split(/\n/, $Form->Get('NG_WORDS'));

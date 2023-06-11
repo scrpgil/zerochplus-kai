@@ -325,8 +325,8 @@ sub ReadyBeforeWrite
 
 		# NGƒ[ƒh
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_NGWORD, $bbs)) {
-			require './module/wormtongue.pl';
-			my $ngWord = WORMTONGUE->new;
+			require './module/ng_word.pl';
+			my $ngWord = NG_WORD->new;
 			$ngWord->Load($Sys);
 			my @checkKey = ('FROM', 'mail', 'MESSAGE');
 
