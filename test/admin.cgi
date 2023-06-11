@@ -115,11 +115,11 @@ sub SystemSetting
 	);
 
 	require './module/elves.pl';
-	require './module/imrahil.pl';
+	require './module/log.pl';
 	require './module/newrelease.pl';
 
 	$CGI->{'SECINFO'} = ARWEN->new;
-	$CGI->{'LOGGER'} = IMRAHIL->new;
+	$CGI->{'LOGGER'} = LOG->new;
 	$CGI->{'NEWRELEASE'} = ZP_NEWRELEASE->new;
 }
 

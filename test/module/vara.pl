@@ -871,8 +871,8 @@ sub SaveHost
 		}
 	}
 
-	require './module/imrahil.pl';
-	my $Logger = IMRAHIL->new;
+	require './module/log.pl';
+	my $Logger = LOG->new;
 
 	if ($Logger->Open("$bbs/log/HOST", $Sys->Get('HSTMAX'), 2 | 4) == 0) {
 		$Logger->Put($host, $Sys->Get('KEY'), $Sys->Get('MODE'));

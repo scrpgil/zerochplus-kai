@@ -241,8 +241,8 @@ sub PrintLogs
 	$Sys->Set('_TITLE', 'Hosts Log')			if ($mode == 1);
 	$Sys->Set('_TITLE', 'Error Log')			if ($mode == 2);
 
-	require './module/imrahil.pl';
-	$Logger = IMRAHIL->new;
+	require './module/log.pl';
+	$Logger = LOG->new;
 
 	$logFile = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/log/IP'	if ($mode == 0);
 	$logFile = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/log/HOST'	if ($mode == 1);
@@ -344,8 +344,8 @@ sub FunctionLogDelete
 			return 1000;
 		}
 	}
-	require './module/imrahil.pl';
-	$Logger = IMRAHIL->new;
+	require './module/log.pl';
+	$Logger = LOG->new;
 
 	$logFile = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/log/IP'	if ($mode == 0);
 	$logFile = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/log/HOST'	if ($mode == 1);

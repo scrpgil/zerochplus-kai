@@ -74,8 +74,8 @@ sub DoPrint
 	}
 
 	#log‚Ì“Ç‚Ýž‚Ý
-	require './module/imrahil.pl';
-	$Logger = IMRAHIL->new;
+	require './module/log.pl';
+	$Logger = LOG->new;
 	my $logPath = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS') . '/log/' . $Sys->Get('KEY');
 	$Logger->Open($logPath, 0, 1 | 2);
 
