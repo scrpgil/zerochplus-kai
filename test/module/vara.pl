@@ -165,8 +165,8 @@ sub Write
 	my $datPath = $Sys->Get('DATPATH');
 
 	# ログ書き込み
-	require './module/peregrin.pl';
-	my $Log = PEREGRIN->new;
+	require './module/syslog.pl';
+	my $Log = SYSLOG->new;
 	$Log->Load($Sys, 'WRT', $threadid);
 	$Log->Set($Set, length($Form->Get('MESSAGE')), $Sys->Get('VERSION'), $Sys->Get('KOYUU'), $data, $Sys->Get('AGENT', 0));
 	$Log->Save($Sys);
@@ -499,8 +499,8 @@ sub IsRegulation
 			}
 		}
 		# スレッド作成(スレッド立てすぎ)
-		require './module/peregrin.pl';
-		my $Log = PEREGRIN->new;
+		require './module/syslog.pl';
+		my $Log = SYSLOG->new;
 		$Log->Load($Sys, 'THR');
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_MANYTHREAD, $bbs)) {
 			my $tateHour = $Set->Get('BBS_TATESUGI_HOUR', '0') - 0;
@@ -519,7 +519,7 @@ sub IsRegulation
 
 		# Sambaログ
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_SAMBA, $bbs) || !$Sec->IsAuthority($capID, $ZP::CAP_REG_NOTIMEPOST, $bbs)) {
-			my $Logs = PEREGRIN->new;
+			my $Logs = SYSLOG->new;
 			$Logs->Load($Sys, 'SMB');
 			$Logs->Set($Set, $Sys->Get('KEY'), $Sys->Get('VERSION'), $koyuu);
 			$Logs->Save($Sys);
@@ -527,13 +527,13 @@ sub IsRegulation
 	}
 	# レス書き込みモード
 	else {
-		require './module/peregrin.pl';
+		require './module/syslog.pl';
 
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_SAMBA, $bbs) || !$Sec->IsAuthority($capID, $ZP::CAP_REG_NOTIMEPOST, $bbs)) {
-			my $Logs = PEREGRIN->new;
+			my $Logs = SYSLOG->new;
 			$Logs->Load($Sys, 'SMB');
 
-			my $Logh = PEREGRIN->new;
+			my $Logh = SYSLOG->new;
 			$Logh->Load($Sys, 'SBH');
 
 			my $n = 0;
@@ -584,7 +584,7 @@ sub IsRegulation
 		# レス書き込み(連続投稿)
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_NOBREAKPOST, $bbs)) {
 			if ($Set->Get('timeclose') && $Set->Get('timecount') ne '') {
-				my $Log = PEREGRIN->new;
+				my $Log = SYSLOG->new;
 				$Log->Load($Sys, 'HST');
 				my $cnt = $Log->Search($koyuu, 2, $mode, $host, $Set->Get('timecount'));
 				if ($cnt >= $Set->Get('timeclose')) {
@@ -595,7 +595,7 @@ sub IsRegulation
 		# レス書き込み(二重投稿)
 		if (!$Sec->IsAuthority($capID, $ZP::CAP_REG_DOUBLEPOST, $bbs)) {
 			if ($this->{'SYS'}->Get('KAKIKO') == 1) {
-				my $Log = PEREGRIN->new;
+				my $Log = SYSLOG->new;
 				$Log->Load($Sys, 'WRT', $Sys->Get('KEY'));
 				if ($Log->Search($koyuu, 1) - 2 == length($this->{'FORM'}->Get('MESSAGE'))) {
 					return $ZP::E_REG_DOUBLEPOST;

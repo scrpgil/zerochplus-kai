@@ -126,8 +126,8 @@ sub Print
 	$mode = 'O' if ($Form->Equal('mb', 'on'));
 
 	# ƒGƒ‰[ƒƒO‚ð•Û‘¶
-	require './module/peregrin.pl';
-	my $Log = PEREGRIN->new;
+	require './module/syslog.pl';
+	my $Log = SYSLOG->new;
 	$Log->Load($Sys, 'ERR', '');
 	$Log->Set('', $err, $version, $koyuu, $mode);
 	$Log->Save($Sys);

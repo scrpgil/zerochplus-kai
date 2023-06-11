@@ -579,8 +579,8 @@ sub FunctionResDelete
 		$abone	= $Setting->Get('BBS_DELETE_NAME');
 	}
 	else {
-		require './module/peregrin.pl';
-		$LOG = PEREGRIN->new;
+		require './module/syslog.pl';
+		$LOG = SYSLOG->new;
 		$LOG->Load($Sys, 'WRT', $Sys->Get('KEY'));
 		$logsize = $LOG->Size();
 		$lastnum = $Dat->Size() - 1;
