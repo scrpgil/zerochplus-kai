@@ -49,8 +49,8 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
 
-	require './mordor/sauron.pl';
-	$BASE = SAURON->new;
+	require './mordor/base.pl';
+	$BASE = BASE->new;
 
 	# 管理マスタオブジェクトの生成
 	$Page		= $BASE->Create($Sys, $Form);
@@ -127,7 +127,7 @@ sub DoFunction
 #
 #	メニューリスト設定
 #	-------------------------------------------------------------------------------------
-#	@param	$Base	SAURON
+#	@param	$Base	BASE
 #	@param	$Sys	SYS_DATA
 #	@return	なし
 #

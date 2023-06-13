@@ -48,9 +48,9 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
 
-	require './mordor/sauron.pl';
+	require './mordor/base.pl';
 	require './module/bbs_manage.pl';
-	$BASE = SAURON->new;
+	$BASE = BASE->new;
 	$BBS = $pSys->{'AD_BBS'};
 
 	# 掲示板情報の読み込みとグループ設定
@@ -183,7 +183,7 @@ sub DoFunction
 #
 #	メニューリスト設定
 #	-------------------------------------------------------------------------------------
-#	@param	$Base	SAURON
+#	@param	$Base	BASE
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
