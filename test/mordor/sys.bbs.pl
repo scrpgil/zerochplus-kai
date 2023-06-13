@@ -48,8 +48,8 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($BASE, $Page, $subMode);
 
-	require './mordor/sauron.pl';
-	$BASE = SAURON->new;
+	require './mordor/base.pl';
+	$BASE = BASE->new;
 
 	# 管理情報を登録
 	$Sys->Set('ADMIN', $pSys);
@@ -155,7 +155,7 @@ sub DoFunction
 #
 #	メニューリスト設定
 #	-------------------------------------------------------------------------------------
-#	@param	$Base	SAURON
+#	@param	$Base	BASE
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------

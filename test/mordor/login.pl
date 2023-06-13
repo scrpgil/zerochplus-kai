@@ -48,8 +48,8 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($BASE, $Page);
 
-	require './mordor/sauron.pl';
-	$BASE = SAURON->new;
+	require './mordor/base.pl';
+	$BASE = BASE->new;
 
 	$Page = $BASE->Create($Sys, $Form);
 

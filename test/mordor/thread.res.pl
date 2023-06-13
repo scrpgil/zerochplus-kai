@@ -48,8 +48,8 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $DAT, $Page,$Logger);
 
-	require './mordor/sauron.pl';
-	$BASE = SAURON->new;
+	require './mordor/base.pl';
+	$BASE = BASE->new;
 	$BBS = $pSys->{'AD_BBS'};
 	$DAT = $pSys->{'AD_DAT'};
 
@@ -181,7 +181,7 @@ sub DoFunction
 #
 #	メニューリスト設定
 #	-------------------------------------------------------------------------------------
-#	@param	$Base	SAURON
+#	@param	$Base	BASE
 #	@return	なし
 #
 #------------------------------------------------------------------------------------------------------------
