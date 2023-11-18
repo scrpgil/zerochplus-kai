@@ -48,7 +48,7 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($BASE, $Page);
 
-	require './mordor/base.pl';
+	require './module/admin/base.pl';
 	$BASE = BASE->new;
 
 	$Page = $BASE->Create($Sys, $Form);
@@ -79,7 +79,7 @@ sub DoFunction
 
 	# ログイン情報を確認
 	if ($pSys->{'USER'}) {
-		require './mordor/sys.top.pl';
+		require './module/admin/sys.top.pl';
 		$Mod = MODULE->new;
 		$Form->Set('MODE_SUB', 'NOTICE');
 

@@ -48,7 +48,7 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $Page);
 
-	require './mordor/base.pl';
+	require './module/admin/base.pl';
 	$BASE = BASE->new;
 
 	# 管理マスタオブジェクトの生成

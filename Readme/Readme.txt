@@ -52,7 +52,7 @@ zerochplus_x.x.x/
     |  + users.cgi            - 初期ユーザ(Administrator)定義ファイル
     + module/
     |  + *.pl                 - ぜろちゃんねるモジュール
-    + mordor/
+    + module/admin
     |  + *.pl                 - 管理CGI用モジュール
     + plugin/
     |  + 0ch_*.pl             - プラグインスクリプト
