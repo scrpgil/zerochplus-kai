@@ -43,7 +43,7 @@ sub BBSCGI
 		my $Conv = $CGI->{'CONV'};
 		my $Threads = $CGI->{'THREADS'};
 
-		require './module/nns_write.pl';
+		require './module/bbs_write.pl';
 		my $WriteAid = BBS_WRITE->new;
 		$WriteAid->Init($Sys, $Form, $Set, $Threads, $Conv);
 
@@ -253,6 +253,7 @@ sub PrintBBSThreadCreate
 	my $image = $Set->Get('BBS_TITLE_PICTURE');
 	my $code = $Sys->Get('ENCODE');
 	my $cgipath = $Sys->Get('CGIPATH');
+	my $bbs_path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS');
 
 	# HTMLヘッダの出力
 	$Page->Print("Content-type: text/html\n\n");
@@ -260,7 +261,7 @@ sub PrintBBSThreadCreate
 	$Page->Print("<html lang=\"ja\">\n");
 	$Page->Print("<head>\n");
 	$Page->Print(' <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">'."\n\n");
-	$Page->Print(" <link rel=\"stylesheet\" href=\"$data_path/app.css\" type=\"text/css\">"."\n\n");
+	$Page->Print(" <link rel=\"stylesheet\" href=\"$bbs_path/customize.css\" type=\"text/css\">"."\n\n");
 	$Caption->Print($Page, undef);
 	$Page->Print(" <title>$title</title>\n\n");
 	$Page->Print("</head>\n<!--nobanner-->\n");
@@ -275,9 +276,7 @@ sub PrintBBSThreadCreate
 		$work[4] = $Set->Get('BBS_VLINK_COLOR');
 		$work[5] = $Set->Get('BBS_BG_PICTURE');
 
-		$Page->Print("<body bgcolor=\"$work[0]\" text=\"$work[1]\" link=\"$work[2]\" ");
-		$Page->Print("alink=\"$work[3]\" vlink=\"$work[4]\" ");
-		$Page->Print("background=\"$work[5]\">\n");
+		$Page->Print("<body>");
 	}
 
 	$Page->Print("<div align=\"center\">");
@@ -308,9 +307,9 @@ sub PrintBBSThreadCreate
 		my $ver = $Sys->Get('VERSION');
 
 		$Page->Print(<<HTML);
-<table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="$tblCol" align="center">
+<table class="ze-info-table">
  <tr>
-  <td>
+  <td class="ze-info-table-td">
   <b>スレッド新規作成(テスト)</b><br>
   <center>
   <form method="POST" action="./bbs.cgi?guid=ON">
@@ -417,6 +416,7 @@ sub PrintBBSCookieConfirm
 	my $msg = &$sanitize($Form->Get('MESSAGE'));
 	my $subject = &$sanitize($Form->Get('subject'));
 	my $key = &$sanitize($Form->Get('key'));
+	my $bbs_path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS');
 
 	# cookie情報の出力
 	$Cookie->Set('NAME', $name, 'utf8')	if ($Set->Equal('BBS_NAMECOOKIE_CHECK', 'checked'));
@@ -431,7 +431,7 @@ sub PrintBBSCookieConfirm
 <head>
 
  <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
- <link rel="stylesheet" href="$data_path/app.css" type="text/css">
+ <link rel="stylesheet" href="$bbs_path/customize.css" type="text/css">
 
  <title>■ 書き込み確認 ■</title>
 

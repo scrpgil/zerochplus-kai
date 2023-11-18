@@ -645,6 +645,10 @@ sub FunctionBBSCreate
 	FILE_UTILS::Copy("$dataPath/index.html", "$createPath/log/index.html");
 	FILE_UTILS::Copy("$dataPath/index.html", "$createPath/pool/index.html");
 	FILE_UTILS::Copy("$dataPath/index.html", "$createPath/info/index.html");
+	# CSSデータのコピー
+	FILE_UTILS::Copy("$dataPath/customize.css", "$createPath/customize.css");
+	FILE_UTILS::Copy("$dataPath/normalize.css", "$createPath/normalize.css");
+	FILE_UTILS::Copy("$dataPath/default.css", "$createPath/default.css");
 
 	push @$pLog, "■掲示板ディレクトリ生成完了...[$createPath]";
 

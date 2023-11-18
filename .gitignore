@@ -32,6 +32,7 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 
 bbs/
+bbs2/
 test/info/AdminLog.cgi
 test/info/bbss.cgi
 test/info/.session

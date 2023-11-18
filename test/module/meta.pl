@@ -52,6 +52,7 @@ sub Load
 	$file = 'head.txt' if ($kind eq 'HEAD');
 	$file = 'foot.txt' if ($kind eq 'FOOT');
 	$file = 'meta.txt' if ($kind eq 'META');
+	$file = 'customize.css' if ($kind eq 'CSS');
 
 	$this->{'TEXT'} = $Sys->Get('HEADTEXT');
 	$this->{'URL'} = $Sys->Get('HEADURL');
@@ -156,12 +157,12 @@ sub Print
 
 	$Page->Print(<<HEAD);
 <a name="info"></a>
-<table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="$tcol" style="margin-bottom:1.2em;" align="center">
+<table class="ze-info-table">
  <tr>
-  <td>
-  <table border="0" width="100%">
+  <td class="ze-info-table-td">
+  <table class="ze-info-sub-table">
    <tr>
-    <td><font size="+1"><b>$bbs</b></font></td>
+    <td><b>$bbs</b></td>
     <td align="right"><a href="#menu">Å°</a> <a href="#1">Å•</a></td>
    </tr>
    <tr>
@@ -180,7 +181,7 @@ HEAD
 
 		if ($text ne '') {
 			$Page->Print(" <tr>\n");
-			$Page->Print("  <td align=\"center\"><a href=\"$url\" target=\"_blank\">$text</a></td>\n");
+			$Page->Print("  <td class='ze-info-table-td ze-text-center'><a href=\"$url\" target=\"_blank\">$text</a></td>\n");
 			$Page->Print(" </tr>\n");
 		}
 

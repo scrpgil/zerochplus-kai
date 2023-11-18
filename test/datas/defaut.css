@@ -1,0 +1,60 @@
+body {
+  background-image: url("/bbs2/ba.gif");
+  background-color: #ffffff;
+  color: #000000;
+  text-decoration: none;
+}
+
+a:link {
+  color: #0000ff;
+}
+
+a:visited {
+  color: #aa0088;
+}
+
+a:hover {
+  color: #ff0000;
+}
+
+.ze-info-table {
+  border-collapse: separate; /* セルの境界を隠す */
+  width: 95%;
+  margin: 0 auto 1.2em;
+  background-color: #ccffcc;
+  border: 1px solid #000000; /* ボーダーを追加 */
+  border-spacing: 7px; /* セル間のスペーシング */
+  box-sizing: border-box;
+}
+/* border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="#CCFFCC" style="margin-bottom:1.2em;" align="center"*/
+
+/* 表内のセルのパディング */
+.ze-info-table-td {
+  padding: 3px;
+  border: 1px solid #000000;
+}
+
+.ze-info-sub-table {
+  width: 100%;
+}
+
+.ze-text-center {
+  text-align: center;
+}
+
+/* テーブルのスタイル */
+.ze-thread-table {
+  width: 95%;
+  background-color: #efefef;
+  border-collapse: separate; /* セルの境界を隠す */
+  border: 1px solid; /* ボーダーを追加 */
+  border-spacing: 7px; /* セル間のスペーシング */
+  box-sizing: border-box;
+  margin: 0 auto 1.2em;
+}
+
+/* テーブル内のセルのパディング */
+.ze-thread-table td {
+  padding: 3px;
+  border: 1px solid #000000;
+}

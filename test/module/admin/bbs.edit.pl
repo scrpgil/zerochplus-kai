@@ -78,6 +78,9 @@ sub DoPrint
 	elsif ($subMode eq 'META') {													# META編集画面
 		PrintMETAEdit($Page, $Sys, $Form);
 	}
+	elsif ($subMode eq 'CSS') {													# CSS編集画面
+		PrintCSSEdit($Page, $Sys, $Form);
+	}
 	elsif ($subMode eq 'USER') {													# 規制ユーザ編集画面
 		PrintValidUserEdit($Page, $Sys, $Form);
 	}
@@ -139,6 +142,9 @@ sub DoFunction
 	elsif ($subMode eq 'META') {													# META編集
 		$err = FunctionTextEdit($Sys, $Form, 3, $this->{'LOG'});
 	}
+	elsif ($subMode eq 'CSS') {													# CSS編集
+		$err = FunctionTextEdit($Sys, $Form, 4, $this->{'LOG'});
+	}
 	elsif ($subMode eq 'USER') {													# 規制ユーザ編集
 		$err = FunctionValidUserEdit($Sys, $Form, $this->{'LOG'});
 	}
@@ -180,6 +186,7 @@ sub SetMenuList
 	$Base->SetMenu('ヘッダの編集', "'bbs.edit','DISP','HEAD'");
 	$Base->SetMenu('フッタの編集', "'bbs.edit','DISP','FOOT'");
 	$Base->SetMenu('META情報の編集', "'bbs.edit','DISP','META'");
+	$Base->SetMenu('CSS情報の編集', "'bbs.edit','DISP','CSS'");
 	$Base->SetMenu('<hr>', '');
 
 	# 管理グループ設定権限のみ
@@ -385,6 +392,57 @@ sub PrintMETAEdit
 		$common = "onclick=\"DoSubmit('bbs.edit'";
 		$Page->Print("<tr><td colspan=2 align=left>");
 		$Page->Print("<input type=button value=\"　変更　\" $common,'FUNC','META')\">");
+		$Page->Print("</td></tr>\n");
+	}
+	$Page->Print("</table><br>");
+}
+
+#------------------------------------------------------------------------------------------------------------
+#
+#	CSS編集画面の表示
+#	-------------------------------------------------------------------------------------
+#	@param	$Page	ページコンテキスト
+#	@param	$SYS	システム変数
+#	@param	$Form	フォーム変数
+#	@return	なし
+#
+#------------------------------------------------------------------------------------------------------------
+sub PrintCSSEdit
+{
+	my ($Page, $SYS, $Form) = @_;
+	my ($Meta, $common, $isAuth, $data, $pMeta);
+
+	$SYS->Set('_TITLE', 'BBS CSS Edit');
+
+	require './module/meta.pl';
+	$Meta = META->new;
+	$Meta->Load($SYS, 'CSS');
+
+	$pMeta = $Meta->Get();
+	$data = join '', @$pMeta;
+
+	# 権限取得
+	$isAuth = $SYS->Get('ADMIN')->{'SECINFO'}->IsAuthority($SYS->Get('ADMIN')->{'USER'}, $ZP::AUTH_BBSEDIT, $SYS->Get('BBS'));
+
+	$Page->Print("<center><table border=0 cellspacing=2 width=100%>");
+	$Page->Print("<tr><td colspan=2><hr></td></tr>\n");
+	$Page->Print("<tr><td class=\"DetailTitle\">内容編集</td><td>");
+	$Page->Print("<textarea name=CSS_TEXT rows=11 cols=80 wrap=off>");
+
+	# フッタ内容テキストの表示
+	$data =~ s/&/&amp;/g;
+	$data =~ s/</&lt;/g;
+	$data =~ s/>/&gt;/g;
+	$Page->Print($data);
+
+	$Page->Print("</textarea></td></tr>\n");
+	$Page->Print("<tr><td colspan=2><hr></td></tr>\n");
+
+	# 権限によって表示を抑制
+	if ($isAuth) {
+		$common = "onclick=\"DoSubmit('bbs.edit'";
+		$Page->Print("<tr><td colspan=2 align=left>");
+		$Page->Print("<input type=button value=\"　変更　\" $common,'FUNC','CSS')\">");
 		$Page->Print("</td></tr>\n");
 	}
 	$Page->Print("</table><br>");
@@ -740,6 +798,11 @@ sub FunctionTextEdit
 		$readKey = 'META';
 		$formKey = 'META_TEXT';
 		push @$pLog, 'meta.txtを設定しました。';
+	}
+	elsif ($mode == 4) {
+		$readKey = 'CSS';
+		$formKey = 'CSS_TEXT';
+		push @$pLog, 'customize.cssを設定しました。';
 	}
 
 	require './module/meta.pl';
