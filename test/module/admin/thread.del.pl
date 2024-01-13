@@ -48,7 +48,7 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $BBS, $DAT, $Page);
 
-	require './mordor/base.pl';
+	require './module/admin/base.pl';
 	$BASE = BASE->new;
 	$BBS = $pSys->{'AD_BBS'};
 	$DAT = $pSys->{'AD_DAT'};

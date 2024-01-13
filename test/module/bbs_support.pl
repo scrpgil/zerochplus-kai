@@ -288,8 +288,19 @@ sub PrintIndexHead
 	my $link = $this->{'SET'}->Get('BBS_TITLE_LINK');
 	my $image = $this->{'SET'}->Get('BBS_TITLE_PICTURE');
 	my $Sys = $this->{'SYS'};
-	my $data_path	= $Sys->Get('SERVER') . $Sys->Get('CGIPATH') . $Sys->Get('DATA');
+	# my $= $Sys->Get('SERVER') . $Sys->Get('BBSPATH');
+	my $data_path = $Sys->Get('BBSPATH') . '/' . $Sys->Get('BBS');
 #	my $code = $this->{'CODE'};
+	# 現在の時刻を取得
+	my ($sec, $min, $hour, $mday, $mon, $year) = localtime();
+
+	# 年と月は0から始まるため、適切な値に変換
+	$year += 1900;
+	$mon += 1;
+
+	# 年月日時分秒を結合して数値のタイムスタンプを作成
+	my $timestamp = sprintf("%04d%02d%02d%02d%02d%02d", $year, $mon, $mday, $hour, $min, $sec);
+	print $timestamp;
 
 	# HTMLヘッダの出力
 	$Page->Print(<<HEAD);
@@ -300,7 +311,7 @@ sub PrintIndexHead
  <meta name="viewport" content="viewport-fit=cover, width=device-width" />
  <meta http-equiv="Content-Type" content="text/html;charset=Shift_JIS">
  <meta http-equiv="Content-Script-Type" content="text/javascript">
- <link rel="stylesheet" href="$data_path/app.css" type="text/css">
+ <link rel="stylesheet" href="$data_path/customize.css?t=$timestamp" type="text/css">
 
 HEAD
 
@@ -372,7 +383,7 @@ sub PrintIndexMenu
 	$Page->Print(<<MENU);
 
 <a name="menu"></a>
-<table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="$menuCol" style="margin:1.2em auto;" align="center">
+<table class="ze-info-table">
  <tr>
   <td>
   <small>
@@ -481,7 +492,7 @@ sub PrintIndexPreview
 		# ヘッダ部分の表示
 		$Page->Print(<<THREAD);
 <main class="threads">
-<table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="$tblCol" style="margin-bottom:1.2em;" align="center">
+<table class="ze-thread-table">
  <tr>
   <td>
   <a name="$cnt"></a>
@@ -553,9 +564,9 @@ sub PrintIndexFoot
 	# スレッド作成画面を別画面で表示
 	if ($Set->Equal('BBS_PASSWORD_CHECK', 'checked')) {
 		$Page->Print(<<FORM);
-<table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="$tblCol" align="center">
+<table class="ze-info-table">
  <tr>
-  <td>
+  <td class="ze-info-table-td">
   <form method="POST" action="$cgipath/bbs.cgi?guid=ON" style="margin:1.2em 0;">
   <input type="submit" value="新規スレッド作成画面へ"><br>
   <input type="hidden" name="bbs" value="$bbs">
@@ -570,7 +581,7 @@ FORM
 	else {
 		$Page->Print(<<FORM);
 <form method="POST" action="$cgipath/bbs.cgi?guid=ON">
-<table border="1" cellspacing="7" cellpadding="3" width="95%" bgcolor="#CCFFCC" style="margin-bottom:1.2em;" align="center">
+<table class="ze-info-table">
  <tr>
   <td>&lrm;</td>
   <td nowrap>

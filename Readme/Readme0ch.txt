@@ -55,7 +55,7 @@ ver.0.10
 			users.cgi		初期ユーザ(Administrator)定義ファイルです
 		module/
 			*.pl			ぜろちゃんねるモジュール
-		mordor/
+		module/admin/
 			*.pl			管理CGIモジュール
 		plugin/
 			*.pl			プラグインスクリプト

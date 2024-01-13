@@ -51,7 +51,7 @@ sub DoPrint
 	my ($Sys, $Form, $pSys) = @_;
 	my ($subMode, $BASE, $Page);
 
-	require './mordor/base.pl';
+	require './module/admin/base.pl';
 	$BASE = BASE->new;
 
 	# ŠÇ—î•ñ‚ğ“o˜^
